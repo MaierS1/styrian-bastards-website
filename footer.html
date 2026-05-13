@@ -1,0 +1,194 @@
+<!-- Styrian Bastards Footer / Impressum -->
+
+<footer class="sb-footer" id="contact">
+
+    <div class="sb-footer-top">
+        <p>&copy; 2026 Styrian Bastards &bull; Graz, Österreich</p>
+        <p>Fanclub des ATSE Graz</p>
+    </div>
+
+    <div class="sb-footer-line"></div>
+
+    <section class="sb-impressum">
+
+        <h2>Impressum</h2>
+
+        <div class="sb-impressum-grid">
+
+            <div class="sb-impressum-col">
+                <h3>Angaben gemäß § 5 ECG</h3>
+                <p>
+                    Styrian Bastards<br>
+                    Eishockey-Fanclub<br>
+                    Marburger Straße 12/2/13<br>
+                    8042 Graz, Österreich
+                </p>
+            </div>
+
+            <div class="sb-impressum-col sb-impressum-contact">
+                <h3>Kontakt</h3>
+                <p>
+                    E-Mail:
+                    <a href="mailto:mail@styrian-bastards.at">mail@styrian-bastards.at</a>
+                </p>
+
+                <div class="sb-social-icons">
+                    <a href="https://www.facebook.com/styrian.bastards" target="_blank" rel="noopener" aria-label="Facebook">
+                        <span>f</span>
+                    </a>
+
+                    <a href="https://www.instagram.com/styrian_bastards" target="_blank" rel="noopener" aria-label="Instagram">
+                        <span>◎</span>
+                    </a>
+
+                    <a href="https://soundcloud.com/styrian-bastards" target="_blank" rel="noopener" aria-label="SoundCloud">
+                        <span>☁</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="sb-impressum-col">
+                <h3>Verantwortlich für den Inhalt</h3>
+                <p>
+                    Styrian Bastards<br>
+                    Eishockey-Fanclub<br>
+                    Stefan Maier<br>
+                    Marburger Straße 12/2/13<br>
+                    8042 Graz, Österreich
+                </p>
+            </div>
+
+        </div>
+
+    </section>
+
+</footer>
+
+<style>
+.sb-footer {
+    background: #050505;
+    color: #ffffff;
+    font-family: 'Oswald', Arial, sans-serif;
+}
+
+.sb-footer-top {
+    min-height: 155px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    color: rgba(255,255,255,0.45);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    text-align: center;
+}
+
+.sb-footer-line {
+    width: 100%;
+    height: 2px;
+    background: #8b000c;
+}
+
+.sb-impressum {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 85px 60px 80px;
+}
+
+.sb-impressum h2 {
+    font-size: clamp(3rem, 5vw, 5rem);
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 0 0 45px;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.sb-impressum-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+}
+
+.sb-impressum-col h3 {
+    font-size: 1.35rem;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    margin: 0 0 18px;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.sb-impressum-col p {
+    font-size: 1.05rem;
+    line-height: 1.55;
+    color: #ffffff;
+    margin: 0;
+}
+
+.sb-impressum a {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+.sb-impressum a:hover {
+    color: #c40018;
+}
+
+.sb-impressum-contact {
+    text-align: left;
+}
+
+.sb-social-icons {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 22px;
+}
+
+.sb-social-icons a {
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+
+    transition: 0.25s ease;
+}
+
+.sb-social-icons a:hover {
+    color: #c40018;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 900px) {
+    .sb-impressum {
+        padding: 65px 25px;
+    }
+
+    .sb-impressum-grid {
+        grid-template-columns: 1fr;
+        gap: 42px;
+    }
+
+    .sb-impressum h2,
+    .sb-impressum-col,
+    .sb-impressum-contact {
+        text-align: center;
+    }
+
+    .sb-social-icons {
+        justify-content: center;
+    }
+}
+</style>

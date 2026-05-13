@@ -1,0 +1,117 @@
+<!-- Styrian Bastards Navbar -->
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600&display=swap');
+
+.sb-navbar{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    z-index:9999;
+
+    background:rgba(0,0,0,0.88);
+    backdrop-filter:blur(8px);
+
+    border-bottom:1px solid rgba(255,255,255,0.08);
+
+    padding:14px 28px;
+    box-sizing:border-box;
+}
+
+.sb-navbar-container{
+    max-width:1450px;
+    margin:0 auto;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+/* LOGO */
+
+.sb-navbar-logo img{
+    height:62px;
+    width:auto;
+    display:block;
+}
+
+/* MENÜ */
+
+.sb-navbar-menu{
+    display:flex;
+    align-items:center;
+    gap:30px;
+}
+
+.sb-navbar-menu a{
+    color:#ffffff;
+    text-decoration:none;
+
+    font-family:'Oswald', sans-serif;
+    font-size:1rem;
+    font-weight:500;
+
+    text-transform:uppercase;
+    letter-spacing:1px;
+
+    transition:0.25s ease;
+}
+
+.sb-navbar-menu a:hover{
+    color:#b30018;
+}
+
+/* MOBILE */
+
+@media (max-width:950px){
+
+    .sb-navbar{
+        padding:18px;
+    }
+
+    .sb-navbar-container{
+        flex-direction:column;
+        gap:18px;
+    }
+
+    .sb-navbar-logo img{
+        height:52px;
+    }
+
+    .sb-navbar-menu{
+        flex-wrap:wrap;
+        justify-content:center;
+        gap:16px;
+    }
+
+    .sb-navbar-menu a{
+        font-size:0.92rem;
+    }
+}
+
+</style>
+
+<nav class="sb-navbar">
+
+    <div class="sb-navbar-container">
+
+        <!-- LOGO -->
+        <a href="index.html" class="sb-navbar-logo">
+            <img src="logo.png" alt="Styrian Bastards Logo">
+        </a>
+
+        <!-- MENÜ -->
+        <div class="sb-navbar-menu">
+            <a href="index.html">Home</a>
+            <a href="index.html#about">Über Uns</a>
+            <a href="index.html#events">Events</a>
+            <a href="mitglied-werden.html">Mitglied Werden</a>
+            <a href="datenschutz.html">Datenschutz</a>
+            <a href="impressum.html">Impressum</a>
+            <a href="index.html#contact">Kontakt</a>
+        </div>
+
+    </div>
+
+</nav>
