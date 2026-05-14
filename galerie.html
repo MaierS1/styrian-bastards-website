@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Galerie | Styrian Bastards</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:#050505;
+    color:#ffffff;
+    font-family:'Oswald', Arial, sans-serif;
+    overflow-x:hidden;
+}
+
+.hero{
+    position:relative;
+    width:100%;
+    min-height:100vh;
+
+    background:
+        linear-gradient(to bottom, rgba(0,0,0,0.45), rgba(0,0,0,0.88)),
+        url("hero.jpg");
+
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+
+    padding:160px 24px 90px;
+}
+
+.hero::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:radial-gradient(circle at center, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.78) 100%);
+    pointer-events:none;
+}
+
+.hero-content{
+    position:relative;
+    z-index:2;
+    max-width:900px;
+}
+
+.hero h1{
+    font-family:'Cinzel', serif;
+    font-size:clamp(3.4rem, 8vw, 7rem);
+    letter-spacing:8px;
+    text-transform:uppercase;
+    line-height:1;
+    margin-bottom:24px;
+    text-shadow:0 0 30px rgba(0,0,0,0.9);
+}
+
+.hero p{
+    font-size:1.25rem;
+    color:rgba(255,255,255,0.82);
+    letter-spacing:3px;
+    text-transform:uppercase;
+}
+
+.gallery-section{
+    padding:100px 35px 120px;
+    background:
+        radial-gradient(circle at top, rgba(179,0,24,0.12), transparent 38%),
+        #050505;
+}
+
+.gallery-wrap{
+    max-width:1500px;
+    margin:0 auto;
+}
+
+.section-title{
+    text-align:center;
+    font-size:clamp(2.6rem, 5vw, 4.5rem);
+    margin-bottom:22px;
+    letter-spacing:6px;
+    text-transform:uppercase;
+}
+
+.section-intro{
+    text-align:center;
+    max-width:760px;
+    margin:0 auto 60px;
+    color:rgba(255,255,255,0.7);
+    line-height:1.7;
+    font-size:1.05rem;
+}
+
+.gallery-grid{
+    display:grid;
+    grid-template-columns:repeat(12, 1fr);
+    gap:22px;
+}
+
+.gallery-item{
+    position:relative;
+    overflow:hidden;
+    min-height:290px;
+    border-radius:14px;
+    background:#111;
+    border:1px solid rgba(255,255,255,0.08);
+    cursor:pointer;
+}
+
+.gallery-item.large{
+    grid-column:span 6;
+    min-height:430px;
+}
+
+.gallery-item.medium{
+    grid-column:span 4;
+}
+
+.gallery-item.small{
+    grid-column:span 3;
+}
+
+.gallery-item img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+    transition:0.45s ease;
+    filter:grayscale(18%) contrast(1.08);
+}
+
+.gallery-item:hover img{
+    transform:scale(1.07);
+    filter:grayscale(0%) contrast(1.15);
+}
+
+.gallery-overlay{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    padding:28px 24px;
+    background:linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+}
+
+.gallery-overlay h3{
+    font-size:1.35rem;
+    letter-spacing:2px;
+    text-transform:uppercase;
+}
+
+.gallery-overlay span{
+    display:block;
+    margin-top:5px;
+    color:rgba(255,255,255,0.62);
+}
+
+.lightbox{
+    position:fixed;
+    inset:0;
+    z-index:999999;
+    background:rgba(0,0,0,0.94);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:30px;
+}
+
+.lightbox.active{
+    display:flex;
+}
+
+.lightbox img{
+    max-width:94vw;
+    max-height:86vh;
+    object-fit:contain;
+    border-radius:12px;
+    box-shadow:0 20px 80px rgba(0,0,0,0.8);
+}
+
+.lightbox-close{
+    position:fixed;
+    top:26px;
+    right:30px;
+    width:46px;
+    height:46px;
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,0.2);
+    background:rgba(255,255,255,0.08);
+    color:white;
+    font-size:2rem;
+    cursor:pointer;
+}
+
+.lightbox-close:hover{
+    background:#b30018;
+}
+
+@media(max-width:1000px){
+    .gallery-item.large,
+    .gallery-item.medium,
+    .gallery-item.small{
+        grid-column:span 6;
+    }
+}
+
+@media(max-width:650px){
+    .hero{
+        padding-top:190px;
+    }
+
+    .hero h1{
+        letter-spacing:4px;
+    }
+
+    .gallery-section{
+        padding:80px 18px 100px;
+    }
+
+    .gallery-grid{
+        gap:16px;
+    }
+
+    .gallery-item.large,
+    .gallery-item.medium,
+    .gallery-item.small{
+        grid-column:span 12;
+        min-height:280px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="navbar"></div>
+
+<section class="hero">
+    <div class="hero-content">
+        <h1>Galerie</h1>
+        <p>Leidenschaft • Gemeinschaft • Hockey</p>
+    </div>
+</section>
+
+<section class="gallery-section" id="galerie">
+    <div class="gallery-wrap">
+
+        <h2 class="section-title">Momente</h2>
+
+        <p class="section-intro">
+            Bilder, Eindrücke und Erinnerungen rund um die Styrian Bastards,
+            den ATSE Graz Hockey und unsere gemeinsamen Veranstaltungen.
+        </p>
+
+        <div class="gallery-grid">
+
+            <div class="gallery-item large" data-full="bilder/galerie/bild-01.jpg">
+                <img src="bilder/galerie/bild-01.jpg" alt="Styrian Bastards Galerie Bild 1">
+                <div class="gallery-overlay">
+                    <h3>ATSE Support</h3>
+                    <span>Styrian Bastards</span>
+                </div>
+            </div>
+
+            <div class="gallery-item medium" data-full="bilder/galerie/bild-02.jpg">
+                <img src="bilder/galerie/bild-02.jpg" alt="Styrian Bastards Galerie Bild 2">
+                <div class="gallery-overlay">
+                    <h3>Auswärtsfahrt</h3>
+                    <span>Gemeinschaft</span>
+                </div>
+            </div>
+
+            <div class="gallery-item small" data-full="bilder/galerie/bild-03.jpg">
+                <img src="bilder/galerie/bild-03.jpg" alt="Styrian Bastards Galerie Bild 3">
+                <div class="gallery-overlay">
+                    <h3>Spieltag</h3>
+                    <span>Hockey in Graz</span>
+                </div>
+            </div>
+
+            <div class="gallery-item small" data-full="bilder/galerie/bild-04.jpg">
+                <img src="bilder/galerie/bild-04.jpg" alt="Styrian Bastards Galerie Bild 4">
+                <div class="gallery-overlay">
+                    <h3>Fanclub</h3>
+                    <span>Momente</span>
+                </div>
+            </div>
+
+            <div class="gallery-item medium" data-full="bilder/galerie/bild-05.jpg">
+                <img src="bilder/galerie/bild-05.jpg" alt="Styrian Bastards Galerie Bild 5">
+                <div class="gallery-overlay">
+                    <h3>Cornhole Turnier</h3>
+                    <span>Events</span>
+                </div>
+            </div>
+
+            <div class="gallery-item large" data-full="bilder/galerie/bild-06.jpg">
+                <img src="bilder/galerie/bild-06.jpg" alt="Styrian Bastards Galerie Bild 6">
+                <div class="gallery-overlay">
+                    <h3>Styrian Bastards</h3>
+                    <span>Fanclub Leben</span>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+<div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lightboxClose" aria-label="Bild schließen">&times;</button>
+    <img id="lightboxImage" src="" alt="Galerie Bild groß">
+</div>
+
+<div id="footer"></div>
+
+<script>
+fetch('navbar.html')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('navbar').innerHTML = data;
+    });
+
+fetch('footer.html')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('footer').innerHTML = data;
+    });
+
+const lightbox = document.getElementById('lightbox');
+const lightboxImage = document.getElementById('lightboxImage');
+const lightboxClose = document.getElementById('lightboxClose');
+
+document.querySelectorAll('.gallery-item').forEach(item => {
+    item.addEventListener('click', () => {
+        lightboxImage.src = item.getAttribute('data-full');
+        lightbox.classList.add('active');
+    });
+});
+
+lightboxClose.addEventListener('click', () => {
+    lightbox.classList.remove('active');
+    lightboxImage.src = '';
+});
+
+lightbox.addEventListener('click', event => {
+    if(event.target === lightbox){
+        lightbox.classList.remove('active');
+        lightboxImage.src = '';
+    }
+});
+
+document.addEventListener('keydown', event => {
+    if(event.key === 'Escape'){
+        lightbox.classList.remove('active');
+        lightboxImage.src = '';
+    }
+});
+</script>
+
+</body>
+</html>
