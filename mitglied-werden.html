@@ -583,11 +583,12 @@ Werde Teil der Styrian Bastards und unterstütze gemeinsam mit uns den ATSE Graz
 Fülle das Formular aus, wähle deine Mitgliedsart und sende deinen Antrag direkt an den Verein.
 </p>
 
-<form id="mitgliedForm" action="https://api.web3forms.com/submit" method="POST" enctype="multipart/form-data">
+<form id="mitgliedForm" action="https://api.web3forms.com/submit" method="POST">
     <input type="hidden" name="access_key" value="ea20be90-de31-4e44-86c3-702819668d0a">
     <input type="hidden" name="subject" value="Neue Mitgliedsanfrage - Styrian Bastards">
     <input type="hidden" name="from_name" value="Styrian Bastards Homepage">
-    <input type="checkbox" name="botcheck" class="hidden" style="display:none;">
+    <input type="checkbox" name="botcheck" style="display:none;">
+
 <div class="form-grid">
 
         <div class="form-group">
@@ -621,8 +622,37 @@ Fülle das Formular aus, wähle deine Mitgliedsart und sende deinen Antrag direk
 
         <div class="form-group full">
             <label for="antrag">Mitgliedsantrag hochladen</label>
-            <input id="antrag" type="file" name="Mitgliedsantrag" accept=".pdf,.jpg,.jpeg,.png" required>
+            
+        
+        <div class="form-group cloudinary-upload-box" style="margin-top:20px;">
+            <label for="cloudinaryFile" style="display:block; margin-bottom:10px; font-weight:bold;">
+                Mitgliedsantrag hochladen *
+            </label>
+
+            <input 
+                type="file" 
+                id="cloudinaryFile" 
+                name="mitgliedsantrag"
+                accept=".jpg,.jpeg,.png,.webp,.pdf"
+                required
+                style="
+                    width:100%;
+                    padding:14px;
+                    border-radius:12px;
+                    background:rgba(255,255,255,0.08);
+                    color:white;
+                    border:1px solid rgba(255,255,255,0.15);
+                    cursor:pointer;
+                "
+            >
+
+            <input type="hidden" name="Datei-Link" id="uploadedFileUrl">
+
+            <small id="uploadStatus" style="display:block; margin-top:10px; color:rgba(255,255,255,0.75);">
+                Bitte lade hier deinen unterschriebenen Mitgliedsantrag hoch.
+            </small>
         </div>
+
 
         <div class="form-group full">
             <label for="nachricht">Nachricht / Anmerkung</label>
@@ -654,8 +684,7 @@ Fülle das Formular aus, wähle deine Mitgliedsart und sende deinen Antrag direk
         Danke! Dein Mitgliedsantrag wurde erfolgreich vorbereitet bzw. versendet.
     </div>
 
-
-    <div id="formResult" style="display:none; margin-top:20px; padding:16px; border-radius:10px; background:rgba(255,255,255,0.08); color:#fff; text-align:center;"></div>
+        <div id="formResult" style="display:none; margin-top:20px; padding:16px; border-radius:10px; background:rgba(255,255,255,0.08); color:#fff; text-align:center;"></div>
 
 </form>
 </section>
@@ -680,9 +709,36 @@ fetch('footer.html')
 </script>
 
 
+
+
+
 <script>
 const mitgliedForm = document.getElementById('mitgliedForm');
 const formResult = document.getElementById('formResult');
+const cloudinaryFile = document.getElementById('cloudinaryFile');
+const uploadedFileUrl = document.getElementById('uploadedFileUrl');
+const uploadStatus = document.getElementById('uploadStatus');
+
+async function uploadToCloudinary(file) {
+    const cloudinaryData = new FormData();
+    cloudinaryData.append('file', file);
+    cloudinaryData.append('upload_preset', 'STB Galerie');
+    cloudinaryData.append('folder', 'mitgliedsanfragen');
+    cloudinaryData.append('tags', 'mitgliedsanfrage');
+
+    const response = await fetch('https://api.cloudinary.com/v1_1/dmixb4gsg/auto/upload', {
+        method: 'POST',
+        body: cloudinaryData
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.secure_url) {
+        throw new Error(data.error && data.error.message ? data.error.message : 'Cloudinary Upload fehlgeschlagen');
+    }
+
+    return data.secure_url;
+}
 
 if (mitgliedForm && formResult) {
     mitgliedForm.addEventListener('submit', async function(event) {
@@ -690,11 +746,21 @@ if (mitgliedForm && formResult) {
 
         formResult.style.display = 'block';
         formResult.style.background = 'rgba(255,255,255,0.08)';
-        formResult.innerHTML = 'Deine Anfrage wird gesendet …';
-
-        const formData = new FormData(mitgliedForm);
+        formResult.innerHTML = 'Deine Anfrage wird vorbereitet …';
 
         try {
+            if (cloudinaryFile && cloudinaryFile.files.length > 0) {
+                uploadStatus.innerHTML = 'Datei wird hochgeladen …';
+                const fileUrl = await uploadToCloudinary(cloudinaryFile.files[0]);
+                uploadedFileUrl.value = fileUrl;
+                uploadStatus.innerHTML = 'Datei wurde hochgeladen.';
+            }
+
+            formResult.innerHTML = 'Deine Anfrage wird gesendet …';
+
+            const formData = new FormData(mitgliedForm);
+            formData.delete('cloudinaryFile');
+
             const response = await fetch(mitgliedForm.action, {
                 method: 'POST',
                 body: formData
@@ -706,6 +772,9 @@ if (mitgliedForm && formResult) {
                 formResult.style.background = 'rgba(0,120,60,0.35)';
                 formResult.innerHTML = 'Danke! Deine Mitgliedsanfrage wurde erfolgreich gesendet.';
                 mitgliedForm.reset();
+                if (uploadStatus) {
+                    uploadStatus.innerHTML = 'Optional: Falls du eine Datei mitsenden möchtest, wird sie zuerst sicher hochgeladen und der Link mitgesendet.';
+                }
             } else {
                 formResult.style.background = 'rgba(180,0,24,0.35)';
                 formResult.innerHTML = data.message
@@ -715,8 +784,8 @@ if (mitgliedForm && formResult) {
             }
         } catch (error) {
             formResult.style.background = 'rgba(180,0,24,0.35)';
-            formResult.innerHTML = 'Technischer Fehler: ' + error.message;
-            console.error('Web3Forms technischer Fehler:', error);
+            formResult.innerHTML = 'Fehler: ' + error.message;
+            console.error(error);
         }
     });
 }
