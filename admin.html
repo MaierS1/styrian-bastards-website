@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Admin | Styrian Bastards</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+
+<style>
+*{ margin:0; padding:0; box-sizing:border-box; }
+
+body{
+    background:#050505;
+    color:#ffffff;
+    font-family:'Oswald', Arial, sans-serif;
+    min-height:100vh;
+    overflow-x:hidden;
+}
+
+.admin-hero{
+    min-height:100vh;
+    padding:170px 24px 90px;
+    background:
+        linear-gradient(to bottom, rgba(0,0,0,0.50), rgba(0,0,0,0.92)),
+        url("hero.jpg");
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.admin-box{
+    width:100%;
+    max-width:780px;
+    background:rgba(5,5,5,0.88);
+    border:1px solid rgba(255,255,255,0.12);
+    border-radius:24px;
+    padding:46px 38px;
+    text-align:center;
+    box-shadow:0 20px 80px rgba(0,0,0,0.6);
+    backdrop-filter:blur(10px);
+}
+
+.admin-kicker{
+    color:#b30018;
+    text-transform:uppercase;
+    letter-spacing:4px;
+    font-size:0.95rem;
+    margin-bottom:16px;
+}
+
+h1{
+    font-family:'Cinzel', serif;
+    font-size:clamp(2.6rem, 6vw, 4.8rem);
+    text-transform:uppercase;
+    letter-spacing:3px;
+    line-height:1;
+    margin-bottom:24px;
+}
+
+.admin-text{
+    color:rgba(255,255,255,0.74);
+    font-size:1.08rem;
+    line-height:1.7;
+    max-width:620px;
+    margin:0 auto 34px;
+}
+
+.admin-button{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:260px;
+    padding:16px 28px;
+    border-radius:12px;
+    background:#b30018;
+    color:#ffffff;
+    text-decoration:none;
+    text-transform:uppercase;
+    letter-spacing:1.5px;
+    font-size:1rem;
+    font-weight:600;
+    transition:0.25s ease;
+}
+
+.admin-button:hover{
+    background:#d1001c;
+    transform:translateY(-2px);
+}
+
+.admin-note{
+    margin-top:30px;
+    color:rgba(255,255,255,0.48);
+    font-size:0.95rem;
+    line-height:1.6;
+}
+
+@media(max-width:650px){
+    .admin-hero{ padding-top:190px; }
+    .admin-box{ padding:36px 24px; }
+    .admin-button{ width:100%; }
+}
+</style>
+</head>
+
+<body>
+
+<div id="navbar"></div>
+
+<main class="admin-hero">
+    <section class="admin-box">
+        <div class="admin-kicker">Styrian Bastards</div>
+        <h1>Admin</h1>
+        <p class="admin-text">
+            Interner Bereich für die Verwaltung der Homepage.
+            Vorerst ist hier die Galerie-Verwaltung erreichbar.
+        </p>
+        <a href="galerie-admin.html" class="admin-button">
+            Galerie verwalten
+        </a>
+        <p class="admin-note">
+            Dieser Bereich sollte über Cloudflare Access geschützt werden,
+            bevor er öffentlich verwendet wird.
+        </p>
+    </section>
+</main>
+
+<div id="footer"></div>
+
+<script>
+fetch('navbar.html')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('navbar').innerHTML = data;
+    });
+
+fetch('footer.html')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('footer').innerHTML = data;
+    });
+</script>
+
+</body>
+</html>
