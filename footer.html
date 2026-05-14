@@ -116,6 +116,51 @@
 
 </footer>
 
+
+<!-- COOKIE BANNER -->
+<div id="cookie-banner" class="sb-cookie-banner">
+    <div class="sb-cookie-content">
+
+        <div class="sb-cookie-text">
+            <strong>Datenschutz & Cookies</strong><br>
+            Diese Website verwendet technisch notwendige Cookies sowie externe Inhalte
+            (z. B. Social Media oder eingebettete Medien). Durch die Nutzung der Website
+            stimmen Sie der Verwendung zu.
+            <a href="datenschutz.html">Mehr erfahren</a>
+        </div>
+
+        <button id="acceptCookies" class="sb-cookie-btn">
+            Akzeptieren
+        </button>
+
+    </div>
+</div>
+
+<script>
+(function() {
+
+    const banner = document.getElementById('cookie-banner');
+
+    if(localStorage.getItem('sbCookiesAccepted')) {
+        banner.style.display = 'none';
+    }
+
+    document.getElementById('acceptCookies').addEventListener('click', function() {
+
+        localStorage.setItem('sbCookiesAccepted', 'true');
+
+        banner.style.opacity = '0';
+
+        setTimeout(function() {
+            banner.style.display = 'none';
+        }, 300);
+
+    });
+
+})();
+</script>
+
+
 <style>
 .sb-footer {
     background: #050505;
@@ -259,6 +304,108 @@
 
 .sb-social-icons {
     justify-content: flex-start !important;
+}
+
+
+
+/* =========================================
+   COOKIE BANNER
+========================================= */
+
+.sb-cookie-banner{
+    position:fixed;
+    bottom:22px;
+    left:22px;
+    right:22px;
+
+    z-index:999999;
+
+    background:rgba(10,10,10,0.96);
+    border:1px solid rgba(255,255,255,0.12);
+
+    backdrop-filter:blur(10px);
+
+    border-radius:16px;
+
+    padding:22px 24px;
+
+    box-shadow:0 10px 40px rgba(0,0,0,0.45);
+
+    transition:0.3s ease;
+}
+
+.sb-cookie-content{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:25px;
+}
+
+.sb-cookie-text{
+    color:#ffffff;
+    font-size:0.96rem;
+    line-height:1.6;
+}
+
+.sb-cookie-text strong{
+    display:block;
+    margin-bottom:4px;
+    font-size:1rem;
+}
+
+.sb-cookie-text a{
+    color:#ffffff;
+    text-decoration:underline;
+}
+
+.sb-cookie-text a:hover{
+    color:#c40018;
+}
+
+.sb-cookie-btn{
+    background:#b30018;
+    color:#ffffff;
+
+    border:none;
+    outline:none;
+
+    padding:13px 22px;
+
+    border-radius:10px;
+
+    font-family:'Oswald', Arial, sans-serif;
+    font-size:0.95rem;
+    text-transform:uppercase;
+    letter-spacing:1px;
+
+    cursor:pointer;
+
+    transition:0.25s ease;
+}
+
+.sb-cookie-btn:hover{
+    background:#d1001c;
+    transform:translateY(-2px);
+}
+
+@media (max-width: 900px){
+
+    .sb-cookie-banner{
+        left:14px;
+        right:14px;
+        bottom:14px;
+
+        padding:18px;
+    }
+
+    .sb-cookie-content{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    .sb-cookie-btn{
+        width:100%;
+    }
 }
 
 </style>
