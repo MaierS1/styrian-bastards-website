@@ -123,43 +123,18 @@
 
         <div class="sb-cookie-text">
             <strong>Datenschutz & Cookies</strong><br>
-            Diese Website verwendet technisch notwendige Cookies sowie externe Inhalte
-            (z. B. Social Media oder eingebettete Medien). Durch die Nutzung der Website
-            stimmen Sie der Verwendung zu.
-            <a href="datenschutz.html">Mehr erfahren</a>
+            Diese Website verwendet technisch notwendige Funktionen sowie externe Inhalte
+            wie Social-Media-Links oder eingebettete Medien. Weitere Informationen findest du in der
+            <a href="datenschutz.html">Datenschutzerklärung</a>.
         </div>
 
-        <button id="acceptCookies" class="sb-cookie-btn">
+        <button class="sb-cookie-btn"
+                onclick="localStorage.setItem('sbCookiesAccepted','true'); this.closest('#cookie-banner').style.opacity='0'; setTimeout(() => this.closest('#cookie-banner').style.display='none', 250);">
             Akzeptieren
         </button>
 
     </div>
 </div>
-
-<script>
-(function() {
-
-    const banner = document.getElementById('cookie-banner');
-
-    if(localStorage.getItem('sbCookiesAccepted')) {
-        banner.style.display = 'none';
-    }
-
-    document.getElementById('acceptCookies').addEventListener('click', function() {
-
-        localStorage.setItem('sbCookiesAccepted', 'true');
-
-        banner.style.opacity = '0';
-
-        setTimeout(function() {
-            banner.style.display = 'none';
-        }, 300);
-
-    });
-
-})();
-</script>
-
 
 <style>
 .sb-footer {
