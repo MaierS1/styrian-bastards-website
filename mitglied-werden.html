@@ -583,7 +583,7 @@ Werde Teil der Styrian Bastards und unterstütze gemeinsam mit uns den ATSE Graz
 Fülle das Formular aus, wähle deine Mitgliedsart und sende deinen Antrag direkt an den Verein.
 </p>
 
-<form id="mitgliedForm" action="https://api.web3forms.com/submit" method="POST">
+<form id="mitgliedForm" action="https://api.web3forms.com/submit" method="POST" enctype="multipart/form-data">
     <input type="hidden" name="access_key" value="ea20be90-de31-4e44-86c3-702819668d0a">
     <input type="hidden" name="subject" value="Neue Mitgliedsanfrage - Styrian Bastards">
     <input type="hidden" name="from_name" value="Styrian Bastards Homepage">
@@ -607,7 +607,7 @@ Fülle das Formular aus, wähle deine Mitgliedsart und sende deinen Antrag direk
 
         <div class="form-group">
             <label for="email">E-Mail Adresse</label>
-            <input id="email" type="email" name="E-Mail" required>
+            <input id="email" type="email" name="email" required>
         </div>
 
         <div class="form-group full">
@@ -708,11 +708,15 @@ if (mitgliedForm && formResult) {
                 mitgliedForm.reset();
             } else {
                 formResult.style.background = 'rgba(180,0,24,0.35)';
-                formResult.innerHTML = 'Leider konnte die Anfrage nicht gesendet werden. Bitte versuche es erneut.';
+                formResult.innerHTML = data.message
+                    ? 'Fehler: ' + data.message
+                    : 'Leider konnte die Anfrage nicht gesendet werden. Bitte versuche es erneut.';
+                console.error('Web3Forms Fehler:', data);
             }
         } catch (error) {
             formResult.style.background = 'rgba(180,0,24,0.35)';
-            formResult.innerHTML = 'Es gab ein technisches Problem. Bitte versuche es später erneut.';
+            formResult.innerHTML = 'Technischer Fehler: ' + error.message;
+            console.error('Web3Forms technischer Fehler:', error);
         }
     });
 }
