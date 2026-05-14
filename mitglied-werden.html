@@ -583,14 +583,12 @@ Werde Teil der Styrian Bastards und unterstütze gemeinsam mit uns den ATSE Graz
 Fülle das Formular aus, wähle deine Mitgliedsart und sende deinen Antrag direkt an den Verein.
 </p>
 
-<form class="membership-form" action="https://formsubmit.co/mail@styrian-bastards.at" method="POST" enctype="multipart/form-data">
-
-    <input type="hidden" name="_subject" value="Neuer Mitgliedsantrag - Styrian Bastards">
-    <input type="hidden" name="_captcha" value="false">
-    <input type="hidden" name="_template" value="table">
-    <input type="hidden" name="_next" value="https://styrian-bastards.at/mitglied-werden.html#erfolgreich">
-
-    <div class="form-grid">
+<form id="mitgliedForm" action="https://api.web3forms.com/submit" method="POST">
+    <input type="hidden" name="access_key" value="ea20be90-de31-4e44-86c3-702819668d0a">
+    <input type="hidden" name="subject" value="Neue Mitgliedsanfrage - Styrian Bastards">
+    <input type="hidden" name="from_name" value="Styrian Bastards Homepage">
+    <input type="checkbox" name="botcheck" class="hidden" style="display:none;">
+<div class="form-grid">
 
         <div class="form-group">
             <label for="vorname">Vorname</label>
@@ -648,13 +646,16 @@ Fülle das Formular aus, wähle deine Mitgliedsart und sende deinen Antrag direk
     </div>
 
     <div class="form-note">
-        Hinweis: Beim ersten Absenden über FormSubmit muss die Empfängeradresse einmal bestätigt werden.
+        Hinweis: Beim ersten Absenden über Web3Forms muss die Empfängeradresse einmal bestätigt werden.
         Danach werden alle Anträge automatisch an mail@styrian-bastards.at weitergeleitet.
     </div>
 
     <div id="erfolgreich" class="success-box">
         Danke! Dein Mitgliedsantrag wurde erfolgreich vorbereitet bzw. versendet.
     </div>
+
+
+    <div id="formResult" style="display:none; margin-top:20px; padding:16px; border-radius:10px; background:rgba(255,255,255,0.08); color:#fff; text-align:center;"></div>
 
 </form>
 </section>
@@ -676,6 +677,45 @@ fetch('footer.html')
     .then(data => {
         document.getElementById('footer').innerHTML = data;
     });
+</script>
+
+
+<script>
+const mitgliedForm = document.getElementById('mitgliedForm');
+const formResult = document.getElementById('formResult');
+
+if (mitgliedForm && formResult) {
+    mitgliedForm.addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        formResult.style.display = 'block';
+        formResult.style.background = 'rgba(255,255,255,0.08)';
+        formResult.innerHTML = 'Deine Anfrage wird gesendet …';
+
+        const formData = new FormData(mitgliedForm);
+
+        try {
+            const response = await fetch(mitgliedForm.action, {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                formResult.style.background = 'rgba(0,120,60,0.35)';
+                formResult.innerHTML = 'Danke! Deine Mitgliedsanfrage wurde erfolgreich gesendet.';
+                mitgliedForm.reset();
+            } else {
+                formResult.style.background = 'rgba(180,0,24,0.35)';
+                formResult.innerHTML = 'Leider konnte die Anfrage nicht gesendet werden. Bitte versuche es erneut.';
+            }
+        } catch (error) {
+            formResult.style.background = 'rgba(180,0,24,0.35)';
+            formResult.innerHTML = 'Es gab ein technisches Problem. Bitte versuche es später erneut.';
+        }
+    });
+}
 </script>
 
 </body>
