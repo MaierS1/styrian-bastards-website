@@ -631,8 +631,7 @@ Fülle das Formular aus, wähle deine Mitgliedsart und sende deinen Antrag direk
 
             <input 
                 type="file" 
-                id="cloudinaryFile" 
-                name="mitgliedsantrag"
+                id="cloudinaryFile"
                 accept=".jpg,.jpeg,.png,.webp,.pdf"
                 required
                 style="
@@ -649,7 +648,7 @@ Fülle das Formular aus, wähle deine Mitgliedsart und sende deinen Antrag direk
             <input type="hidden" name="Datei-Link" id="uploadedFileUrl">
 
             <small id="uploadStatus" style="display:block; margin-top:10px; color:rgba(255,255,255,0.75);">
-                Bitte lade hier deinen unterschriebenen Mitgliedsantrag hoch.
+                Bitte lade hier deinen unterschriebenen Mitgliedsantrag hoch. Die Datei wird zuerst zu Cloudinary hochgeladen, per E-Mail wird nur der sichere Link gesendet.
             </small>
         </div>
 
@@ -759,6 +758,13 @@ if (mitgliedForm && formResult) {
             formResult.innerHTML = 'Deine Anfrage wird gesendet …';
 
             const formData = new FormData(mitgliedForm);
+
+            // Wichtig: Datei-Inputs dürfen NICHT an Web3Forms gesendet werden,
+            // weil Datei-Uploads dort nur Pro sind. Gesendet wird nur der Cloudinary-Link.
+            mitgliedForm.querySelectorAll('input[type="file"]').forEach(fileInput => {
+                formData.delete(fileInput.name);
+            });
+            formData.delete('mitgliedsantrag');
             formData.delete('cloudinaryFile');
 
             const response = await fetch(mitgliedForm.action, {
