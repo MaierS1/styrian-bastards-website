@@ -1,0 +1,23 @@
+[
+    {
+        "type": "news",
+        "date": "15 MAI 2026",
+        "title": "Newsbereich gestartet",
+        "text": "Hier erscheinen künftig aktuelle Vereinsnews der Styrian Bastards.",
+        "link": ""
+    },
+    {
+        "type": "news",
+        "date": "SOMMER 2026",
+        "title": "Cornhole Turnier",
+        "text": "Unser erstes Styrian Bastards Cornhole Turnier ist in Planung. Weitere Infos folgen.",
+        "link": ""
+    },
+    {
+        "type": "facebook",
+        "date": "FACEBOOK",
+        "title": "Aktuelles auf Facebook",
+        "text": "Folge uns auf Facebook für aktuelle Beiträge, Bilder und Veranstaltungen.",
+        "link": "https://facebook.com/styrian.bastards"
+    }
+]

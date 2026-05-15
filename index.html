@@ -378,6 +378,89 @@ section.hero::after {
 
 
 
+
+<style>
+/* Hero News Modul */
+.hero-news{
+    margin-top:35px;
+    border-top:1px solid rgba(255,255,255,0.15);
+    padding-top:25px;
+}
+
+.hero-news h3{
+    font-size:18px;
+    letter-spacing:3px;
+    text-transform:uppercase;
+    margin-bottom:20px;
+    color:#b00018;
+}
+
+.news-list{
+    display:grid;
+    gap:16px;
+}
+
+.news-item{
+    background:#0d0d0d;
+    border-left:3px solid #b00018;
+    padding:18px;
+    transition:0.3s ease;
+}
+
+.news-item:hover{
+    transform:translateX(4px);
+    background:#141414;
+}
+
+.news-date{
+    display:block;
+    font-size:12px;
+    letter-spacing:2px;
+    color:#888;
+    margin-bottom:8px;
+    text-transform:uppercase;
+}
+
+.news-item h4{
+    font-size:20px;
+    margin-bottom:10px;
+    text-transform:uppercase;
+}
+
+.news-item p{
+    font-size:15px;
+    line-height:1.5;
+    color:#ddd;
+}
+
+.news-item a{
+    display:inline-block;
+    margin-top:12px;
+    color:#fff;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.news-item.facebook{
+    border-left-color:#1877f2;
+}
+
+.news-empty{
+    font-size:15px;
+    color:#bbb;
+}
+
+@media(max-width:1000px){
+    .hero-news{
+        margin-top:28px;
+    }
+
+    .news-item:hover{
+        transform:none;
+    }
+}
+</style>
+
 </head>
 
 <body>
@@ -408,6 +491,14 @@ Aus Leidenschaft. Aus Überzeugung. Für Graz und den Hockeysport.
 </div>
 </div>
 </div>
+
+
+    <div class="hero-news">
+        <h3>Latest News</h3>
+        <div id="heroNewsList" class="news-list">
+            <p class="news-empty">News werden geladen …</p>
+        </div>
+    </div>
 
 </section>
 
@@ -487,6 +578,49 @@ Promise.all([
     document.getElementById('navbar').innerHTML = navbar;
     document.getElementById('footer').innerHTML = footer;
 });
+</script>
+
+
+<script>
+async function loadHeroNews() {
+    const container = document.getElementById('heroNewsList');
+    if (!container) return;
+
+    try {
+        const response = await fetch('news.json', { cache: 'no-store' });
+        if (!response.ok) throw new Error('news.json konnte nicht geladen werden');
+
+        const news = await response.json();
+        const items = Array.isArray(news) ? news.slice(0, 3) : [];
+
+        if (!items.length) {
+            container.innerHTML = '<p class="news-empty">Aktuell sind keine News vorhanden.</p>';
+            return;
+        }
+
+        container.innerHTML = items.map(item => {
+            const typeClass = item.type === 'facebook' ? ' facebook' : '';
+            const label = item.type === 'facebook' ? 'Facebook' : (item.date || 'News');
+            const link = item.link
+                ? `<a href="${item.link}" target="_blank" rel="noopener">Mehr ansehen →</a>`
+                : '';
+
+            return `
+                <article class="news-item${typeClass}">
+                    <span class="news-date">${label}</span>
+                    <h4>${item.title || ''}</h4>
+                    <p>${item.text || ''}</p>
+                    ${link}
+                </article>
+            `;
+        }).join('');
+    } catch (error) {
+        container.innerHTML = '<p class="news-empty">News konnten nicht geladen werden.</p>';
+        console.error(error);
+    }
+}
+
+loadHeroNews();
 </script>
 
 </body>
