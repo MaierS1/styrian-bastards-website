@@ -497,6 +497,22 @@ section.hero::after {
 
 
 
+
+<style>
+/* Footer-Position Fix */
+#footer-placeholder{
+    position:relative;
+    z-index:1;
+    clear:both;
+}
+
+.facebook-feed-section{
+    position:relative;
+    z-index:2;
+    clear:both;
+}
+</style>
+
 </head>
 
 <body>
@@ -598,15 +614,6 @@ Egal ob langjähriger Hockeyfan oder Neuling – bei uns ist jeder willkommen, d
 
 <div id="footer"></div>
 
-<script>
-Promise.all([
-    fetch('navbar.html').then(r => r.text()),
-    fetch('footer.html').then(r => r.text())
-]).then(([navbar, footer]) => {
-    document.getElementById('navbar').innerHTML = navbar;
-    document.getElementById('footer').innerHTML = footer;
-});
-</script>
 <section class="facebook-feed-section" id="facebook-feed">
     <div class="facebook-feed-wrap">
         <div class="facebook-feed-text">
@@ -640,5 +647,14 @@ Promise.all([
     </div>
 </section>
 
+<script>
+Promise.all([
+    fetch('navbar.html').then(r => r.text()),
+    fetch('footer.html').then(r => r.text())
+]).then(([navbar, footer]) => {
+    document.getElementById('navbar').innerHTML = navbar;
+    document.getElementById('footer').innerHTML = footer;
+});
+</script>
 </body>
 </html>
