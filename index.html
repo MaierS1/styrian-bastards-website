@@ -379,87 +379,121 @@ section.hero::after {
 
 
 
+
 <style>
-/* Hero News Modul */
-.hero-news{
-    margin-top:35px;
-    border-top:1px solid rgba(255,255,255,0.15);
-    padding-top:25px;
+/* Facebook Feed Modul */
+.facebook-feed-section{
+    background:#070707;
+    padding:90px 8vw;
+    border-top:2px solid #b00018;
+    color:#fff;
 }
 
-.hero-news h3{
-    font-size:18px;
-    letter-spacing:3px;
+.facebook-feed-wrap{
+    max-width:1280px;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:minmax(320px, 1fr) minmax(500px, 560px);
+    gap:55px;
+    align-items:start;
+}
+
+.facebook-feed-text h2{
+    font-size:clamp(2.4rem,5vw,4.8rem);
+    line-height:.95;
     text-transform:uppercase;
     margin-bottom:20px;
-    color:#b00018;
 }
 
-.news-list{
-    display:grid;
-    gap:16px;
-}
-
-.news-item{
-    background:#0d0d0d;
-    border-left:3px solid #b00018;
-    padding:18px;
-    transition:0.3s ease;
-}
-
-.news-item:hover{
-    transform:translateX(4px);
-    background:#141414;
-}
-
-.news-date{
-    display:block;
-    font-size:12px;
-    letter-spacing:2px;
-    color:#888;
-    margin-bottom:8px;
-    text-transform:uppercase;
-}
-
-.news-item h4{
-    font-size:20px;
-    margin-bottom:10px;
-    text-transform:uppercase;
-}
-
-.news-item p{
-    font-size:15px;
-    line-height:1.5;
+.facebook-feed-text p{
     color:#ddd;
+    font-size:1.15rem;
+    line-height:1.6;
+    max-width:620px;
 }
 
-.news-item a{
+.facebook-feed-button{
     display:inline-block;
-    margin-top:12px;
+    margin-top:28px;
+    padding:13px 24px;
+    background:#b00018;
     color:#fff;
     text-decoration:none;
-    font-weight:bold;
+    text-transform:uppercase;
+    font-weight:700;
+    letter-spacing:1px;
+    border-radius:10px;
 }
 
-.news-item.facebook{
-    border-left-color:#1877f2;
+.facebook-feed-box{
+    background:#0d0d0d;
+    border:1px solid rgba(255,255,255,.12);
+    border-left:4px solid #1877f2;
+    padding:22px;
+    border-radius:18px;
+    min-height:720px;
+    overflow:hidden;
+    box-shadow:0 25px 60px rgba(0,0,0,.35);
 }
 
-.news-empty{
-    font-size:15px;
-    color:#bbb;
+.facebook-feed-inner{
+    width:500px;
+    max-width:100%;
+    margin:0 auto;
+    overflow:hidden;
+    border-radius:12px;
+    background:#fff;
 }
 
-@media(max-width:1000px){
-    .hero-news{
-        margin-top:28px;
+.facebook-feed-box iframe{
+    display:block;
+    width:500px;
+    max-width:100%;
+    height:700px;
+    border:none;
+    overflow:hidden;
+}
+
+.facebook-feed-note{
+    margin-top:14px;
+    color:#aaa;
+    font-size:.9rem;
+    line-height:1.4;
+    text-align:center;
+}
+
+@media(max-width:1100px){
+    .facebook-feed-wrap{
+        grid-template-columns:1fr;
     }
 
-    .news-item:hover{
-        transform:none;
+    .facebook-feed-box{
+        width:100%;
+        max-width:560px;
+    }
+}
+
+@media(max-width:560px){
+    .facebook-feed-section{
+        padding:65px 5vw;
+    }
+
+    .facebook-feed-box{
+        padding:12px;
+        min-height:620px;
+    }
+
+    .facebook-feed-inner{
+        width:100%;
+    }
+
+    .facebook-feed-box iframe{
+        width:100%;
+        height:620px;
     }
 }
 </style>
+
 
 </head>
 
@@ -491,14 +525,6 @@ Aus Leidenschaft. Aus Überzeugung. Für Graz und den Hockeysport.
 </div>
 </div>
 </div>
-
-
-    <div class="hero-news">
-        <h3>Latest News</h3>
-        <div id="heroNewsList" class="news-list">
-            <p class="news-empty">News werden geladen …</p>
-        </div>
-    </div>
 
 </section>
 
@@ -581,47 +607,40 @@ Promise.all([
 </script>
 
 
-<script>
-async function loadHeroNews() {
-    const container = document.getElementById('heroNewsList');
-    if (!container) return;
 
-    try {
-        const response = await fetch('news.json', { cache: 'no-store' });
-        if (!response.ok) throw new Error('news.json konnte nicht geladen werden');
+<section class="facebook-feed-section" id="facebook-feed">
+    <div class="facebook-feed-wrap">
+        <div class="facebook-feed-text">
+            <h2>Aktuelles<br>von Facebook</h2>
+            <p>
+                Fotos, Beiträge und Veranstaltungen posten wir direkt auf Facebook.
+                So bleibt die Homepage automatisch aktuell, ohne Bilder doppelt hochladen zu müssen.
+            </p>
+            <a class="facebook-feed-button" href="https://facebook.com/styrian.bastards" target="_blank" rel="noopener">
+                Facebook Seite öffnen
+            </a>
+        </div>
 
-        const news = await response.json();
-        const items = Array.isArray(news) ? news.slice(0, 3) : [];
+        <div class="facebook-feed-box">
+            <div class="facebook-feed-inner">
+                <iframe
+                    src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fstyrian.bastards&tabs=timeline&width=500&height=700&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=false"
+                    width="500"
+                    height="700"
+                    style="border:none;overflow:hidden"
+                    scrolling="no"
+                    frameborder="0"
+                    allowfullscreen="true"
+                    allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
+                </iframe>
+            </div>
+            <p class="facebook-feed-note">
+                Falls der Feed nicht angezeigt wird, blockiert Facebook oder der Browser eventuell externe Inhalte.
+            </p>
+        </div>
+    </div>
+</section>
 
-        if (!items.length) {
-            container.innerHTML = '<p class="news-empty">Aktuell sind keine News vorhanden.</p>';
-            return;
-        }
-
-        container.innerHTML = items.map(item => {
-            const typeClass = item.type === 'facebook' ? ' facebook' : '';
-            const label = item.type === 'facebook' ? 'Facebook' : (item.date || 'News');
-            const link = item.link
-                ? `<a href="${item.link}" target="_blank" rel="noopener">Mehr ansehen →</a>`
-                : '';
-
-            return `
-                <article class="news-item${typeClass}">
-                    <span class="news-date">${label}</span>
-                    <h4>${item.title || ''}</h4>
-                    <p>${item.text || ''}</p>
-                    ${link}
-                </article>
-            `;
-        }).join('');
-    } catch (error) {
-        container.innerHTML = '<p class="news-empty">News konnten nicht geladen werden.</p>';
-        console.error(error);
-    }
-}
-
-loadHeroNews();
-</script>
 
 </body>
 </html>
