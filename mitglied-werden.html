@@ -600,14 +600,13 @@ Werde Teil der Styrian Bastards und unterstütze gemeinsam mit uns den ATSE Graz
 Fülle das Formular aus, wähle deine Mitgliedsart und sende deinen Antrag direkt an den Verein.
 </p>
 
-<form class="membership-form" action="https://formsubmit.co/mail@styrian-bastards.at" method="POST" enctype="multipart/form-data">
-
-    <input type="hidden" name="_subject" value="Neuer Mitgliedsantrag - Styrian Bastards">
-    <input type="hidden" name="_captcha" value="false">
-    <input type="hidden" name="_template" value="table">
-    <input type="hidden" name="_next" value="https://styrian-bastards.at/mitglied-werden.html#erfolgreich">
-
-    <div class="form-grid">
+<form class="membership-form" id="membershipForm" novalidate>
+    <input type="hidden" name="access_key" value="ea20be90-de31-4e44-86c3-702819668d0a">
+    <input type="hidden" name="subject" value="Neuer Mitgliedsantrag - Styrian Bastards">
+    <input type="hidden" name="from_name" value="Styrian Bastards Homepage">
+    <input type="hidden" name="Mitgliedsantrag Link" id="mitgliedsantragLink" value="">
+    <input type="checkbox" name="botcheck" class="hidden" style="display:none;">
+<div class="form-grid">
 
         <div class="form-group">
             <label for="vorname">Vorname</label>
@@ -640,8 +639,8 @@ Fülle das Formular aus, wähle deine Mitgliedsart und sende deinen Antrag direk
 
         <div class="form-group full">
             <label for="antrag">Mitgliedsantrag hochladen</label>
-            <input id="antrag" type="file" name="Mitgliedsantrag" accept="application/pdf,image/jpeg,image/png,image/webp,.pdf,.jpg,.jpeg,.png,.webp" required>
-            <small id="fileValidationMessage" class="file-validation-message">Erlaubt sind nur echte PDF-, JPG-, PNG- oder WebP-Dateien bis 10 MB.</small>
+            <input id="antrag" type="file" accept="application/pdf,image/jpeg,image/png,image/webp,.pdf,.jpg,.jpeg,.png,.webp" required>
+            <small id="fileValidationMessage" class="file-validation-message">Erlaubt sind nur echte PDF-, JPG-, PNG- oder WebP-Dateien bis 10 MB. Die Datei wird zuerst zu Cloudinary hochgeladen, per E-Mail wird nur der sichere Link gesendet.</small>
         </div>
 
         <div class="form-group full">
@@ -662,16 +661,16 @@ Fülle das Formular aus, wähle deine Mitgliedsart und sende deinen Antrag direk
     </div>
 
     <div class="submit-row">
-        <button type="submit">Mitgliedsantrag senden</button>
+        <button type="submit" id="submitButton">Mitgliedsantrag senden</button>
     </div>
 
     <div class="form-note">
-        Hinweis: Beim ersten Absenden über FormSubmit muss die Empfängeradresse einmal bestätigt werden.
-        Danach werden alle Anträge automatisch an mail@styrian-bastards.at weitergeleitet.
+        Hinweis: Dein Mitgliedsantrag wird zuerst sicher zu Cloudinary hochgeladen.
+        An den Verein wird anschließend nur der Link zur Datei gesendet.
     </div>
 
     <div id="erfolgreich" class="success-box">
-        Danke! Dein Mitgliedsantrag wurde erfolgreich vorbereitet bzw. versendet.
+        Danke! Dein Mitgliedsantrag wurde erfolgreich versendet.
     </div>
 
 </form>
@@ -683,14 +682,23 @@ Fülle das Formular aus, wähle deine Mitgliedsart und sende deinen Antrag direk
 <div id="footer"></div>
 
 
+
 <script>
 (function(){
-    const form = document.querySelector('.membership-form');
+    const form = document.getElementById('membershipForm');
     const fileInput = document.getElementById('antrag');
     const message = document.getElementById('fileValidationMessage');
+    const submitButton = document.getElementById('submitButton');
+    const uploadLinkInput = document.getElementById('mitgliedsantragLink');
 
-    if (!form || !fileInput || !message) return;
+    if (!form || !fileInput || !message || !submitButton || !uploadLinkInput) return;
 
+    // Cloudinary-Daten
+    const CLOUDINARY_CLOUD_NAME = 'dmixb4gsg';
+    const CLOUDINARY_UPLOAD_PRESET = 'STB Galerie';
+    const CLOUDINARY_FOLDER = 'mitgliedsantraege';
+
+    // Datei-Regeln
     const maxSize = 10 * 1024 * 1024; // 10 MB
     const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png', 'webp'];
     const allowedMimeTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
@@ -765,22 +773,102 @@ Fülle das Formular aus, wähle deine Mitgliedsart und sende deinen Antrag direk
         return { valid:true, message:'Datei geprüft: ' + file.name };
     }
 
+    async function uploadToCloudinary(file){
+        const uploadData = new FormData();
+        uploadData.append('file', file);
+        uploadData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+        uploadData.append('folder', CLOUDINARY_FOLDER);
+
+        const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`, {
+            method: 'POST',
+            body: uploadData
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.secure_url) {
+            console.error('Cloudinary Fehler:', result);
+            throw new Error(result.error?.message || 'Cloudinary-Upload fehlgeschlagen.');
+        }
+
+        return result.secure_url;
+    }
+
+    async function sendToWeb3Forms(){
+        const formData = new FormData(form);
+
+        // Wichtig: Datei selbst niemals an Web3Forms senden.
+        formData.delete('Mitgliedsantrag');
+
+        const response = await fetch('https://api.web3forms.com/submit', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            console.error('Web3Forms Fehler:', result);
+            throw new Error(result.message || 'Web3Forms-Versand fehlgeschlagen.');
+        }
+
+        return result;
+    }
+
     fileInput.addEventListener('change', async function(){
+        uploadLinkInput.value = '';
         const result = await validateUploadFile(fileInput.files[0]);
         setMessage(result.message, result.valid ? 'ok' : 'error');
         if (!result.valid) fileInput.value = '';
     });
 
     form.addEventListener('submit', async function(event){
-        const result = await validateUploadFile(fileInput.files[0]);
-        if (!result.valid) {
-            event.preventDefault();
-            setMessage(result.message, 'error');
+        event.preventDefault();
+
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        const file = fileInput.files[0];
+        const validation = await validateUploadFile(file);
+
+        if (!validation.valid) {
+            setMessage(validation.message, 'error');
             fileInput.focus();
+            return;
+        }
+
+        submitButton.disabled = true;
+        submitButton.textContent = 'Wird hochgeladen …';
+        setMessage('Datei wird geprüft und zu Cloudinary hochgeladen …', '');
+
+        try {
+            const fileUrl = await uploadToCloudinary(file);
+            uploadLinkInput.value = fileUrl;
+
+            submitButton.textContent = 'Wird gesendet …';
+            setMessage('Datei wurde hochgeladen. Formular wird gesendet …', 'ok');
+
+            await sendToWeb3Forms();
+
+            setMessage('Erfolgreich gesendet. Danke für deinen Mitgliedsantrag!', 'ok');
+            form.reset();
+            uploadLinkInput.value = '';
+
+            if (window.location.hash !== '#erfolgreich') {
+                window.location.hash = 'erfolgreich';
+            }
+        } catch (error) {
+            setMessage('Fehler: ' + error.message, 'error');
+        } finally {
+            submitButton.disabled = false;
+            submitButton.textContent = 'Mitgliedsantrag senden';
         }
     });
 })();
 </script>
+
 
 <script>
 fetch('navbar.html')
