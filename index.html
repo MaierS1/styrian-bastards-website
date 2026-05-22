@@ -176,6 +176,99 @@ h1 {
     color: #c1121f;
 }
 
+.sponsors-section{
+    position: relative;
+}
+
+.sponsors-section[hidden]{
+    display: none;
+}
+
+.sponsors-intro{
+    max-width: 760px;
+    margin: 0 auto 32px;
+    color: rgba(255,255,255,0.78);
+    text-align: center;
+    line-height: 1.7;
+}
+
+.sponsor-level{
+    margin-top: 36px;
+}
+
+.sponsor-level:first-of-type{
+    margin-top: 0;
+}
+
+.sponsor-level h3{
+    margin-bottom: 18px;
+    font-size: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #fff;
+}
+
+.sponsors-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 20px;
+}
+
+.sponsor-card{
+    min-height: 168px;
+    padding: 22px 20px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.sponsor-card a,
+.sponsor-card .sponsor-link{
+    color: inherit;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    height: 100%;
+}
+
+.sponsor-logo-wrap{
+    width: 100%;
+    min-height: 88px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sponsor-logo{
+    display: block;
+    max-width: 180px;
+    max-height: 88px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+}
+
+.sponsor-name{
+    font-size: 18px;
+    line-height: 1.25;
+    color: #fff;
+}
+
+.sponsor-description{
+    margin-top: -2px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: rgba(255,255,255,0.76);
+}
+
+.sponsor-empty-state{
+    color: rgba(255,255,255,0.72);
+    font-size: 15px;
+}
+
 footer {
     padding: 40px;
     text-align: center;
@@ -566,6 +659,14 @@ Egal ob langjähriger Hockeyfan oder Neuling – bei uns ist jeder willkommen, d
 </div>
 </section>
 
+<section class="section sponsors-section" id="sponsors" hidden>
+<h2>Sponsoren</h2>
+<p class="sponsors-intro">
+Unsere Partner unterstützen den Fanclub und den Hockeysport in Graz. Hier zeigen wir die öffentlich freigegebenen Sponsoren in einer ruhigen, kompakten Darstellung.
+</p>
+<div id="sponsors-content"></div>
+</section>
+
 <section class="section" id="events">
 <h2>Events</h2>
 
@@ -639,6 +740,8 @@ fetch('footer.html')
         document.getElementById('footer').innerHTML = data;
     });
 </script>
+
+<script src="sponsors.js"></script>
 
 </body>
 </html>
