@@ -62,6 +62,20 @@
         return String(left.title || '').localeCompare(String(right.title || ''), 'de');
     });
 
+    const getEventCategoryLabel = (value) => {
+        const labels = {
+            event: 'Event',
+            heimspiel: 'Heimspiel',
+            turnier: 'Turnier',
+            fanfahrt: 'Fanfahrt',
+            treffen: 'Treffen',
+            sitzung: 'Sitzung',
+            sonstiges: 'Sonstiges'
+        };
+
+        return labels[String(value || 'event').toLowerCase()] || labels.event;
+    };
+
     const createAction = (href, label, className) => {
         const link = document.createElement('a');
         link.className = className;
@@ -95,6 +109,11 @@
 
         const body = document.createElement('div');
         body.className = 'public-event-body';
+
+        const category = document.createElement('div');
+        category.className = 'public-event-category';
+        category.textContent = getEventCategoryLabel(event.event_category);
+        body.appendChild(category);
 
         const date = document.createElement('div');
         date.className = 'public-event-date';
