@@ -386,6 +386,138 @@ h1 {
     color: #050505;
 }
 
+.public-merch-section{
+    position: relative;
+}
+
+.public-merch-section[hidden]{
+    display: none;
+}
+
+.public-merch-intro{
+    max-width: 760px;
+    margin: 0 auto 32px;
+    color: rgba(255,255,255,0.78);
+    text-align: center;
+    line-height: 1.7;
+}
+
+.public-merch-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+    margin-top: 38px;
+}
+
+.public-merch-card{
+    overflow: hidden;
+    padding: 0;
+}
+
+.public-merch-image-wrap{
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    background: #080808;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.public-merch-image{
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.public-merch-body{
+    padding: 28px;
+}
+
+.public-merch-title{
+    margin-bottom: 12px;
+    color: #ffffff;
+}
+
+.public-merch-description{
+    color: rgba(255,255,255,0.78);
+}
+
+.public-merch-price{
+    margin-top: 18px;
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.public-merch-variants{
+    display: grid;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.public-merch-variant{
+    padding: 12px;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.03);
+}
+
+.public-merch-variant-name{
+    color: #ffffff;
+    font-weight: 800;
+}
+
+.public-merch-variant-meta{
+    margin-top: 4px;
+    color: rgba(255,255,255,0.72);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.public-merch-variant-footer{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.public-merch-variant-price{
+    color: #ffffff;
+    font-weight: 800;
+}
+
+.public-merch-availability{
+    display: inline-flex;
+    align-items: center;
+    width: max-content;
+    max-width: 100%;
+    padding: 5px 10px;
+    border: 1px solid rgba(193,18,31,0.55);
+    border-radius: 999px;
+    background: rgba(193,18,31,0.16);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+.public-merch-availability.sold-out{
+    border-color: rgba(255,255,255,0.22);
+    background: transparent;
+    color: rgba(255,255,255,0.68);
+}
+
+.public-merch-actions{
+    margin-top: 24px;
+}
+
+.public-merch-actions .btn{
+    padding: 12px 18px;
+    font-size: 13px;
+}
+
 footer {
     padding: 40px;
     text-align: center;
@@ -784,6 +916,14 @@ Unsere Partner unterstützen den Fanclub und den Hockeysport in Graz. Hier zeige
 <div id="sponsors-content"></div>
 </section>
 
+<section class="section public-merch-section" id="public-merch" hidden>
+<h2>Fanartikel</h2>
+<p class="public-merch-intro">
+Ã–ffentlich verfÃ¼gbare Fanartikel der Styrian Bastards.
+</p>
+<div id="public-merch-content" class="public-merch-grid"></div>
+</section>
+
 <section class="section public-events-section" id="public-events" hidden>
 <h2>Events</h2>
 <p class="public-events-intro">
@@ -846,6 +986,7 @@ fetch('footer.html')
 </script>
 
 <script src="sponsors.js"></script>
+<script src="merch.js"></script>
 <script src="events.js"></script>
 
 </body>
