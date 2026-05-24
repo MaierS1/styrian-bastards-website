@@ -269,15 +269,15 @@ h1 {
     font-size: 15px;
 }
 
-.public-events-section{
+.public-dynamic-section{
     position: relative;
 }
 
-.public-events-section[hidden]{
+.public-dynamic-section[hidden]{
     display: none;
 }
 
-.public-events-intro{
+.public-dynamic-intro{
     max-width: 760px;
     margin: 0 auto 32px;
     color: rgba(255,255,255,0.78);
@@ -285,11 +285,53 @@ h1 {
     line-height: 1.7;
 }
 
+.public-dynamic-grid{
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 28px;
+    align-items: start;
+    margin-top: 38px;
+}
+
+.public-dynamic-grid.single-panel{
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.public-dynamic-panel{
+    min-width: 0;
+}
+
+.public-dynamic-panel[hidden]{
+    display: none;
+}
+
+.public-dynamic-panel h3{
+    margin-bottom: 18px;
+    color: #ffffff;
+    font-size: 24px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.public-events-section{
+    order: 1;
+}
+
+.public-merch-section{
+    order: 2;
+}
+
+.public-events-intro{
+    margin: 0 0 18px;
+    color: rgba(255,255,255,0.72);
+    line-height: 1.6;
+}
+
 .public-events-grid{
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 24px;
-    margin-top: 38px;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-top: 0;
 }
 
 .public-event-card{
@@ -386,27 +428,17 @@ h1 {
     color: #050505;
 }
 
-.public-merch-section{
-    position: relative;
-}
-
-.public-merch-section[hidden]{
-    display: none;
-}
-
 .public-merch-intro{
-    max-width: 760px;
-    margin: 0 auto 32px;
+    margin: 0 0 18px;
     color: rgba(255,255,255,0.78);
-    text-align: center;
-    line-height: 1.7;
+    line-height: 1.6;
 }
 
 .public-merch-grid{
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 24px;
-    margin-top: 38px;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-top: 0;
 }
 
 .public-merch-card{
@@ -518,6 +550,19 @@ h1 {
     font-size: 13px;
 }
 
+.about-section{
+    padding-top: 80px;
+}
+
+.about-section .grid{
+    margin-top: 28px;
+}
+
+.about-section > p{
+    max-width: 920px;
+    margin-bottom: 14px;
+}
+
 footer {
     padding: 40px;
     text-align: center;
@@ -539,6 +584,10 @@ footer {
 
     .content {
         padding: 30px;
+    }
+
+    .public-dynamic-grid{
+        grid-template-columns: 1fr;
     }
 
     .textbox {
@@ -869,7 +918,32 @@ Aus Leidenschaft. Aus Überzeugung. Für Graz und den Hockeysport.
 
 </section>
 
-<section class="section" id="about">
+<section class="section public-dynamic-section" id="public-dynamic" hidden>
+<h2>Aktuelles</h2>
+<p class="public-dynamic-intro">
+Kommende Termine und Ã¶ffentlich verfÃ¼gbare Fanartikel der Styrian Bastards.
+</p>
+<div class="public-dynamic-grid">
+
+<div class="public-dynamic-panel public-events-section" id="public-events" hidden>
+<h3>Events</h3>
+<p class="public-events-intro">
+Kommende Ã¶ffentliche Termine und Veranstaltungen der Styrian Bastards.
+</p>
+<div id="public-events-content" class="public-events-grid"></div>
+</div>
+
+<div class="public-dynamic-panel public-merch-section" id="public-merch" hidden>
+<h3>Fanartikel</h3>
+<p class="public-merch-intro">
+Ã–ffentlich verfÃ¼gbare Fanartikel der Styrian Bastards.
+</p>
+<div id="public-merch-content" class="public-merch-grid"></div>
+</div>
+</div>
+</section>
+
+<section class="section about-section" id="about">
 <h2>Über Uns</h2>
 
 <p>
@@ -915,23 +989,6 @@ Unsere Partner unterstützen den Fanclub und den Hockeysport in Graz. Hier zeige
 </p>
 <div id="sponsors-content"></div>
 </section>
-
-<section class="section public-merch-section" id="public-merch" hidden>
-<h2>Fanartikel</h2>
-<p class="public-merch-intro">
-Ã–ffentlich verfÃ¼gbare Fanartikel der Styrian Bastards.
-</p>
-<div id="public-merch-content" class="public-merch-grid"></div>
-</section>
-
-<section class="section public-events-section" id="public-events" hidden>
-<h2>Events</h2>
-<p class="public-events-intro">
-Kommende öffentliche Termine und Veranstaltungen der Styrian Bastards.
-</p>
-<div id="public-events-content" class="public-events-grid"></div>
-</section>
-
 
 <section class="facebook-feed-section" id="facebook-feed">
     <div class="facebook-feed-wrap">

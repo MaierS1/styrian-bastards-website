@@ -4,10 +4,39 @@
 
     const section = document.getElementById('public-events');
     const content = document.getElementById('public-events-content');
+    const dynamicSection = document.getElementById('public-dynamic');
+    const dynamicGrid = dynamicSection?.querySelector('.public-dynamic-grid');
 
     if (!section || !content) {
         return;
     }
+
+    const syncDynamicLayout = () => {
+        if (!dynamicGrid) {
+            return;
+        }
+
+        const panelCount = dynamicGrid.querySelectorAll('.public-dynamic-panel').length;
+        dynamicGrid.classList.toggle('single-panel', panelCount === 1);
+    };
+
+    const removeSection = () => {
+        section.remove();
+        syncDynamicLayout();
+
+        if (dynamicSection && !dynamicSection.querySelector('#public-events, #public-merch')) {
+            dynamicSection.remove();
+        }
+    };
+
+    const showSection = () => {
+        section.hidden = false;
+        syncDynamicLayout();
+
+        if (dynamicSection) {
+            dynamicSection.hidden = false;
+        }
+    };
 
     const assetUrl = (path) => {
         if (!path) {
@@ -179,7 +208,7 @@
 
             const events = await response.json();
             if (!Array.isArray(events) || events.length === 0) {
-                section.remove();
+                removeSection();
                 return;
             }
 
@@ -192,14 +221,14 @@
             });
 
             if (!content.children.length) {
-                section.remove();
+                removeSection();
                 return;
             }
 
-            section.hidden = false;
+            showSection();
         } catch (error) {
             console.warn('Could not load public events', error);
-            section.remove();
+            removeSection();
         }
     };
 
