@@ -24,7 +24,7 @@
         section.remove();
         syncDynamicLayout();
 
-        if (dynamicSection && !dynamicSection.querySelector('#public-events, #public-merch')) {
+        if (dynamicSection && !dynamicSection.querySelector('#public-events, #public-merch, #public-media')) {
             dynamicSection.remove();
         }
     };

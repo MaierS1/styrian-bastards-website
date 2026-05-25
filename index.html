@@ -313,6 +313,154 @@ h1 {
     letter-spacing: 0.08em;
 }
 
+.public-media-section{
+    order: 0;
+    grid-column: 1 / -1;
+}
+
+.public-media-intro{
+    margin: 0 0 18px;
+    color: rgba(255,255,255,0.78);
+    line-height: 1.6;
+}
+
+.public-media-grid{
+    display: grid;
+    gap: 18px;
+    margin-top: 0;
+}
+
+.public-media-featured{
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    min-height: 340px;
+}
+
+.public-media-card{
+    overflow: hidden;
+    padding: 0;
+}
+
+.public-media-card.compact{
+    display: grid;
+    grid-template-columns: minmax(150px, 0.36fr) minmax(0, 1fr);
+}
+
+.public-media-card.no-image{
+    display: block;
+    min-height: auto;
+}
+
+.public-media-card.no-image .public-media-body{
+    width: 100%;
+}
+
+.public-media-image-wrap{
+    width: 100%;
+    min-height: 100%;
+    aspect-ratio: 16 / 9;
+    background: #080808;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.public-media-card.compact .public-media-image-wrap,
+.public-media-featured .public-media-image-wrap{
+    border-bottom: 0;
+    border-right: 1px solid rgba(255,255,255,0.08);
+    aspect-ratio: auto;
+}
+
+.public-media-image{
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.public-media-body{
+    padding: 28px;
+}
+
+.public-media-meta{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.public-media-category,
+.public-media-date{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: max-content;
+    max-width: 100%;
+    padding: 5px 10px;
+    border: 1px solid rgba(179,0,24,0.48);
+    border-radius: 999px;
+    background: rgba(179,0,24,0.16);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+.public-media-date{
+    border-color: rgba(255,255,255,0.18);
+    background: transparent;
+    color: rgba(255,255,255,0.78);
+}
+
+.public-media-card h3{
+    margin-bottom: 12px;
+    color: #ffffff;
+}
+
+.public-media-featured h3{
+    font-size: clamp(26px, 4vw, 42px);
+    line-height: 1.05;
+}
+
+.public-media-source{
+    margin-bottom: 14px;
+    color: #c1121f;
+    font-weight: 700;
+}
+
+.public-media-summary{
+    color: rgba(255,255,255,0.78);
+}
+
+.public-media-actions{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+.public-media-actions .btn{
+    padding: 12px 18px;
+    font-size: 13px;
+}
+
+.public-media-actions .btn-secondary{
+    border: 1px solid rgba(255,255,255,0.22);
+    background: transparent;
+}
+
+.public-media-actions .btn-secondary:hover{
+    background: #ffffff;
+    color: #050505;
+}
+
+.public-media-more-grid{
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
 .public-events-section{
     order: 1;
 }
@@ -588,6 +736,21 @@ footer {
 
     .public-dynamic-grid{
         grid-template-columns: 1fr;
+    }
+    .public-media-featured,
+    .public-media-card.compact{
+        grid-template-columns: 1fr;
+    }
+
+    .public-media-more-grid{
+        grid-template-columns: 1fr;
+    }
+
+    .public-media-card.compact .public-media-image-wrap,
+    .public-media-featured .public-media-image-wrap{
+        border-right: 0;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        aspect-ratio: 16 / 9;
     }
 
     .textbox {
@@ -921,10 +1084,18 @@ Aus Leidenschaft. Aus Überzeugung. Für Graz und den Hockeysport.
 <section class="section public-dynamic-section" id="public-dynamic" hidden>
 <h2>Aktuelles</h2>
 <p class="public-dynamic-intro">
-Kommende Termine und öffentlich verfügbare Fanartikel der Styrian Bastards.
+Kommende Termine, Medienberichte und �ffentlich verf�gbare Fanartikel der Styrian Bastards.
 </p>
 <div class="public-dynamic-grid">
 
+
+<div class="public-dynamic-panel public-media-section" id="public-media" hidden>
+<h3>Medien / Presse</h3>
+<p class="public-media-intro">
+Presseberichte, Podcasts, Radiosendungen und Interviews rund um die Styrian Bastards.
+</p>
+<div id="public-media-content" class="public-media-grid"></div>
+</div>
 <div class="public-dynamic-panel public-events-section" id="public-events" hidden>
 <h3>Events</h3>
 <p class="public-events-intro">
@@ -1043,6 +1214,7 @@ fetch('footer.html')
 </script>
 
 <script src="sponsors.js"></script>
+<script src="media.js"></script>
 <script src="merch.js"></script>
 <script src="events.js"></script>
 
