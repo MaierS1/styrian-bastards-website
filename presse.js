@@ -22,12 +22,24 @@
         }).format(date);
     };
 
-    const detailIdentifier = () => {
-        const match = window.location.pathname.replace(/\/+$/, '').match(/^\/presse\/([^/]+)$/);
-        return match ? decodeURIComponent(match[1]).toLowerCase() : '';
+    const detailParams = () => {
+        const params = new URLSearchParams(window.location.search);
+        const slug = params.get('slug');
+        const id = params.get('id');
+
+        return {
+            slug: slug ? slug.toLowerCase() : '',
+            id: id ? id.toLowerCase() : ''
+        };
     };
 
-    const detailHref = (item) => `/presse/${encodeURIComponent(item.slug || item.id)}`;
+    const detailHref = (item) => {
+        if (item.slug) {
+            return `/presse/?slug=${encodeURIComponent(item.slug)}`;
+        }
+
+        return `/presse/?id=${encodeURIComponent(item.id)}`;
+    };
 
     const createHero = (title, intro) => {
         const hero = document.createElement('div');
@@ -155,7 +167,7 @@
 
         const back = document.createElement('a');
         back.className = 'btn press-back';
-        back.href = '/presse';
+        back.href = '/presse/';
         back.textContent = 'Zurück zu Presse';
         detail.appendChild(back);
 
@@ -201,7 +213,7 @@
         root.appendChild(createHero('Nicht gefunden', 'Der angefragte Presseartikel ist nicht verfügbar.'));
         const back = document.createElement('a');
         back.className = 'btn';
-        back.href = '/presse';
+        back.href = '/presse/';
         back.textContent = 'Zurück zu Presse';
         root.appendChild(back);
     };
@@ -226,9 +238,9 @@
             if (!response.ok) throw new Error(`Supabase RPC failed with status ${response.status}`);
 
             const items = (await response.json()).filter((item) => item && item.title);
-            const identifier = detailIdentifier();
+            const params = detailParams();
 
-            if (!identifier) {
+            if (!params.slug && !params.id) {
                 renderOverview(items);
                 return;
             }
@@ -236,7 +248,7 @@
             const selected = items.find((item) => {
                 const slug = item.slug ? String(item.slug).toLowerCase() : '';
                 const id = item.id ? String(item.id).toLowerCase() : '';
-                return slug === identifier || id === identifier;
+                return (params.slug && slug === params.slug) || (params.id && id === params.id);
             });
 
             if (selected) renderDetail(selected);
