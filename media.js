@@ -119,6 +119,28 @@
     const renderMediaCard = (item, isFeatured = false) => {
         const card = document.createElement('article');
         card.className = `card public-media-card ${isFeatured ? 'public-media-featured' : 'compact'}`.trim();
+        card.tabIndex = 0;
+        card.setAttribute('role', 'link');
+        card.style.cursor = 'pointer';
+
+        const openDetail = () => {
+            window.location.href = `/presse/${encodeURIComponent(item.slug || item.id)}`;
+        };
+
+        card.addEventListener('click', (event) => {
+            if (event.target.closest('a')) {
+                return;
+            }
+
+            openDetail();
+        });
+
+        card.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                openDetail();
+            }
+        });
 
         const imageSrc = assetUrl(item.image_path);
         if (imageSrc) {

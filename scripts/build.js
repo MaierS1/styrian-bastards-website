@@ -1,0 +1,36 @@
+const fs = require('fs')
+const path = require('path')
+
+const root = path.resolve(__dirname, '..')
+const dist = path.join(root, 'dist')
+const excluded = new Set(['.git', '.github', 'dist', 'node_modules', 'package.json', 'scripts'])
+
+function shouldSkip(entry) {
+  return excluded.has(entry) || entry.endsWith('.log')
+}
+
+function copyRecursive(source, target) {
+  const stat = fs.statSync(source)
+
+  if (stat.isDirectory()) {
+    fs.mkdirSync(target, { recursive: true })
+    for (const entry of fs.readdirSync(source)) {
+      if (shouldSkip(entry)) continue
+      copyRecursive(path.join(source, entry), path.join(target, entry))
+    }
+    return
+  }
+
+  fs.mkdirSync(path.dirname(target), { recursive: true })
+  fs.copyFileSync(source, target)
+}
+
+fs.rmSync(dist, { recursive: true, force: true })
+fs.mkdirSync(dist, { recursive: true })
+
+for (const entry of fs.readdirSync(root)) {
+  if (shouldSkip(entry)) continue
+  copyRecursive(path.join(root, entry), path.join(dist, entry))
+}
+
+console.log(`Built static site into ${dist}`)

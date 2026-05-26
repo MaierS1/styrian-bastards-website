@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Presse | Styrian Bastards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<style>
+body{background:#050505;color:#ffffff;font-family:'Oswald',Arial,sans-serif}
+.press-page{min-height:100vh;padding:150px 25px 80px}
+.press-shell{max-width:1250px;margin:0 auto}
+.press-hero{margin-bottom:42px}
+.press-kicker,.press-date{display:inline-flex;width:max-content;max-width:100%;padding:6px 11px;border:1px solid rgba(179,0,24,.48);border-radius:999px;background:rgba(179,0,24,.16);color:#fff;font-size:12px;font-weight:800;letter-spacing:.08em;line-height:1.2;text-transform:uppercase}
+.press-hero h1{margin:18px 0 14px;font-size:clamp(2.8rem,7vw,5.8rem);line-height:.95;letter-spacing:3px;text-transform:uppercase}
+.press-hero p{max-width:760px;color:rgba(255,255,255,.78);font-size:1.1rem;line-height:1.8}
+.press-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.press-card{display:grid;grid-template-columns:minmax(170px,.38fr) minmax(0,1fr);overflow:hidden;padding:0;color:#fff;text-decoration:none}
+.press-card.no-image{display:block}
+.press-image-wrap{width:100%;min-height:100%;aspect-ratio:16/9;background:#080808;border-right:1px solid rgba(255,255,255,.08)}
+.press-image{display:block;width:100%;height:100%;object-fit:cover}
+.press-body{padding:28px}
+.press-date{margin-bottom:16px;border-color:rgba(255,255,255,.18);background:transparent;color:rgba(255,255,255,.78)}
+.press-card h2{margin:0 0 12px;color:#fff;font-size:clamp(24px,3vw,34px);line-height:1.08;text-transform:uppercase;letter-spacing:.04em}
+.press-summary,.press-status{color:rgba(255,255,255,.78);line-height:1.7}
+.press-detail{max-width:940px}
+.press-detail-image{display:block;width:100%;max-height:470px;object-fit:cover;border-radius:16px;margin-bottom:28px;border:1px solid rgba(255,255,255,.08)}
+.press-detail h1{margin:16px 0;font-size:clamp(2.4rem,6vw,5rem);line-height:1;text-transform:uppercase;letter-spacing:2px}
+.press-lead{margin-bottom:28px;color:#fff;font-size:1.25rem;font-weight:700;line-height:1.6}
+.press-content{color:rgba(255,255,255,.82);font-family:Arial,sans-serif;font-size:1.05rem;line-height:1.85}
+.press-content p{margin-bottom:18px}
+.press-back{margin-bottom:28px}
+@media(max-width:900px){.press-page{padding-top:185px}.press-grid,.press-card{grid-template-columns:1fr}.press-image-wrap{border-right:0;border-bottom:1px solid rgba(255,255,255,.08)}}
+</style>
+</head>
+<body>
+<div id="navbar"></div>
+<main class="press-page">
+    <div class="press-shell" id="press-root">
+        <div class="press-hero">
+            <span class="press-kicker">Presse</span>
+            <h1>Presse</h1>
+            <p>Aktuelle Presseartikel, Medienberichte und Vereinsnews der Styrian Bastards.</p>
+        </div>
+        <p class="press-status">Presseartikel werden geladen...</p>
+    </div>
+</main>
+<div id="footer"></div>
+<script>
+fetch('/navbar.html').then((response) => response.text()).then((html) => {
+    document.getElementById('navbar').innerHTML = html;
+});
+fetch('/footer.html').then((response) => response.text()).then((html) => {
+    document.getElementById('footer').innerHTML = html;
+});
+</script>
+<script src="/presse.js"></script>
+</body>
+</html>
