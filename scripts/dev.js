@@ -29,21 +29,24 @@ function resolveRequest(url, port) {
   return path.join(root, cleanPath.replace(/^\/+/, ''))
 }
 
-const server = http.createServer((request, response) => {
-  const port = server.address()?.port || preferredPort
-  const filePath = resolveRequest(request.url, port)
+function createServer(port) {
+  return http.createServer((request, response) => {
+    const filePath = resolveRequest(request.url, port)
 
-  if (!filePath.startsWith(root) || !fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
-    response.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' })
-    response.end(fs.existsSync(path.join(root, '404.html')) ? fs.readFileSync(path.join(root, '404.html')) : 'Not found')
-    return
-  }
+    if (!filePath.startsWith(root) || !fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
+      response.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' })
+      response.end(fs.existsSync(path.join(root, '404.html')) ? fs.readFileSync(path.join(root, '404.html')) : 'Not found')
+      return
+    }
 
-  response.writeHead(200, { 'Content-Type': types[path.extname(filePath).toLowerCase()] || 'application/octet-stream' })
-  fs.createReadStream(filePath).pipe(response)
-})
+    response.writeHead(200, { 'Content-Type': types[path.extname(filePath).toLowerCase()] || 'application/octet-stream' })
+    fs.createReadStream(filePath).pipe(response)
+  })
+}
 
 function listen(port, attemptsLeft = 10) {
+  const server = createServer(port)
+
   server.once('error', (error) => {
     if (error.code === 'EADDRINUSE' && attemptsLeft > 0) {
       listen(port + 1, attemptsLeft - 1)

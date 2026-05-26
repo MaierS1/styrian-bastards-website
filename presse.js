@@ -105,6 +105,11 @@
             body.appendChild(summary);
         }
 
+        const more = document.createElement('span');
+        more.className = 'btn press-read-more';
+        more.textContent = 'Weiterlesen';
+        body.appendChild(more);
+
         card.appendChild(body);
         return card;
     };

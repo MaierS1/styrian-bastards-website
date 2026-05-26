@@ -3,7 +3,7 @@ const path = require('path')
 
 const root = path.resolve(__dirname, '..')
 const dist = path.join(root, 'dist')
-const excluded = new Set(['.git', '.github', 'dist', 'node_modules', 'package.json', 'scripts'])
+const excluded = new Set(['.git', '.github', '.gitignore', 'dist', 'node_modules', 'package.json', 'scripts'])
 
 function shouldSkip(entry) {
   return excluded.has(entry) || entry.endsWith('.log')
