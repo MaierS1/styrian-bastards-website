@@ -584,7 +584,7 @@ h1 {
 
 .public-merch-grid{
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 18px;
     margin-top: 0;
 }
@@ -592,11 +592,14 @@ h1 {
 .public-merch-card{
     overflow: hidden;
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
 }
 
 .public-merch-image-wrap{
     width: 100%;
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 1 / 1;
     background: #080808;
     border-bottom: 1px solid rgba(255,255,255,0.08);
 }
@@ -609,7 +612,50 @@ h1 {
 }
 
 .public-merch-body{
-    padding: 28px;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: 24px;
+}
+
+.public-merch-badges{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-bottom: 14px;
+}
+
+.public-merch-badge,
+.public-merch-category,
+.public-merch-stock{
+    display: inline-flex;
+    align-items: center;
+    width: max-content;
+    max-width: 100%;
+    padding: 5px 10px;
+    border: 1px solid rgba(193,18,31,0.55);
+    border-radius: 999px;
+    background: rgba(193,18,31,0.16);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+.public-merch-badge.is-muted,
+.public-merch-stock.sold-out{
+    border-color: rgba(255,255,255,0.22);
+    background: transparent;
+    color: rgba(255,255,255,0.68);
+}
+
+.public-merch-category{
+    margin-bottom: 12px;
+    border-color: rgba(255,255,255,0.18);
+    background: rgba(255,255,255,0.05);
+    color: rgba(255,255,255,0.78);
 }
 
 .public-merch-title{
@@ -621,11 +667,28 @@ h1 {
     color: rgba(255,255,255,0.78);
 }
 
-.public-merch-price{
+.public-merch-price-row{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 10px 14px;
     margin-top: 18px;
+}
+
+.public-merch-price{
     color: #ffffff;
     font-size: 22px;
     font-weight: 800;
+}
+
+.public-merch-member-price{
+    color: #f3c2c7;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.public-merch-stock{
+    margin-top: 14px;
 }
 
 .public-merch-variants{
@@ -690,6 +753,11 @@ h1 {
 }
 
 .public-merch-actions{
+    margin-top: auto;
+    padding-top: 24px;
+}
+
+.public-merch-variants + .public-merch-actions{
     margin-top: 24px;
 }
 
@@ -1084,7 +1152,7 @@ Aus Leidenschaft. Aus Überzeugung. Für Graz und den Hockeysport.
 <section class="section public-dynamic-section" id="public-dynamic" hidden>
 <h2>Aktuelles</h2>
 <p class="public-dynamic-intro">
-Kommende Termine, Medienberichte und öffentlich verfügbare Fanartikel der Styrian Bastards.
+Kommende Termine, Medienberichte und öffentlich verfügbare Produkte aus Shop &amp; Fanartikel.
 </p>
 <div class="public-dynamic-grid">
 
@@ -1105,9 +1173,9 @@ Kommende öffentliche Termine und Veranstaltungen der Styrian Bastards.
 </div>
 
 <div class="public-dynamic-panel public-merch-section" id="public-merch" hidden>
-<h3>Fanartikel</h3>
+<h3>Shop &amp; Fanartikel</h3>
 <p class="public-merch-intro">
-Öffentlich verfügbare Fanartikel der Styrian Bastards.
+Öffentlich verfügbare Fanartikel und Vereinsprodukte der Styrian Bastards.
 </p>
 <div id="public-merch-content" class="public-merch-grid"></div>
 </div>

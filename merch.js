@@ -75,12 +75,68 @@
         }).format(cents / 100);
     };
 
+    const getAvailabilityState = (merchItem, variants = []) => {
+        if (merchItem.availability === 'sold_out' || merchItem.status === 'sold_out') {
+            return 'sold_out';
+        }
+
+        if (variants.length && variants.every((variant) => variant.availability === 'sold_out' || variant.status === 'sold_out' || Number(variant.stock_quantity || 0) <= 0)) {
+            return 'sold_out';
+        }
+
+        if (Number(merchItem.stock_quantity || 0) <= 0 && !variants.length && merchItem.stock_quantity !== undefined) {
+            return 'sold_out';
+        }
+
+        if (merchItem.is_preorder) {
+            return 'preorder';
+        }
+
+        return 'available';
+    };
+
     const getAvailabilityLabel = (availability) => {
         if (availability === 'sold_out') {
             return 'Ausverkauft';
         }
 
-        return 'Verfuegbar';
+        if (availability === 'preorder') {
+            return 'Vorbestellung möglich';
+        }
+
+        return 'Verfügbar';
+    };
+
+    const getItemBadges = (merchItem, variants = []) => {
+        const badges = [];
+        const availability = getAvailabilityState(merchItem, variants);
+
+        if (merchItem.is_new) badges.push('Neu');
+        if (merchItem.is_bestseller) badges.push('Bestseller');
+        if (merchItem.is_preorder) badges.push('Vorbestellung');
+        if (merchItem.is_limited) badges.push('Limitiert');
+        if (merchItem.is_clearance) badges.push('Restposten');
+        if (availability === 'sold_out') badges.push('Ausverkauft');
+
+        return badges;
+    };
+
+    const renderBadges = (badges) => {
+        if (!badges.length) {
+            return null;
+        }
+
+        const wrap = document.createElement('div');
+        wrap.className = 'public-merch-badges';
+
+        badges.forEach((badge) => {
+            const badgeNode = document.createElement('span');
+            badgeNode.className = `public-merch-badge ${badge === 'Ausverkauft' ? 'is-muted' : ''}`.trim();
+            badgeNode.textContent = badge;
+            wrap.appendChild(badgeNode);
+        });
+
+        return wrap;
     };
 
     const getVariantTitle = (variant) => {
@@ -101,7 +157,7 @@
         item.appendChild(name);
 
         const metaParts = [
-            variant.size ? `Groesse: ${variant.size}` : '',
+            variant.size ? `Größe: ${variant.size}` : '',
             variant.color ? `Farbe: ${variant.color}` : ''
         ].filter(Boolean);
 
@@ -123,9 +179,10 @@
             footer.appendChild(priceNode);
         }
 
+        const availabilityState = variant.availability || (variant.status === 'sold_out' ? 'sold_out' : 'available');
         const availability = document.createElement('span');
-        availability.className = `public-merch-availability ${variant.availability === 'sold_out' ? 'sold-out' : ''}`.trim();
-        availability.textContent = getAvailabilityLabel(variant.availability);
+        availability.className = `public-merch-availability ${availabilityState === 'sold_out' ? 'sold-out' : ''}`.trim();
+        availability.textContent = getAvailabilityLabel(availabilityState);
         footer.appendChild(availability);
 
         item.appendChild(footer);
@@ -135,6 +192,11 @@
     const renderMerchCard = (merchItem) => {
         const card = document.createElement('article');
         card.className = 'card public-merch-card';
+        card.dataset.source = 'supabase-public-merch';
+
+        const variants = Array.isArray(merchItem.variants) ? merchItem.variants : [];
+        const availabilityState = getAvailabilityState(merchItem, variants);
+        const badges = getItemBadges(merchItem, variants);
 
         const imageSrc = assetUrl(merchItem.image_path);
         if (imageSrc) {
@@ -144,7 +206,7 @@
             const image = document.createElement('img');
             image.className = 'public-merch-image';
             image.src = imageSrc;
-            image.alt = merchItem.image_alt || merchItem.title || 'Fanartikel';
+            image.alt = merchItem.image_alt || merchItem.public_image_alt || merchItem.title || merchItem.name || 'Fanartikel';
             image.loading = 'lazy';
             image.decoding = 'async';
             image.onerror = () => imageWrap.remove();
@@ -156,27 +218,59 @@
         const body = document.createElement('div');
         body.className = 'public-merch-body';
 
+        const badgeWrap = renderBadges(badges);
+        if (badgeWrap) {
+            body.appendChild(badgeWrap);
+        }
+
+        if (merchItem.category) {
+            const category = document.createElement('div');
+            category.className = 'public-merch-category';
+            category.textContent = merchItem.category;
+            body.appendChild(category);
+        }
+
         const title = document.createElement('h3');
         title.className = 'public-merch-title';
-        title.textContent = merchItem.title || 'Fanartikel';
+        title.textContent = merchItem.title || merchItem.name || 'Fanartikel';
         body.appendChild(title);
 
-        if (merchItem.public_description) {
+        const shortDescription = merchItem.short_description || merchItem.public_description || merchItem.description;
+        if (shortDescription) {
             const description = document.createElement('p');
             description.className = 'public-merch-description';
-            description.textContent = merchItem.public_description;
+            description.textContent = shortDescription;
             body.appendChild(description);
         }
 
         const price = formatAmount(merchItem.display_price_cents);
-        if (price) {
-            const priceNode = document.createElement('div');
-            priceNode.className = 'public-merch-price';
-            priceNode.textContent = `ab ${price}`;
-            body.appendChild(priceNode);
+        const memberPrice = formatAmount(merchItem.member_price_cents);
+        if (price || memberPrice) {
+            const priceWrap = document.createElement('div');
+            priceWrap.className = 'public-merch-price-row';
+
+            if (price) {
+                const priceNode = document.createElement('div');
+                priceNode.className = 'public-merch-price';
+                priceNode.textContent = variants.length ? `ab ${price}` : price;
+                priceWrap.appendChild(priceNode);
+            }
+
+            if (memberPrice) {
+                const memberPriceNode = document.createElement('div');
+                memberPriceNode.className = 'public-merch-member-price';
+                memberPriceNode.textContent = `Mitglieder: ${memberPrice}`;
+                priceWrap.appendChild(memberPriceNode);
+            }
+
+            body.appendChild(priceWrap);
         }
 
-        const variants = Array.isArray(merchItem.variants) ? merchItem.variants : [];
+        const stock = document.createElement('div');
+        stock.className = `public-merch-stock ${availabilityState === 'sold_out' ? 'sold-out' : ''}`.trim();
+        stock.textContent = getAvailabilityLabel(availabilityState);
+        body.appendChild(stock);
+
         if (variants.length) {
             const variantsWrap = document.createElement('div');
             variantsWrap.className = 'public-merch-variants';
