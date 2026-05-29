@@ -370,21 +370,16 @@
 
     const isUuid = (value) => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(value || ''));
 
-    const buildOrderNumber = () => `WEB-${Date.now()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
-
-    const todayIsoDate = () => new Date().toISOString().slice(0, 10);
-
     const cleanPayload = (payload) => Object.fromEntries(
         Object.entries(payload).filter(([, value]) => value !== undefined)
     );
 
-    const postSupabaseRow = async (table, payload) => {
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+    const createPublicShopOrderRpc = async (payload) => {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/create_public_shop_order`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-                'Prefer': 'return=representation',
                 'apikey': SUPABASE_ANON_KEY,
                 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
             },
@@ -392,41 +387,11 @@
         });
 
         if (!response.ok) {
-            const message = await response.text();
-            throw new Error(message || `Supabase insert failed with status ${response.status}`);
+            throw new Error('submit_failed');
         }
 
         const rows = await response.json();
         return Array.isArray(rows) ? rows[0] : rows;
-    };
-
-    const insertOrderWithFallback = async (payload) => {
-        try {
-            return await postSupabaseRow('shop_orders', payload);
-        } catch (error) {
-            const fallbackPayload = { ...payload };
-            delete fallbackPayload.buyer_phone;
-            delete fallbackPayload.delivery_method;
-            delete fallbackPayload.internal_notes;
-            delete fallbackPayload.shipping_cost_cents;
-            delete fallbackPayload.discount_cents;
-            return postSupabaseRow('shop_orders', fallbackPayload);
-        }
-    };
-
-    const insertOrderItemWithFallback = async (payload) => {
-        try {
-            return await postSupabaseRow('shop_order_items', payload);
-        } catch (error) {
-            const fallbackPayload = { ...payload };
-            delete fallbackPayload.item_number;
-            delete fallbackPayload.variant_name;
-            delete fallbackPayload.sku;
-            delete fallbackPayload.size;
-            delete fallbackPayload.color;
-            delete fallbackPayload.member_price_cents;
-            return postSupabaseRow('shop_order_items', fallbackPayload);
-        }
     };
 
     const getOrderableVariants = (merchItem) => {
@@ -606,64 +571,28 @@
                 return;
             }
 
-            const unitPriceCents = Number(firstValue(selectedVariant?.display_price_cents, merchItem.display_price_cents, 0) || 0);
-            const shippingCostCents = delivery === 'shipping' ? Number(merchItem.shipping_cost_cents || 0) : 0;
-            const subtotalCents = quantity * unitPriceCents;
-            const totalCents = subtotalCents + shippingCostCents;
-            const notes = [
-                messageValue ? `Nachricht: ${messageValue}` : '',
-                delivery === 'shipping' ? `Versandadresse: ${addressValue}` : '',
-                `Anfrage von der Homepage für Produkt-ID: ${merchItem.id}`
-            ].filter(Boolean).join('\n');
-
             submit.disabled = true;
             submit.textContent = 'Wird gesendet...';
 
             try {
-                const order = await insertOrderWithFallback({
-                    order_number: buildOrderNumber(),
-                    order_date: todayIsoDate(),
-                    status: 'new',
-                    payment_status: 'open',
-                    payment_method: 'sonstiges',
-                    delivery_method: delivery,
-                    currency: 'EUR',
-                    subtotal_cents: subtotalCents,
-                    discount_cents: 0,
-                    shipping_cost_cents: shippingCostCents,
-                    total_cents: totalCents,
-                    buyer_name: name,
-                    buyer_email: email,
-                    buyer_phone: phone || undefined,
-                    notes
-                });
-
-                await insertOrderItemWithFallback({
-                    shop_order_id: order.id,
-                    merch_item_id: isUuid(merchItem.id) ? merchItem.id : undefined,
-                    merch_variant_id: selectedVariant && isUuid(selectedVariant.id) ? selectedVariant.id : undefined,
-                    item_name: merchItem.title || 'Fanartikel',
-                    item_number: merchItem.item_number || undefined,
-                    variant_name: selectedVariant ? getVariantTitle(selectedVariant) : undefined,
-                    sku: selectedVariant?.sku || undefined,
-                    size: selectedVariant?.size || undefined,
-                    color: selectedVariant?.color || undefined,
-                    quantity,
-                    unit_price_cents: unitPriceCents,
-                    member_price_cents: merchItem.member_price_cents || undefined,
-                    subtotal_cents: subtotalCents,
-                    discount_cents: 0,
-                    total_cents: subtotalCents,
-                    currency: 'EUR'
+                await createPublicShopOrderRpc({
+                    p_merch_item_id: merchItem.id,
+                    p_customer_name: name,
+                    p_customer_email: email,
+                    p_customer_phone: phone || undefined,
+                    p_quantity: quantity,
+                    p_fulfillment_method: delivery,
+                    p_shipping_address: delivery === 'shipping' ? addressValue : undefined,
+                    p_customer_note: messageValue || undefined
                 });
 
                 form.reset();
                 syncAddressRequirement();
-                feedback.textContent = 'Danke! Deine Bestellanfrage wurde an den Verein übermittelt.';
+                feedback.textContent = 'Danke! Deine Bestellanfrage wurde an den Verein ?bermittelt.';
                 feedback.classList.add('success');
             } catch (error) {
                 console.warn('Could not submit merch order request', error);
-                feedback.textContent = 'Die Bestellanfrage konnte gerade nicht gesendet werden. Bitte versuche es später erneut oder kontaktiere den Verein direkt.';
+                feedback.textContent = 'Die Bestellanfrage konnte gerade nicht gesendet werden. Bitte versuche es sp?ter erneut oder kontaktiere den Verein direkt.';
                 feedback.classList.add('error');
             } finally {
                 submit.disabled = false;
