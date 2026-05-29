@@ -368,6 +368,313 @@
         parent.appendChild(row);
     };
 
+    const isUuid = (value) => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(value || ''));
+
+    const buildOrderNumber = () => `WEB-${Date.now()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+
+    const todayIsoDate = () => new Date().toISOString().slice(0, 10);
+
+    const cleanPayload = (payload) => Object.fromEntries(
+        Object.entries(payload).filter(([, value]) => value !== undefined)
+    );
+
+    const postSupabaseRow = async (table, payload) => {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Prefer': 'return=representation',
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+            },
+            body: JSON.stringify(cleanPayload(payload))
+        });
+
+        if (!response.ok) {
+            const message = await response.text();
+            throw new Error(message || `Supabase insert failed with status ${response.status}`);
+        }
+
+        const rows = await response.json();
+        return Array.isArray(rows) ? rows[0] : rows;
+    };
+
+    const insertOrderWithFallback = async (payload) => {
+        try {
+            return await postSupabaseRow('shop_orders', payload);
+        } catch (error) {
+            const fallbackPayload = { ...payload };
+            delete fallbackPayload.buyer_phone;
+            delete fallbackPayload.delivery_method;
+            delete fallbackPayload.internal_notes;
+            delete fallbackPayload.shipping_cost_cents;
+            delete fallbackPayload.discount_cents;
+            return postSupabaseRow('shop_orders', fallbackPayload);
+        }
+    };
+
+    const insertOrderItemWithFallback = async (payload) => {
+        try {
+            return await postSupabaseRow('shop_order_items', payload);
+        } catch (error) {
+            const fallbackPayload = { ...payload };
+            delete fallbackPayload.item_number;
+            delete fallbackPayload.variant_name;
+            delete fallbackPayload.sku;
+            delete fallbackPayload.size;
+            delete fallbackPayload.color;
+            delete fallbackPayload.member_price_cents;
+            return postSupabaseRow('shop_order_items', fallbackPayload);
+        }
+    };
+
+    const getOrderableVariants = (merchItem) => {
+        return merchItem.variants.filter((variant) => {
+            return variant.availability !== 'sold_out'
+                && variant.status !== 'sold_out'
+                && Number(variant.stock_quantity ?? 1) > 0;
+        });
+    };
+
+    const getSelectedOrderVariant = (form, merchItem) => {
+        const variantId = form.querySelector('[name="variant"]')?.value;
+        if (!variantId) return getOrderableVariants(merchItem)[0] || null;
+        return merchItem.variants.find((variant) => String(variant.id) === variantId) || null;
+    };
+
+    const renderOrderRequestForm = (merchItem, availabilityState) => {
+        const wrap = document.createElement('section');
+        wrap.className = 'merch-order-request';
+
+        appendTextNode(wrap, 'h2', '', 'Bestellanfrage senden');
+        appendTextNode(wrap, 'p', 'merch-order-request-note', 'Die Bestellung ist erst nach Bestätigung durch den Verein verbindlich.');
+
+        if (availabilityState === 'sold_out') {
+            appendTextNode(wrap, 'p', 'merch-order-message error', 'Dieser Artikel ist derzeit ausverkauft und kann nicht angefragt werden.');
+            return wrap;
+        }
+
+        const form = document.createElement('form');
+        form.className = 'merch-order-form';
+        form.noValidate = true;
+
+        const orderableVariants = getOrderableVariants(merchItem);
+        if (merchItem.variants.length) {
+            const label = document.createElement('label');
+            label.textContent = 'Variante';
+            const select = document.createElement('select');
+            select.name = 'variant';
+            select.required = true;
+
+            orderableVariants.forEach((variant) => {
+                const option = document.createElement('option');
+                option.value = variant.id;
+                option.textContent = `${getVariantTitle(variant)}${formatAmount(variant.display_price_cents) ? ` - ${formatAmount(variant.display_price_cents)}` : ''}`;
+                select.appendChild(option);
+            });
+
+            label.appendChild(select);
+            form.appendChild(label);
+        }
+
+        [
+            { label: 'Name', name: 'name', type: 'text', required: true, autocomplete: 'name' },
+            { label: 'E-Mail', name: 'email', type: 'email', required: true, autocomplete: 'email' },
+            { label: 'Telefon optional', name: 'phone', type: 'tel', autocomplete: 'tel' },
+            { label: 'Menge', name: 'quantity', type: 'number', required: true, min: '1', value: '1' }
+        ].forEach((field) => {
+            const label = document.createElement('label');
+            label.textContent = field.label;
+            const input = document.createElement('input');
+            input.name = field.name;
+            input.type = field.type;
+            input.required = Boolean(field.required);
+            if (field.min) input.min = field.min;
+            if (field.value) input.value = field.value;
+            if (field.autocomplete) input.autocomplete = field.autocomplete;
+            label.appendChild(input);
+            form.appendChild(label);
+        });
+
+        const deliveryLabel = document.createElement('label');
+        deliveryLabel.textContent = 'Abholung oder Versand';
+        const deliverySelect = document.createElement('select');
+        deliverySelect.name = 'delivery';
+        deliverySelect.required = true;
+
+        [
+            merchItem.pickup_available ? ['pickup', 'Abholung'] : null,
+            merchItem.shipping_available ? ['shipping', 'Versand'] : null
+        ].filter(Boolean).forEach(([value, label]) => {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = label;
+            deliverySelect.appendChild(option);
+        });
+
+        if (!deliverySelect.children.length) {
+            const option = document.createElement('option');
+            option.value = 'pickup';
+            option.textContent = 'Abholung';
+            deliverySelect.appendChild(option);
+        }
+
+        deliveryLabel.appendChild(deliverySelect);
+        form.appendChild(deliveryLabel);
+
+        const addressLabel = document.createElement('label');
+        addressLabel.className = 'merch-order-address';
+        addressLabel.textContent = 'Adresse bei Versand';
+        const address = document.createElement('textarea');
+        address.name = 'address';
+        address.rows = 3;
+        address.placeholder = 'Straße, PLZ, Ort';
+        addressLabel.appendChild(address);
+        form.appendChild(addressLabel);
+
+        const messageLabel = document.createElement('label');
+        messageLabel.textContent = 'Nachricht/Bemerkung optional';
+        const message = document.createElement('textarea');
+        message.name = 'message';
+        message.rows = 4;
+        messageLabel.appendChild(message);
+        form.appendChild(messageLabel);
+
+        const submit = document.createElement('button');
+        submit.className = 'btn merch-order-submit';
+        submit.type = 'submit';
+        submit.textContent = 'Bestellanfrage senden';
+
+        const feedback = document.createElement('p');
+        feedback.className = 'merch-order-message';
+
+        form.appendChild(submit);
+        form.appendChild(feedback);
+
+        const syncAddressRequirement = () => {
+            const shipping = deliverySelect.value === 'shipping';
+            address.required = shipping;
+            addressLabel.classList.toggle('is-required', shipping);
+        };
+
+        deliverySelect.addEventListener('change', syncAddressRequirement);
+        syncAddressRequirement();
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            feedback.textContent = '';
+            feedback.className = 'merch-order-message';
+
+            const formData = new FormData(form);
+            const name = String(formData.get('name') || '').trim();
+            const email = String(formData.get('email') || '').trim();
+            const phone = String(formData.get('phone') || '').trim();
+            const quantity = Number(formData.get('quantity') || 0);
+            const delivery = String(formData.get('delivery') || 'pickup');
+            const addressValue = String(formData.get('address') || '').trim();
+            const messageValue = String(formData.get('message') || '').trim();
+            const selectedVariant = getSelectedOrderVariant(form, merchItem);
+
+            if (!name || !email) {
+                feedback.textContent = 'Bitte Name und E-Mail ausfüllen.';
+                feedback.classList.add('error');
+                return;
+            }
+
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                feedback.textContent = 'Bitte eine gültige E-Mail-Adresse eingeben.';
+                feedback.classList.add('error');
+                return;
+            }
+
+            if (!Number.isInteger(quantity) || quantity < 1) {
+                feedback.textContent = 'Die Menge muss mindestens 1 sein.';
+                feedback.classList.add('error');
+                return;
+            }
+
+            if (delivery === 'shipping' && !addressValue) {
+                feedback.textContent = 'Bitte für den Versand eine Adresse angeben.';
+                feedback.classList.add('error');
+                return;
+            }
+
+            if (merchItem.variants.length && !selectedVariant) {
+                feedback.textContent = 'Bitte eine verfügbare Variante auswählen.';
+                feedback.classList.add('error');
+                return;
+            }
+
+            const unitPriceCents = Number(firstValue(selectedVariant?.display_price_cents, merchItem.display_price_cents, 0) || 0);
+            const shippingCostCents = delivery === 'shipping' ? Number(merchItem.shipping_cost_cents || 0) : 0;
+            const subtotalCents = quantity * unitPriceCents;
+            const totalCents = subtotalCents + shippingCostCents;
+            const notes = [
+                messageValue ? `Nachricht: ${messageValue}` : '',
+                delivery === 'shipping' ? `Versandadresse: ${addressValue}` : '',
+                `Anfrage von der Homepage für Produkt-ID: ${merchItem.id}`
+            ].filter(Boolean).join('\n');
+
+            submit.disabled = true;
+            submit.textContent = 'Wird gesendet...';
+
+            try {
+                const order = await insertOrderWithFallback({
+                    order_number: buildOrderNumber(),
+                    order_date: todayIsoDate(),
+                    status: 'new',
+                    payment_status: 'open',
+                    payment_method: 'sonstiges',
+                    delivery_method: delivery,
+                    currency: 'EUR',
+                    subtotal_cents: subtotalCents,
+                    discount_cents: 0,
+                    shipping_cost_cents: shippingCostCents,
+                    total_cents: totalCents,
+                    buyer_name: name,
+                    buyer_email: email,
+                    buyer_phone: phone || undefined,
+                    notes
+                });
+
+                await insertOrderItemWithFallback({
+                    shop_order_id: order.id,
+                    merch_item_id: isUuid(merchItem.id) ? merchItem.id : undefined,
+                    merch_variant_id: selectedVariant && isUuid(selectedVariant.id) ? selectedVariant.id : undefined,
+                    item_name: merchItem.title || 'Fanartikel',
+                    item_number: merchItem.item_number || undefined,
+                    variant_name: selectedVariant ? getVariantTitle(selectedVariant) : undefined,
+                    sku: selectedVariant?.sku || undefined,
+                    size: selectedVariant?.size || undefined,
+                    color: selectedVariant?.color || undefined,
+                    quantity,
+                    unit_price_cents: unitPriceCents,
+                    member_price_cents: merchItem.member_price_cents || undefined,
+                    subtotal_cents: subtotalCents,
+                    discount_cents: 0,
+                    total_cents: subtotalCents,
+                    currency: 'EUR'
+                });
+
+                form.reset();
+                syncAddressRequirement();
+                feedback.textContent = 'Danke! Deine Bestellanfrage wurde an den Verein übermittelt.';
+                feedback.classList.add('success');
+            } catch (error) {
+                console.warn('Could not submit merch order request', error);
+                feedback.textContent = 'Die Bestellanfrage konnte gerade nicht gesendet werden. Bitte versuche es später erneut oder kontaktiere den Verein direkt.';
+                feedback.classList.add('error');
+            } finally {
+                submit.disabled = false;
+                submit.textContent = 'Bestellanfrage senden';
+            }
+        });
+
+        wrap.appendChild(form);
+        return wrap;
+    };
+
     const renderMerchDetail = (merchItems) => {
         if (!detailRoot) return;
 
@@ -469,6 +776,8 @@
             variants.forEach((variant) => variantsSection.appendChild(renderVariant(variant)));
             body.appendChild(variantsSection);
         }
+
+        body.appendChild(renderOrderRequestForm(merchItem, availabilityState));
 
         layout.appendChild(media);
         layout.appendChild(body);
