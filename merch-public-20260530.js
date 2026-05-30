@@ -427,6 +427,12 @@
         form.noValidate = true;
 
         const orderableVariants = getOrderableVariants(merchItem);
+
+        if (merchItem.variants.length && orderableVariants.length === 0) {
+            appendTextNode(wrap, 'p', 'merch-order-message error', 'Dieser Artikel ist derzeit nicht bestellbar.');
+            return wrap;
+        }
+
         if (merchItem.variants.length) {
             const label = document.createElement('label');
             label.textContent = 'Variante';
@@ -579,7 +585,7 @@
             try {
                 await createPublicShopOrderRpc({
                     p_merch_item_id: merchItem.id,
-                    p_merch_variant_id: selectedVariant?.id || undefined,
+                    p_merch_variant_id: selectedVariant?.id ?? null,
                     p_customer_name: name,
                     p_customer_email: email,
                     p_customer_phone: phone || undefined,
