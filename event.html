@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Styrian Bastards - Event</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #050505;
+    color: #ffffff;
+    font-family: 'Oswald', sans-serif;
+    overflow-x: hidden;
+}
+
+.event-detail-page {
+    min-height: 100vh;
+    padding: 150px 24px 100px;
+}
+
+.event-detail-shell {
+    max-width: 1180px;
+    margin: 0 auto;
+}
+
+.event-detail-header {
+    margin-bottom: 28px;
+}
+
+.event-detail-header h1 {
+    font-size: clamp(2.4rem, 5vw, 4.8rem);
+    line-height: 0.98;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 14px;
+}
+
+.event-detail-intro {
+    max-width: 760px;
+    color: rgba(255,255,255,0.74);
+    line-height: 1.7;
+    font-size: 1.05rem;
+}
+
+.event-detail-card {
+    background: #0d0d0d;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+}
+
+.event-detail-image-wrap {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #080808;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.event-detail-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.event-detail-body {
+    padding: 32px;
+}
+
+.event-detail-backlink {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 18px;
+    color: #ffffff;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.86rem;
+}
+
+.event-detail-backlink:hover {
+    color: #b30018;
+}
+
+.event-detail-category {
+    display: inline-flex;
+    align-items: center;
+    width: max-content;
+    max-width: 100%;
+    margin-bottom: 14px;
+    padding: 6px 12px;
+    border: 1px solid rgba(179,0,24,0.5);
+    border-radius: 999px;
+    background: rgba(179,0,24,0.14);
+    color: #ffffff;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.event-detail-body h2,
+.event-detail-body h1 {
+    color: #ffffff;
+}
+
+.event-detail-description {
+    max-width: 900px;
+    color: rgba(255,255,255,0.8);
+    line-height: 1.8;
+    font-size: 1.03rem;
+    margin: 0 0 24px;
+}
+
+.event-detail-facts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 24px;
+    margin: 0;
+}
+
+.event-detail-facts dt {
+    color: rgba(255,255,255,0.56);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.76rem;
+    margin-bottom: 6px;
+}
+
+.event-detail-facts dd {
+    color: #ffffff;
+    font-size: 1.02rem;
+    line-height: 1.5;
+}
+
+.event-detail-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 12px 18px;
+    border-radius: 10px;
+    background: #b30018;
+    color: #ffffff;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.9rem;
+    font-weight: 700;
+    border: 1px solid #b30018;
+}
+
+.btn:hover {
+    background: #d00020;
+    border-color: #d00020;
+}
+
+.btn-secondary {
+    background: transparent;
+    border-color: rgba(255,255,255,0.22);
+}
+
+.btn-secondary:hover {
+    background: #ffffff;
+    color: #050505;
+    border-color: #ffffff;
+}
+
+.event-detail-empty,
+.public-events-empty {
+    margin-top: 24px;
+    padding: 24px;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    background: rgba(255,255,255,0.04);
+    color: rgba(255,255,255,0.82);
+    line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+    .event-detail-page {
+        padding: 132px 16px 72px;
+    }
+
+    .event-detail-body {
+        padding: 22px;
+    }
+
+    .event-detail-facts {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+<body>
+<div id="navbar"></div>
+
+<main class="event-detail-page">
+    <div class="event-detail-shell">
+        <header class="event-detail-header">
+            <h1>Event</h1>
+            <p class="event-detail-intro">
+                Öffentliche Veranstaltungen der Styrian Bastards mit den wichtigsten Informationen auf einen Blick.
+            </p>
+        </header>
+
+        <section id="event-detail" aria-live="polite">
+            <div id="event-detail-content"></div>
+        </section>
+    </div>
+</main>
+
+<div id="footer"></div>
+
+<script>
+fetch('navbar.html')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('navbar').innerHTML = data;
+    });
+</script>
+<script>
+fetch('footer.html')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('footer').innerHTML = data;
+    });
+</script>
+<script src="events.js"></script>
+</body>
+</html>

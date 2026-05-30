@@ -487,6 +487,23 @@ h1 {
     padding: 0;
 }
 
+.public-event-link{
+    display: block;
+    color: inherit;
+    text-decoration: none;
+    transition: transform 0.2s ease;
+}
+
+.public-event-link:hover,
+.public-event-link:focus-visible{
+    transform: translateY(-2px);
+}
+
+.public-event-link:focus-visible{
+    outline: 2px solid #ffffff;
+    outline-offset: 4px;
+}
+
 .public-event-image-wrap{
     width: 100%;
     aspect-ratio: 16 / 9;
@@ -552,6 +569,31 @@ h1 {
 
 .public-event-description{
     color: rgba(255,255,255,0.78);
+}
+
+.public-event-meta{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    margin-bottom: 14px;
+    color: rgba(255,255,255,0.82);
+    font-size: 14px;
+}
+
+.public-event-meta span{
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.public-events-empty{
+    margin: 0;
+    padding: 22px 24px;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    background: rgba(255,255,255,0.04);
+    color: rgba(255,255,255,0.82);
+    line-height: 1.6;
 }
 
 .public-event-actions{
