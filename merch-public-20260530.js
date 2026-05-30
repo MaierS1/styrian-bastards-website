@@ -107,13 +107,24 @@
         return {
             ...variant,
             id: firstValue(variant.id, variant.variant_id, variant.sku),
+            merch_item_id: firstValue(variant.merch_item_id, variant.item_id),
             name: firstValue(variant.name, variant.variant_name),
             size: firstValue(variant.size, variant.groesse),
             color: firstValue(variant.color, variant.colour, variant.farbe),
             display_price_cents: displayPrice,
             stock_quantity: firstValue(variant.stock_quantity, variant.stock, variant.quantity),
+            reorder_level: firstValue(variant.reorder_level, variant.minimum_stock),
+            status: firstValue(variant.status, variant.availability),
+            is_public: variant.is_public !== false,
             availability: firstValue(variant.availability, variant.status)
         };
+    };
+
+    const isOrderableVariant = (variant) => {
+        return variant
+            && variant.is_public !== false
+            && variant.status === 'active'
+            && Number(variant.stock_quantity ?? 0) > 0;
     };
 
     const normalizeMerchItem = (item = {}) => {
@@ -145,16 +156,10 @@
     };
 
     const getAvailabilityState = (merchItem, variants = []) => {
-        if (merchItem.availability === 'sold_out' || merchItem.status === 'sold_out') {
-            return 'sold_out';
-        }
+        const orderableVariants = variants.filter((variant) => isOrderableVariant(variant));
 
-        if (variants.length && variants.every((variant) => variant.availability === 'sold_out' || variant.status === 'sold_out' || Number(variant.stock_quantity || 0) <= 0)) {
-            return 'sold_out';
-        }
-
-        if (Number(merchItem.stock_quantity || 0) <= 0 && !variants.length && merchItem.stock_quantity !== undefined) {
-            return 'sold_out';
+        if (orderableVariants.length > 0) {
+            return 'available';
         }
 
         if (merchItem.is_preorder) {
@@ -237,7 +242,7 @@
         const price = formatAmount(variant.display_price_cents);
         appendTextNode(footer, 'span', 'public-merch-variant-price', price);
 
-        const availabilityState = variant.availability === 'sold_out' || variant.status === 'sold_out' ? 'sold_out' : 'available';
+        const availabilityState = isOrderableVariant(variant) ? 'available' : 'sold_out';
         const availability = document.createElement('span');
         availability.className = `public-merch-availability ${availabilityState === 'sold_out' ? 'sold-out' : ''}`.trim();
         availability.textContent = getAvailabilityLabel(availabilityState);
@@ -398,9 +403,7 @@
 
     const getOrderableVariants = (merchItem) => {
         return merchItem.variants.filter((variant) => {
-            return variant.availability !== 'sold_out'
-                && variant.status !== 'sold_out'
-                && Number(variant.stock_quantity ?? 1) > 0;
+            return isOrderableVariant(variant);
         });
     };
 
