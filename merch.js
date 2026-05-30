@@ -386,11 +386,13 @@
             body: JSON.stringify(cleanPayload(payload))
         });
 
+        const responseText = await response.text();
+
         if (!response.ok) {
-            throw new Error('submit_failed');
+            throw new Error(`submit_failed: ${response.status} ${responseText}`);
         }
 
-        const rows = await response.json();
+        const rows = responseText ? JSON.parse(responseText) : [];
         return Array.isArray(rows) ? rows[0] : rows;
     };
 
@@ -577,6 +579,7 @@
             try {
                 await createPublicShopOrderRpc({
                     p_merch_item_id: merchItem.id,
+                    p_merch_variant_id: selectedVariant?.id || undefined,
                     p_customer_name: name,
                     p_customer_email: email,
                     p_customer_phone: phone || undefined,
@@ -588,11 +591,11 @@
 
                 form.reset();
                 syncAddressRequirement();
-                feedback.textContent = 'Danke! Deine Bestellanfrage wurde an den Verein ?bermittelt.';
+                feedback.textContent = 'Danke! Deine Bestellanfrage wurde an den Verein übermittelt.';
                 feedback.classList.add('success');
             } catch (error) {
-                console.warn('Could not submit merch order request', error);
-                feedback.textContent = 'Die Bestellanfrage konnte gerade nicht gesendet werden. Bitte versuche es sp?ter erneut oder kontaktiere den Verein direkt.';
+                console.error('Could not submit merch order request', error);
+                feedback.textContent = 'Die Bestellanfrage konnte gerade nicht gesendet werden. Bitte versuche es später erneut oder kontaktiere den Verein direkt.';
                 feedback.classList.add('error');
             } finally {
                 submit.disabled = false;
