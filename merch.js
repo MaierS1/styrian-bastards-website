@@ -428,7 +428,7 @@
 
         const orderableVariants = getOrderableVariants(merchItem);
 
-        if (merchItem.variants.length && orderableVariants.length === 0) {
+        if (orderableVariants.length === 0) {
             appendTextNode(wrap, 'p', 'merch-order-message error', 'Dieser Artikel ist derzeit nicht bestellbar.');
             return wrap;
         }
@@ -601,7 +601,10 @@
                 feedback.classList.add('success');
             } catch (error) {
                 console.error('Could not submit merch order request', error);
-                feedback.textContent = 'Die Bestellanfrage konnte gerade nicht gesendet werden. Bitte versuche es später erneut oder kontaktiere den Verein direkt.';
+                const errorText = String(error?.message || '');
+                feedback.textContent = /item is sold out or requested quantity is not available/i.test(errorText)
+                    ? 'Dieser Artikel ist derzeit nicht verfügbar oder die gewünschte Menge ist nicht lagernd.'
+                    : 'Die Bestellanfrage konnte gerade nicht gesendet werden. Bitte versuche es später erneut oder kontaktiere den Verein direkt.';
                 feedback.classList.add('error');
             } finally {
                 submit.disabled = false;
