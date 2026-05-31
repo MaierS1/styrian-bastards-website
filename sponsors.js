@@ -3,11 +3,12 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVrYXhkeXlzZWZteXBrYWluaGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNjUyNzEsImV4cCI6MjA5Mjk0MTI3MX0.7o4jUIW5gsxvFWiqFHHjoHg87GVm4H_1UW9ftll6VmU';
     const SPONSOR_LEVELS = ['main', 'premium', 'partner', 'supporter'];
     const SPONSOR_LEVEL_LABELS = {
-        main: 'Hauptsponsoren',
-        premium: 'Premium',
+        main: 'Hauptsponsor',
+        premium: 'Sponsor',
         partner: 'Partner',
-        supporter: 'Unterstützer'
+        supporter: 'Unterst\u00fctzer'
     };
+    const EMPTY_MESSAGE = 'Derzeit sind keine Sponsoren ver\u00f6ffentlicht.';
 
     const section = document.getElementById('sponsors');
     const content = document.getElementById('sponsors-content');
@@ -40,11 +41,6 @@
         return `https://${website}`;
     };
 
-    const sponsorLevelRank = (level) => {
-        const index = SPONSOR_LEVELS.indexOf(level);
-        return index === -1 ? SPONSOR_LEVELS.length : index;
-    };
-
     const sortSponsors = (items) => items.slice().sort((left, right) => {
         const leftOrder = Number.isFinite(left.public_sort_order) ? left.public_sort_order : Number(left.public_sort_order || 0);
         const rightOrder = Number.isFinite(right.public_sort_order) ? right.public_sort_order : Number(right.public_sort_order || 0);
@@ -55,6 +51,15 @@
 
         return String(left.name || '').localeCompare(String(right.name || ''), 'de');
     });
+
+    const renderEmptyState = () => {
+        content.innerHTML = '';
+        const emptyState = document.createElement('p');
+        emptyState.className = 'sponsor-empty-state';
+        emptyState.textContent = EMPTY_MESSAGE;
+        content.appendChild(emptyState);
+        section.hidden = false;
+    };
 
     const renderSponsorCard = (sponsor) => {
         const card = document.createElement('article');
@@ -95,11 +100,16 @@
             logoWrap.appendChild(fallback);
         }
 
+        const levelBadge = document.createElement('div');
+        levelBadge.className = 'sponsor-level-badge';
+        levelBadge.textContent = SPONSOR_LEVEL_LABELS[sponsor.sponsor_level] || 'Sponsor';
+
         const name = document.createElement('div');
         name.className = 'sponsor-name';
         name.textContent = sponsor.name || 'Sponsor';
 
         wrapper.appendChild(logoWrap);
+        wrapper.appendChild(levelBadge);
         wrapper.appendChild(name);
 
         if (sponsor.public_description) {
@@ -107,6 +117,13 @@
             description.className = 'sponsor-description';
             description.textContent = sponsor.public_description;
             wrapper.appendChild(description);
+        }
+
+        if (sponsorLink) {
+            const websiteLabel = document.createElement('div');
+            websiteLabel.className = 'sponsor-website-label';
+            websiteLabel.textContent = 'Website \u00f6ffnen';
+            wrapper.appendChild(websiteLabel);
         }
 
         card.appendChild(wrapper);
@@ -155,14 +172,14 @@
 
             const sponsors = await response.json();
             if (!Array.isArray(sponsors) || sponsors.length === 0) {
-                section.remove();
+                renderEmptyState();
                 return;
             }
 
             const groupedSponsors = new Map(SPONSOR_LEVELS.map((level) => [level, []]));
             sponsors.forEach((sponsor) => {
                 const level = SPONSOR_LEVELS.includes(sponsor.sponsor_level) ? sponsor.sponsor_level : 'supporter';
-                groupedSponsors.get(level).push(sponsor);
+                groupedSponsors.get(level).push({ ...sponsor, sponsor_level: level });
             });
 
             content.innerHTML = '';
@@ -178,14 +195,14 @@
             });
 
             if (renderedCount === 0) {
-                section.remove();
+                renderEmptyState();
                 return;
             }
 
             section.hidden = false;
         } catch (error) {
             console.error('Could not load public sponsors', error);
-            section.remove();
+            renderEmptyState();
         }
     };
 

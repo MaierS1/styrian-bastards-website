@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sponsoren | Styrian Bastards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div id="navbar"></div>
+
+<main class="sponsors-page">
+    <div class="sponsors-shell">
+        <div class="sponsors-hero">
+            <span class="sponsors-kicker">Partner &amp; Unterst&uuml;tzer</span>
+            <h1>Sponsoren</h1>
+            <p>
+                Unternehmen und Partner, die den Fanclub und den Hockeysport in Graz unterst&uuml;tzen.
+                Die Liste wird automatisch aus den freigegebenen Sponsoren geladen.
+            </p>
+        </div>
+
+        <section class="sponsors-section" id="sponsors" hidden>
+            <div id="sponsors-content"></div>
+        </section>
+    </div>
+</main>
+
+<div id="footer"></div>
+<script>
+fetch('/navbar.html').then((response) => response.text()).then((html) => {
+    document.getElementById('navbar').innerHTML = html;
+});
+fetch('/footer.html').then((response) => response.text()).then((html) => {
+    document.getElementById('footer').innerHTML = html;
+});
+</script>
+<script src="/sponsors.js"></script>
+</body>
+</html>
