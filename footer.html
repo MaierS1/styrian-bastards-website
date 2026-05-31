@@ -1,34 +1,51 @@
 <!-- Styrian Bastards Footer -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
 <footer class="sb-footer" id="contact">
     <div class="sb-footer-inner">
         <div class="sb-footer-brand">
-            <h2>Styrian Bastards</h2>
-            <p>Fanclub des ATSE Graz</p>
-            <p>Graz, &Ouml;sterreich</p>
-            <p>
-                Kontakt:
-                <a href="mailto:mail@styrian-bastards.at">mail@styrian-bastards.at</a>
-            </p>
+            <a href="/index.html" class="sb-footer-logo-link" aria-label="Styrian Bastards Startseite">
+                <img src="/logo.png" alt="Styrian Bastards Logo" class="sb-footer-logo">
+            </a>
+            <div>
+                <h2>Styrian Bastards</h2>
+                <p>Fanclub des ATSE Graz</p>
+            </div>
         </div>
 
-        <nav class="sb-footer-links" aria-label="Footer Navigation">
-            <a href="/impressum.html">Impressum</a>
-            <a href="/datenschutz.html">Datenschutz</a>
-            <a href="/sponsoren.html">Sponsoren</a>
-            <a href="/merch.html">Shop &amp; Fanartikel</a>
+        <nav class="sb-footer-column sb-footer-links" aria-label="Footer Navigation">
+            <h3>Navigation</h3>
+            <a href="/index.html">Startseite</a>
             <a href="/index.html#events">Events</a>
+            <a href="/merch.html">Shop &amp; Fanartikel</a>
+            <a href="/sponsoren.html">Sponsoren</a>
         </nav>
 
-        <div class="sb-footer-socials" aria-label="Social Media">
-            <a href="https://www.facebook.com/styrian.bastards" target="_blank" rel="noopener">Facebook</a>
-            <a href="https://www.instagram.com/styrian_bastards" target="_blank" rel="noopener">Instagram</a>
-            <a href="https://soundcloud.com/styrian-bastards" target="_blank" rel="noopener">SoundCloud</a>
+        <nav class="sb-footer-column sb-footer-links" aria-label="Rechtliches">
+            <h3>Rechtliches</h3>
+            <a href="/impressum.html">Impressum</a>
+            <a href="/datenschutz.html">Datenschutz</a>
+        </nav>
+
+        <div class="sb-footer-column sb-footer-socials" aria-label="Social Media">
+            <h3>Folge uns</h3>
+            <div class="sb-footer-social-icons">
+                <a href="https://www.facebook.com/styrian.bastards" target="_blank" rel="noopener" aria-label="Facebook">
+                    <i class="fa-brands fa-facebook-f" aria-hidden="true"></i>
+                </a>
+                <a href="https://www.instagram.com/styrian_bastards" target="_blank" rel="noopener" aria-label="Instagram">
+                    <i class="fa-brands fa-instagram" aria-hidden="true"></i>
+                </a>
+                <a href="https://soundcloud.com/styrian-bastards" target="_blank" rel="noopener" aria-label="SoundCloud">
+                    <i class="fa-brands fa-soundcloud" aria-hidden="true"></i>
+                </a>
+            </div>
         </div>
     </div>
 
     <div class="sb-footer-bottom">
-        &copy; 2026 Styrian Bastards. Alle Rechte vorbehalten.
+        <span>&copy; 2026 Styrian Bastards. Alle Rechte vorbehalten.</span>
+        <span>Graz, &Ouml;sterreich</span>
     </div>
 </footer>
 
@@ -53,7 +70,9 @@
 
 <style>
 .sb-footer {
-    background: #050505;
+    background:
+        linear-gradient(135deg, rgba(179,0,24,0.14), transparent 34%),
+        #050505;
     color: #ffffff;
     font-family: 'Oswald', Arial, sans-serif;
     border-top: 2px solid #8b000c;
@@ -62,24 +81,59 @@
 .sb-footer-inner {
     max-width: 1250px;
     margin: 0 auto;
-    padding: 48px 25px 34px;
+    padding: 54px 25px 38px;
     display: grid;
-    grid-template-columns: minmax(240px, 1.4fr) minmax(180px, 0.9fr) minmax(180px, 0.9fr);
-    gap: 34px;
+    grid-template-columns: minmax(250px, 1.4fr) minmax(150px, 0.85fr) minmax(150px, 0.75fr) minmax(180px, 0.8fr);
+    gap: 30px;
     align-items: start;
 }
 
+.sb-footer-brand {
+    display: grid;
+    grid-template-columns: 74px minmax(0, 1fr);
+    gap: 16px;
+    align-items: center;
+}
+
+.sb-footer-logo-link {
+    display: inline-flex;
+    width: 74px;
+    height: 74px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 18px;
+    background: rgba(255,255,255,0.06);
+}
+
+.sb-footer-logo {
+    display: block;
+    max-width: 58px;
+    max-height: 58px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+}
+
 .sb-footer h2 {
-    margin: 0 0 12px;
+    margin: 0 0 8px;
     color: #ffffff;
-    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-size: clamp(1.7rem, 3vw, 2.5rem);
     line-height: 1;
     letter-spacing: 1px;
     text-transform: uppercase;
 }
 
+.sb-footer h3 {
+    margin: 0 0 14px;
+    color: #ffffff;
+    font-size: 0.95rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
 .sb-footer p {
-    margin: 0 0 7px;
+    margin: 0;
     color: rgba(255,255,255,0.72);
     font-size: 1rem;
     line-height: 1.6;
@@ -95,41 +149,101 @@
     color: #c40018;
 }
 
-.sb-footer-links,
-.sb-footer-socials {
+.sb-footer-column,
+.sb-footer-links {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 9px;
 }
 
-.sb-footer-links a,
-.sb-footer-socials a {
+.sb-footer-links a {
     width: max-content;
     max-width: 100%;
     color: rgba(255,255,255,0.82);
     font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
+    position: relative;
+}
+
+.sb-footer-links a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    width: 0;
+    height: 2px;
+    background: #c40018;
+    transition: width 0.25s ease;
+}
+
+.sb-footer-links a:hover::after {
+    width: 100%;
+}
+
+.sb-footer-social-icons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.sb-footer-social-icons a {
+    width: 42px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 999px;
+    background: rgba(255,255,255,0.055);
+    color: #ffffff;
+    font-size: 18px;
+}
+
+.sb-footer-social-icons a:hover {
+    border-color: rgba(196,0,24,0.75);
+    background: rgba(196,0,24,0.18);
+    color: #ffffff;
+    transform: translateY(-3px);
 }
 
 .sb-footer-bottom {
     border-top: 1px solid rgba(255,255,255,0.08);
     padding: 18px 25px 24px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
     color: rgba(255,255,255,0.52);
     font-size: 0.92rem;
     text-align: center;
 }
 
-@media (max-width: 850px) {
+@media (max-width: 950px) {
+    .sb-footer-inner {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 26px;
+    }
+}
+
+@media (max-width: 650px) {
     .sb-footer-inner {
         grid-template-columns: 1fr;
-        gap: 26px;
         text-align: center;
     }
 
+    .sb-footer-brand {
+        grid-template-columns: 1fr;
+        justify-items: center;
+    }
+
     .sb-footer-links,
-    .sb-footer-socials {
+    .sb-footer-column {
         align-items: center;
+    }
+
+    .sb-footer-social-icons {
+        justify-content: center;
     }
 }
 
