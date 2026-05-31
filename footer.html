@@ -1,127 +1,36 @@
-<!-- Styrian Bastards Footer / Impressum -->
+<!-- Styrian Bastards Footer -->
 
 <footer class="sb-footer" id="contact">
+    <div class="sb-footer-inner">
+        <div class="sb-footer-brand">
+            <h2>Styrian Bastards</h2>
+            <p>Fanclub des ATSE Graz</p>
+            <p>Graz, &Ouml;sterreich</p>
+            <p>
+                Kontakt:
+                <a href="mailto:mail@styrian-bastards.at">mail@styrian-bastards.at</a>
+            </p>
+        </div>
 
-    <div class="sb-footer-top">
-        <p>&copy; 2026 Styrian Bastards &bull; Graz, Österreich</p>
-        <p>Fanclub des ATSE Graz</p>
+        <nav class="sb-footer-links" aria-label="Footer Navigation">
+            <a href="/impressum.html">Impressum</a>
+            <a href="/datenschutz.html">Datenschutz</a>
+            <a href="/sponsoren.html">Sponsoren</a>
+            <a href="/merch.html">Shop &amp; Fanartikel</a>
+            <a href="/index.html#events">Events</a>
+        </nav>
+
+        <div class="sb-footer-socials" aria-label="Social Media">
+            <a href="https://www.facebook.com/styrian.bastards" target="_blank" rel="noopener">Facebook</a>
+            <a href="https://www.instagram.com/styrian_bastards" target="_blank" rel="noopener">Instagram</a>
+            <a href="https://soundcloud.com/styrian-bastards" target="_blank" rel="noopener">SoundCloud</a>
+        </div>
     </div>
 
-    <div class="sb-footer-line"></div>
-
-    <section class="sb-impressum">
-
-        <h2>Impressum</h2>
-
-        <div class="sb-impressum-grid">
-
-            <div class="sb-impressum-col">
-
-                <h3>Angaben gemäß § 5 ECG</h3>
-
-                <p>
-                    Styrian Bastards<br>
-                    Eishockey-Fanclub<br>
-                    Marburger Straße 12/2/13<br>
-                    8042 Graz<br>
-                    Österreich
-                </p>
-
-                <br>
-
-                <p>
-                    ZVR-Zahl: 1183844282
-                </p>
-
-            </div>
-
-            <div class="sb-impressum-col sb-impressum-contact">
-
-                <h3>Kontakt</h3>
-
-                <p>
-                    E-Mail:<br>
-                    <a href="mailto:mail@styrian-bastards.at">
-                        mail@styrian-bastards.at
-                    </a>
-                </p>
-
-                <br>
-
-                <p>
-                    Datenschutz:<br>
-                    <a href="datenschutz.html">
-                        Datenschutzerklärung
-                    </a>
-                </p>
-
-                <div class="sb-social-icons">
-
-                    <a href="https://www.facebook.com/styrian.bastards"
-                       target="_blank"
-                       rel="noopener"
-                       aria-label="Facebook">
-                        <span>f</span>
-                    </a>
-
-                    <a href="https://www.instagram.com/styrian_bastards"
-                       target="_blank"
-                       rel="noopener"
-                       aria-label="Instagram">
-                        <span>◎</span>
-                    </a>
-
-                    <a href="https://soundcloud.com/styrian-bastards"
-                       target="_blank"
-                       rel="noopener"
-                       aria-label="SoundCloud">
-                        <span>☁</span>
-                    </a>
-
-                </div>
-
-            </div>
-
-            <div class="sb-impressum-col">
-
-                <h3>Verantwortlich für den Inhalt</h3>
-
-                <p>
-                    Stefan Maier<br>
-                    für den Verein Styrian Bastards
-                </p>
-
-                <br>
-
-                <p>
-                    Vereinszweck:<br>
-                    Förderung und Unterstützung des Eishockeysports
-                    sowie des ATSE Graz Hockey.
-                </p>
-
-                <br>
-
-                <p style="font-size:0.9rem; opacity:0.75;">
-                    Trotz sorgfältiger inhaltlicher Kontrolle wird
-                    keine Haftung für externe Links übernommen.
-                    Für den Inhalt verlinkter Seiten sind ausschließlich
-                    deren Betreiber verantwortlich.
-                </p>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-        <div class="sb-footer-admin">
-            <a href="admin.html">Admin</a>
-        </div>
-
-
+    <div class="sb-footer-bottom">
+        &copy; 2026 Styrian Bastards. Alle Rechte vorbehalten.
+    </div>
 </footer>
-
 
 <!-- COOKIE BANNER -->
 <div id="cookie-banner" class="sb-cookie-banner">
@@ -131,7 +40,7 @@
             <strong>Datenschutz & Cookies</strong><br>
             Diese Website verwendet technisch notwendige Funktionen sowie externe Inhalte
             wie Social-Media-Links oder eingebettete Medien. Weitere Informationen findest du in der
-            <a href="datenschutz.html">Datenschutzerklärung</a>.
+            <a href="datenschutz.html">Datenschutzerkl&auml;rung</a>.
         </div>
 
         <button class="sb-cookie-btn"
@@ -147,147 +56,82 @@
     background: #050505;
     color: #ffffff;
     font-family: 'Oswald', Arial, sans-serif;
+    border-top: 2px solid #8b000c;
 }
 
-.sb-footer-top {
-    min-height: 155px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    color: rgba(255,255,255,0.45);
-    font-size: 0.95rem;
-    line-height: 1.6;
-    text-align: center;
-}
-
-.sb-footer-line {
-    width: 100%;
-    height: 2px;
-    background: #8b000c;
-}
-
-.sb-impressum {
-    max-width: 1600px;
+.sb-footer-inner {
+    max-width: 1250px;
     margin: 0 auto;
-    padding: 85px 60px 80px;
-}
-
-.sb-impressum h2 {
-    font-size: clamp(3rem, 5vw, 5rem);
-    line-height: 1;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin: 0 0 45px;
-    color: #ffffff;
-    font-weight: 700;
-}
-
-.sb-impressum-grid {
+    padding: 48px 25px 34px;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 80px;
+    grid-template-columns: minmax(240px, 1.4fr) minmax(180px, 0.9fr) minmax(180px, 0.9fr);
+    gap: 34px;
     align-items: start;
 }
 
-.sb-impressum-col h3 {
-    font-size: 1.35rem;
-    line-height: 1.2;
+.sb-footer h2 {
+    margin: 0 0 12px;
+    color: #ffffff;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    line-height: 1;
+    letter-spacing: 1px;
     text-transform: uppercase;
-    letter-spacing: 0.7px;
-    margin: 0 0 18px;
-    color: #ffffff;
-    font-weight: 700;
 }
 
-.sb-impressum-col p {
-    font-size: 1.05rem;
-    line-height: 1.55;
-    color: #ffffff;
-    margin: 0;
+.sb-footer p {
+    margin: 0 0 7px;
+    color: rgba(255,255,255,0.72);
+    font-size: 1rem;
+    line-height: 1.6;
 }
 
-.sb-impressum a {
-    color: #ffffff;
-    text-decoration: underline;
-}
-
-.sb-impressum a:hover {
-    color: #c40018;
-}
-
-.sb-impressum-contact {
-    text-align: left;
-}
-
-.sb-social-icons {
-    margin-top: 30px;
-    display: flex;
-    justify-content: center;
-    gap: 22px;
-}
-
-.sb-social-icons a {
-    width: 34px;
-    height: 34px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
+.sb-footer a {
     color: #ffffff;
     text-decoration: none;
-    font-size: 2rem;
-    font-weight: 700;
-    line-height: 1;
-
     transition: 0.25s ease;
 }
 
-.sb-social-icons a:hover {
+.sb-footer a:hover {
     color: #c40018;
-    transform: translateY(-2px);
 }
 
-@media (max-width: 900px) {
+.sb-footer-links,
+.sb-footer-socials {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
 
-    .sb-impressum {
-        padding: 65px 25px;
-    }
+.sb-footer-links a,
+.sb-footer-socials a {
+    width: max-content;
+    max-width: 100%;
+    color: rgba(255,255,255,0.82);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
 
-    .sb-impressum-grid {
+.sb-footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding: 18px 25px 24px;
+    color: rgba(255,255,255,0.52);
+    font-size: 0.92rem;
+    text-align: center;
+}
+
+@media (max-width: 850px) {
+    .sb-footer-inner {
         grid-template-columns: 1fr;
-        gap: 42px;
-    }
-
-    .sb-impressum h2 {
+        gap: 26px;
         text-align: center;
     }
 
-    .sb-impressum-col,
-    .sb-impressum-contact {
-        text-align: left;
-    }
-
-    .sb-social-icons {
-        justify-content: flex-start;
+    .sb-footer-links,
+    .sb-footer-socials {
+        align-items: center;
     }
 }
-
-.sb-impressum-col,
-.sb-impressum-contact,
-.sb-impressum-col p,
-.sb-impressum-contact p,
-.sb-impressum-col h3,
-.sb-impressum-contact h3 {
-    text-align: left !important;
-}
-
-.sb-social-icons {
-    justify-content: flex-start !important;
-}
-
-
 
 /* =========================================
    COOKIE BANNER
@@ -388,26 +232,4 @@
         width:100%;
     }
 }
-
-
-
-.sb-footer-admin{
-    margin-top:40px;
-    text-align:center;
-}
-
-.sb-footer-admin a{
-    color:rgba(255,255,255,0.45);
-    text-decoration:none;
-    font-size:0.82rem;
-    letter-spacing:1px;
-    text-transform:uppercase;
-    transition:0.25s ease;
-}
-
-.sb-footer-admin a:hover{
-    color:#c40018;
-}
-
-
 </style>
