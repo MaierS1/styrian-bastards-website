@@ -43,6 +43,27 @@
         </div>
     </div>
 
+    <div class="sb-footer-cta">
+        <div class="sb-footer-cta-copy">
+            <h3>Unterst&uuml;tze die Styrian Bastards</h3>
+            <p>
+                Mit deinem Einkauf im Shop oder als Sponsor unterst&uuml;tzt du unsere Vereinsarbeit,
+                Veranstaltungen und zuk&uuml;nftige Projekte.
+            </p>
+        </div>
+
+        <div class="sb-footer-cta-actions">
+            <a class="sb-footer-cta-button sb-footer-cta-button-primary" href="/merch.html">
+                Shop &amp; Fanartikel
+            </a>
+            <a class="sb-footer-cta-button sb-footer-cta-button-secondary" href="/sponsoren.html">
+                Sponsor werden
+            </a>
+        </div>
+
+        <p class="sb-footer-cta-slogan">Gemeinsam f&uuml;r den Eishockeysport und den ATSE Graz Hockey.</p>
+    </div>
+
     <div class="sb-footer-bottom">
         <span>&copy; 2026 Styrian Bastards. Alle Rechte vorbehalten.</span>
         <span>Graz, &Ouml;sterreich</span>
@@ -207,6 +228,90 @@
     transform: translateY(-3px);
 }
 
+.sb-footer-cta {
+    max-width: 1250px;
+    margin: 0 auto 34px;
+    padding: 28px 25px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) auto;
+    gap: 22px 28px;
+    align-items: center;
+}
+
+.sb-footer-cta h3 {
+    margin: 0 0 9px;
+    color: #ffffff;
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    letter-spacing: 0.04em;
+    line-height: 1.05;
+    text-transform: uppercase;
+}
+
+.sb-footer-cta p {
+    margin: 0;
+    color: rgba(255,255,255,0.72);
+    font-size: 1rem;
+    line-height: 1.65;
+}
+
+.sb-footer-cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.sb-footer-cta-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 13px 20px;
+    border-radius: 12px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    line-height: 1.2;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.sb-footer-cta-button-primary {
+    border: 1px solid #c40018;
+    background: #b30018;
+    color: #ffffff;
+}
+
+.sb-footer-cta-button-primary:hover {
+    background: #d1001c;
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+.sb-footer-cta-button-secondary {
+    border: 1px solid rgba(255,255,255,0.72);
+    background: #050505;
+    color: #ffffff;
+}
+
+.sb-footer-cta-button-secondary:hover {
+    border-color: #ffffff;
+    background: rgba(255,255,255,0.08);
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+.sb-footer-cta-slogan {
+    grid-column: 1 / -1;
+    padding-top: 2px;
+    color: rgba(255,255,255,0.58) !important;
+    font-size: 0.95rem !important;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
 .sb-footer-bottom {
     border-top: 1px solid rgba(255,255,255,0.08);
     padding: 18px 25px 24px;
@@ -244,6 +349,27 @@
 
     .sb-footer-social-icons {
         justify-content: center;
+    }
+}
+
+@media (max-width: 780px) {
+    .sb-footer-cta {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .sb-footer-cta-actions {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 520px) {
+    .sb-footer-cta-actions {
+        flex-direction: column;
+    }
+
+    .sb-footer-cta-button {
+        width: 100%;
     }
 }
 
