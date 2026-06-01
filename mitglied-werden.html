@@ -480,6 +480,100 @@ section.hero::after {
     line-height: 1.55;
 }
 
+.membership-info {
+    margin: 38px 0 34px;
+    display: grid;
+    gap: 24px;
+}
+
+.membership-info-card {
+    background: linear-gradient(145deg, rgba(17,17,17,0.96), rgba(8,8,8,0.98));
+    border: 1px solid rgba(255,255,255,0.08);
+    border-left: 4px solid #b00018;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.28);
+}
+
+.membership-info-card h3 {
+    color: #ffffff;
+    font-size: clamp(1.55rem, 3vw, 2.35rem);
+    line-height: 1;
+    margin-bottom: 18px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.membership-benefits,
+.membership-steps {
+    display: grid;
+    gap: 12px;
+    color: #d9d9d9;
+    line-height: 1.55;
+}
+
+.membership-benefits {
+    list-style: none;
+}
+
+.membership-benefits li {
+    position: relative;
+    padding-left: 22px;
+}
+
+.membership-benefits li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.65em;
+    width: 8px;
+    height: 8px;
+    background: #b00018;
+}
+
+.membership-types {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.membership-type {
+    background: #111;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 22px;
+}
+
+.membership-type h4 {
+    color: #ffffff;
+    font-size: 1.25rem;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.membership-price {
+    color: #b00018;
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.membership-type p {
+    color: #d0d0d0;
+    line-height: 1.55;
+}
+
+.membership-steps {
+    margin-left: 20px;
+    padding-left: 12px;
+}
+
+.membership-steps li::marker {
+    color: #b00018;
+    font-weight: 700;
+}
+
 .success-box {
     display: none;
     margin-top: 28px;
@@ -518,6 +612,14 @@ section.hero::after {
 }
 
 @media (max-width: 800px) {
+    .membership-info-card {
+        padding: 24px 20px;
+    }
+
+    .membership-types {
+        grid-template-columns: 1fr;
+    }
+
     .membership-form {
         padding: 26px 20px;
     }
@@ -599,6 +701,59 @@ nav ul li a:hover {
 Werde Teil der Styrian Bastards und unterstütze gemeinsam mit uns den ATSE Graz – Hockey.
 Fülle das Formular aus, wähle deine Mitgliedsart und sende deinen Antrag direkt an den Verein.
 </p>
+
+<div class="membership-info" aria-label="Informationen zur Mitgliedschaft">
+    <article class="membership-info-card">
+        <h3>Werde Teil der Styrian Bastards</h3>
+        <p>
+            Du möchtest den ATSE Graz Hockey gemeinsam mit uns unterstützen? Dann werde Mitglied bei den Styrian Bastards – dem offiziellen Fanclub des ATSE Graz Hockey.
+        </p>
+    </article>
+
+    <article class="membership-info-card">
+        <h3>Deine Vorteile</h3>
+        <ul class="membership-benefits">
+            <li>Gemeinschaft mit anderen ATSE-Fans</li>
+            <li>Gemeinsame Spiele, Treffen und Vereinsveranstaltungen</li>
+            <li>Möglichkeit zur Teilnahme an Fanfahrten</li>
+            <li>Mitglieder-Vorteile bei Aktionen und Fanartikeln</li>
+            <li>Aktive Unterstützung des ATSE Graz Hockey</li>
+        </ul>
+    </article>
+
+    <article class="membership-info-card">
+        <h3>Mitgliedschaftsarten</h3>
+        <div class="membership-types">
+            <div class="membership-type">
+                <h4>Probejahr</h4>
+                <div class="membership-price">40 € im ersten Jahr</div>
+                <p>Für neue Mitglieder zum Kennenlernen des Vereins.</p>
+            </div>
+
+            <div class="membership-type">
+                <h4>Fördermitglied</h4>
+                <div class="membership-price">40 € pro Jahr</div>
+                <p>Für Unterstützer, die den Verein fördern möchten.</p>
+            </div>
+
+            <div class="membership-type">
+                <h4>Vollmitglied</h4>
+                <div class="membership-price">70 € pro Jahr</div>
+                <p>Für aktive Mitglieder mit voller Vereinsmitgliedschaft.</p>
+            </div>
+        </div>
+    </article>
+
+    <article class="membership-info-card">
+        <h3>So funktioniert die Aufnahme</h3>
+        <ol class="membership-steps">
+            <li>Formular ausfüllen</li>
+            <li>Mitgliedsantrag absenden</li>
+            <li>Der Vorstand prüft die Aufnahme</li>
+            <li>Nach Bestätigung beginnt deine Mitgliedschaft</li>
+        </ol>
+    </article>
+</div>
 
 <form class="membership-form" id="membershipForm" novalidate>
     <input type="hidden" name="access_key" value="ea20be90-de31-4e44-86c3-702819668d0a">
