@@ -176,6 +176,54 @@ h1 {
     color: #c1121f;
 }
 
+.home-info-section {
+    padding: 34px 30px 10px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.home-info-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.home-info-card {
+    background: linear-gradient(145deg, rgba(17,17,17,0.96), rgba(8,8,8,0.98));
+    border: 1px solid #222;
+    border-left: 4px solid #c1121f;
+    border-radius: 14px;
+    padding: 24px;
+    min-height: 132px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: 0.3s;
+}
+
+.home-info-card:hover {
+    transform: translateY(-5px);
+    border-color: #c1121f;
+}
+
+.home-info-value {
+    color: #ffffff;
+    font-size: clamp(2rem, 4vw, 3.25rem);
+    font-weight: 700;
+    line-height: 1;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.home-info-label {
+    color: #c1121f;
+    font-size: 0.92rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    line-height: 1.35;
+    text-transform: uppercase;
+}
+
 .sponsors-section{
     position: relative;
 }
@@ -942,6 +990,14 @@ footer {
     h1 {
         font-size: 3.5rem;
     }
+
+    .home-info-section {
+        padding: 30px 30px 5px;
+    }
+
+    .home-info-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 </style>
 
@@ -1261,6 +1317,30 @@ Aus Leidenschaft. Aus Überzeugung. Für Graz und den Hockeysport.
 </div>
 </div>
 
+</section>
+
+<section class="home-info-section" id="home-info" aria-label="Fanclub Informationen">
+<div class="home-info-grid">
+<div class="home-info-card">
+<div class="home-info-value">13</div>
+<div class="home-info-label">Mitglieder</div>
+</div>
+
+<div class="home-info-card">
+<div class="home-info-value">2023</div>
+<div class="home-info-label">Gegründet</div>
+</div>
+
+<div class="home-info-card">
+<div class="home-info-value">Events</div>
+<div class="home-info-label">geplant</div>
+</div>
+
+<div class="home-info-card">
+<div class="home-info-value">Graz</div>
+<div class="home-info-label">Österreich</div>
+</div>
+</div>
 </section>
 
 <section class="section public-dynamic-section" id="public-dynamic" hidden>
