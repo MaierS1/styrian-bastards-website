@@ -35,10 +35,10 @@
 
     const detailHref = (item) => {
         if (item.slug) {
-            return `/presse/?slug=${encodeURIComponent(item.slug)}`;
+            return `presse.html?slug=${encodeURIComponent(item.slug)}`;
         }
 
-        return `/presse/?id=${encodeURIComponent(item.id)}`;
+        return `presse.html?id=${encodeURIComponent(item.id)}`;
     };
 
     const createHero = (title, intro) => {
@@ -167,7 +167,7 @@
 
         const back = document.createElement('a');
         back.className = 'btn press-back';
-        back.href = '/presse/';
+        back.href = 'presse.html';
         back.textContent = 'Zurück zu Presse';
         detail.appendChild(back);
 
@@ -213,7 +213,7 @@
         root.appendChild(createHero('Nicht gefunden', 'Der angefragte Presseartikel ist nicht verfügbar.'));
         const back = document.createElement('a');
         back.className = 'btn';
-        back.href = '/presse/';
+        back.href = 'presse.html';
         back.textContent = 'Zurück zu Presse';
         root.appendChild(back);
     };

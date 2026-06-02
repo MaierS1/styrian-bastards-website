@@ -62,6 +62,50 @@
         return `https://${url}`;
     };
 
+    const pressDetailHref = (item) => {
+        if (item.slug) {
+            return `presse.html?slug=${encodeURIComponent(item.slug)}`;
+        }
+
+        if (item.id) {
+            return `presse.html?id=${encodeURIComponent(item.id)}`;
+        }
+
+        return '';
+    };
+
+    const encodePathSegment = (value) => {
+        try {
+            return encodeURIComponent(decodeURIComponent(value));
+        } catch (error) {
+            return encodeURIComponent(value);
+        }
+    };
+
+    const pressDetailHrefFromUrl = (url) => {
+        if (!url) {
+            return '';
+        }
+
+        const value = String(url).trim().replace(/^https?:\/\/(?:www\.)?styrian-bastards\.at/i, '');
+        const directDetail = value.match(/^\/?presse\.html(\?.*)?$/i);
+        if (directDetail) {
+            return value.replace(/^\//, '');
+        }
+
+        const queryDetail = value.match(/^\/?(?:presse|news)\/?\?(.+)$/i);
+        if (queryDetail) {
+            return `presse.html?${queryDetail[1]}`;
+        }
+
+        const slugDetail = value.match(/^\/?(?:presse|news)\/([^?#/]+)/i);
+        if (slugDetail) {
+            return `presse.html?slug=${encodePathSegment(slugDetail[1])}`;
+        }
+
+        return '';
+    };
+
     const formatMediaDate = (value) => {
         if (!value) {
             return '';
@@ -119,28 +163,32 @@
     const renderMediaCard = (item, isFeatured = false) => {
         const card = document.createElement('article');
         card.className = `card public-media-card ${isFeatured ? 'public-media-featured' : 'compact'}`.trim();
-        card.tabIndex = 0;
-        card.setAttribute('role', 'link');
-        card.style.cursor = 'pointer';
+        const cardDetailHref = pressDetailHref(item) || pressDetailHrefFromUrl(item.external_url);
 
-        const openDetail = () => {
-            window.location.href = `/presse/${encodeURIComponent(item.slug || item.id)}`;
-        };
+        if (cardDetailHref) {
+            card.tabIndex = 0;
+            card.setAttribute('role', 'link');
+            card.style.cursor = 'pointer';
 
-        card.addEventListener('click', (event) => {
-            if (event.target.closest('a')) {
-                return;
-            }
+            const openDetail = () => {
+                window.location.href = cardDetailHref;
+            };
 
-            openDetail();
-        });
+            card.addEventListener('click', (event) => {
+                if (event.target.closest('a')) {
+                    return;
+                }
 
-        card.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
                 openDetail();
-            }
-        });
+            });
+
+            card.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    openDetail();
+                }
+            });
+        }
 
         const imageSrc = assetUrl(item.image_path);
         if (imageSrc) {
@@ -203,7 +251,7 @@
             body.appendChild(summary);
         }
 
-        const articleUrl = externalUrl(item.external_url);
+        const articleUrl = cardDetailHref || externalUrl(item.external_url);
         const audioUrl = externalUrl(item.audio_url);
         if (articleUrl || audioUrl) {
             const actions = document.createElement('div');
