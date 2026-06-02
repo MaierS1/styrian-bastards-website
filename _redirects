@@ -1,0 +1,2 @@
+/presse/:slug /presse.html?slug=:slug 200
+/news/:slug /presse.html?slug=:slug 200
