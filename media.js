@@ -64,11 +64,11 @@
 
     const pressDetailHref = (item) => {
         if (item.slug) {
-            return `presse.html?slug=${encodeURIComponent(item.slug)}`;
+            return `/presse.html?slug=${encodeURIComponent(item.slug)}`;
         }
 
         if (item.id) {
-            return `presse.html?id=${encodeURIComponent(item.id)}`;
+            return `/presse.html?id=${encodeURIComponent(item.id)}`;
         }
 
         return '';
@@ -90,17 +90,17 @@
         const value = String(url).trim().replace(/^https?:\/\/(?:www\.)?styrian-bastards\.at/i, '');
         const directDetail = value.match(/^\/?presse\.html(\?.*)?$/i);
         if (directDetail) {
-            return value.replace(/^\//, '');
+            return `/${value.replace(/^\//, '')}`;
         }
 
         const queryDetail = value.match(/^\/?(?:presse|news)\/?\?(.+)$/i);
         if (queryDetail) {
-            return `presse.html?${queryDetail[1]}`;
+            return `/presse.html?${queryDetail[1]}`;
         }
 
         const slugDetail = value.match(/^\/?(?:presse|news)\/([^?#/]+)/i);
         if (slugDetail) {
-            return `presse.html?slug=${encodePathSegment(slugDetail[1])}`;
+            return `/presse.html?slug=${encodePathSegment(slugDetail[1])}`;
         }
 
         return '';

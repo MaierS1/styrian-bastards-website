@@ -26,19 +26,27 @@
         const params = new URLSearchParams(window.location.search);
         const slug = params.get('slug');
         const id = params.get('id');
+        const pathSlug = window.location.pathname.match(/^\/(?:presse|news)\/([^/?#]+)/i)?.[1] || '';
+        let decodedPathSlug = pathSlug;
+
+        try {
+            decodedPathSlug = decodeURIComponent(pathSlug);
+        } catch (error) {
+            decodedPathSlug = pathSlug;
+        }
 
         return {
-            slug: slug ? slug.toLowerCase() : '',
+            slug: slug ? slug.toLowerCase() : decodedPathSlug.toLowerCase(),
             id: id ? id.toLowerCase() : ''
         };
     };
 
     const detailHref = (item) => {
         if (item.slug) {
-            return `presse.html?slug=${encodeURIComponent(item.slug)}`;
+            return `/presse.html?slug=${encodeURIComponent(item.slug)}`;
         }
 
-        return `presse.html?id=${encodeURIComponent(item.id)}`;
+        return `/presse.html?id=${encodeURIComponent(item.id)}`;
     };
 
     const createHero = (title, intro) => {
@@ -167,7 +175,7 @@
 
         const back = document.createElement('a');
         back.className = 'btn press-back';
-        back.href = 'presse.html';
+        back.href = '/presse.html';
         back.textContent = 'Zurück zu Presse';
         detail.appendChild(back);
 
@@ -213,7 +221,7 @@
         root.appendChild(createHero('Nicht gefunden', 'Der angefragte Presseartikel ist nicht verfügbar.'));
         const back = document.createElement('a');
         back.className = 'btn';
-        back.href = 'presse.html';
+        back.href = '/presse.html';
         back.textContent = 'Zurück zu Presse';
         root.appendChild(back);
     };
