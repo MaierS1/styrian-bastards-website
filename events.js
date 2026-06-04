@@ -141,6 +141,10 @@
         }
 
         if (status === 'open') {
+            if (event?.max_participants && typeof event?.registered_count === 'number') {
+                return `${Math.max(0, event.max_participants - event.registered_count)} Teams frei`;
+            }
+
             return 'Anmeldung offen';
         }
 
@@ -212,6 +216,7 @@
                 p_phone: values.phone || null,
                 p_member_status: values.member_status,
                 p_participant_count: values.participant_count,
+                p_team_name: values.team_name || null,
                 p_note: values.note || null
             })
         });
@@ -337,6 +342,7 @@
             return wrapper;
         };
 
+        fields.appendChild(createField({ label: 'Teamname (optional)', name: 'team_name' }));
         fields.appendChild(createField({ label: 'Name', name: 'full_name', required: true }));
         fields.appendChild(createField({ label: 'E-Mail', name: 'email', type: 'email', required: true }));
         fields.appendChild(createField({ label: 'Telefon (optional)', name: 'phone', type: 'tel' }));
@@ -349,7 +355,7 @@
                 { value: 'guest', label: 'Gast' }
             ]
         }));
-        fields.appendChild(createField({ label: 'Teilnehmeranzahl', name: 'participant_count', type: 'number', required: true, min: '1' }));
+        fields.appendChild(createField({ label: 'Teamgröße', name: 'participant_count', type: 'number', required: true, min: '1' }));
         fields.appendChild(createField({ label: 'Notiz (optional)', name: 'note', rows: 4 }));
 
         form.appendChild(fields);
@@ -375,6 +381,7 @@
             feedback.className = 'event-registration-feedback';
 
             const fullName = String(form.elements.full_name.value || '').trim();
+            const teamName = String(form.elements.team_name.value || '').trim();
             const email = String(form.elements.email.value || '').trim();
             const phone = String(form.elements.phone.value || '').trim();
             const memberStatus = String(form.elements.member_status.value || 'unknown');
@@ -396,7 +403,7 @@
             }
 
             if (!Number.isInteger(participantCount) || participantCount < 1) {
-                feedback.textContent = 'Bitte gib eine Teilnehmeranzahl ab 1 ein.';
+                feedback.textContent = 'Bitte gib eine Teamgröße ab 1 ein.';
                 feedback.classList.add('is-error');
                 form.elements.participant_count.focus();
                 return;
@@ -408,6 +415,7 @@
             try {
                 const registrationStatus = await submitPublicRegistration(event.id, {
                     full_name: fullName,
+                    team_name: teamName,
                     email,
                     phone,
                     member_status: memberStatus,
@@ -611,8 +619,8 @@
         addFact('Kontakt E-Mail', event.contact_email);
         addFact('Kontakt Telefon', event.contact_phone);
         addFact('Anmeldeschluss', formatShortDateTime(event.registration_deadline));
-        addFact('Max. Teilnehmer', event.max_participants ? String(event.max_participants) : '');
-        addFact('Angemeldet', typeof event.registered_count === 'number' ? String(event.registered_count) : '');
+        addFact('Max. Teams', event.max_participants ? String(event.max_participants) : '');
+        addFact('Teams', typeof event.registered_count === 'number' ? String(event.registered_count) : '');
         addFact('Warteliste', typeof event.waitlist_count === 'number' ? String(event.waitlist_count) : '');
         addFact('Anmeldestatus', registrationLabel);
 
