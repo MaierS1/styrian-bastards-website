@@ -121,6 +121,129 @@
 
     const getEventCategoryLabel = (value) => categoryLabels[String(value || 'sonstiges').toLowerCase()] || categoryLabels.sonstiges;
 
+    const getRegistrationStatusLabel = (event) => {
+        const status = String(event?.registration_status || '').toLowerCase();
+
+        if (!event?.registration_enabled || status === 'disabled') {
+            return 'Anmeldung deaktiviert';
+        }
+
+        if (status === 'closed') {
+            return 'Anmeldung geschlossen';
+        }
+
+        if (status === 'full') {
+            return 'Voll';
+        }
+
+        if (status === 'waitlist') {
+            return 'Warteliste';
+        }
+
+        if (status === 'open') {
+            return 'Anmeldung offen';
+        }
+
+        return '';
+    };
+
+    const canShowRegistrationForm = (event) => {
+        const status = String(event?.registration_status || '').toLowerCase();
+
+        return Boolean(event?.registration_enabled)
+            && status !== 'disabled'
+            && status !== 'closed'
+            && !(status === 'full' && event?.allow_waitlist !== true);
+    };
+
+    const getRegistrationUnavailableMessage = (event) => {
+        const status = String(event?.registration_status || '').toLowerCase();
+
+        if (!event?.registration_enabled || status === 'disabled') {
+            return 'Die Anmeldung ist für dieses Event nicht aktiviert.';
+        }
+
+        if (status === 'closed') {
+            return 'Die Anmeldung für dieses Event ist geschlossen.';
+        }
+
+        if (status === 'full' && event?.allow_waitlist !== true) {
+            return 'Dieses Event ist voll.';
+        }
+
+        return '';
+    };
+
+    const getRegistrationStatusClass = (event) => {
+        const status = String(event?.registration_status || '').toLowerCase();
+
+        if (status === 'open') {
+            return 'is-open';
+        }
+
+        if (status === 'waitlist') {
+            return 'is-waitlist';
+        }
+
+        if (status === 'full') {
+            return 'is-full';
+        }
+
+        if (status === 'closed' || status === 'disabled') {
+            return 'is-closed';
+        }
+
+        return '';
+    };
+
+    const submitPublicRegistration = async (eventId, values) => {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/create_public_event_registration`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+            },
+            body: JSON.stringify({
+                p_event_id: eventId,
+                p_full_name: values.full_name,
+                p_email: values.email,
+                p_phone: values.phone || null,
+                p_member_status: values.member_status,
+                p_participant_count: values.participant_count,
+                p_note: values.note || null
+            })
+        });
+
+        if (!response.ok) {
+            let message = 'Die Anmeldung konnte nicht gesendet werden.';
+
+            try {
+                const error = await response.json();
+                const rawMessage = String(error?.message || '').toLowerCase();
+
+                if (rawMessage.includes('event is full')) {
+                    message = 'Dieses Event ist voll.';
+                } else if (rawMessage.includes('deadline') || rawMessage.includes('closed')) {
+                    message = 'Die Anmeldung für dieses Event ist geschlossen.';
+                } else if (rawMessage.includes('disabled')) {
+                    message = 'Die Registrierung ist für dieses Event deaktiviert.';
+                } else if (error?.message) {
+                    message = error.message;
+                }
+            } catch {
+                message = `Supabase-Fehler (${response.status}).`;
+            }
+
+            throw new Error(message);
+        }
+
+        const data = await response.json();
+        const registration = Array.isArray(data) ? data[0] : data;
+        return registration?.registration_status || '';
+    };
+
     const sortEvents = (items) => items.slice().sort((left, right) => {
         const leftSource = left.starts_at || (left.event_date ? `${left.event_date}T00:00:00` : '');
         const rightSource = right.starts_at || (right.event_date ? `${right.event_date}T00:00:00` : '');
@@ -140,6 +263,175 @@
         link.className = className;
         link.textContent = label;
         return link;
+    };
+
+    const createRegistrationPanel = (event) => {
+        const panel = document.createElement('section');
+        panel.className = 'event-registration-panel';
+        panel.setAttribute('aria-labelledby', 'event-registration-title');
+
+        const title = document.createElement('h2');
+        title.id = 'event-registration-title';
+        title.textContent = 'Anmeldung';
+        panel.appendChild(title);
+
+        const statusLabel = getRegistrationStatusLabel(event);
+        if (statusLabel) {
+            const status = document.createElement('p');
+            status.className = `event-registration-status ${getRegistrationStatusClass(event)}`.trim();
+            status.textContent = statusLabel;
+            panel.appendChild(status);
+        }
+
+        const unavailableMessage = getRegistrationUnavailableMessage(event);
+        if (!canShowRegistrationForm(event)) {
+            if (unavailableMessage) {
+                const message = document.createElement('p');
+                message.className = 'event-registration-message';
+                message.textContent = unavailableMessage;
+                panel.appendChild(message);
+            }
+
+            return panel;
+        }
+
+        const form = document.createElement('form');
+        form.className = 'event-registration-form';
+        form.noValidate = true;
+
+        const fields = document.createElement('div');
+        fields.className = 'event-registration-fields';
+
+        const createField = ({ label, name, type = 'text', required = false, min = '', rows = 0, options = null }) => {
+            const wrapper = document.createElement('label');
+            wrapper.className = 'event-registration-field';
+
+            const labelText = document.createElement('span');
+            labelText.textContent = label;
+            wrapper.appendChild(labelText);
+
+            let input;
+            if (options) {
+                input = document.createElement('select');
+                options.forEach((option) => {
+                    const optionElement = document.createElement('option');
+                    optionElement.value = option.value;
+                    optionElement.textContent = option.label;
+                    input.appendChild(optionElement);
+                });
+            } else if (rows > 0) {
+                input = document.createElement('textarea');
+                input.rows = rows;
+            } else {
+                input = document.createElement('input');
+                input.type = type;
+            }
+
+            input.name = name;
+            input.required = required;
+            if (min) {
+                input.min = min;
+            }
+
+            wrapper.appendChild(input);
+            return wrapper;
+        };
+
+        fields.appendChild(createField({ label: 'Name', name: 'full_name', required: true }));
+        fields.appendChild(createField({ label: 'E-Mail', name: 'email', type: 'email', required: true }));
+        fields.appendChild(createField({ label: 'Telefon (optional)', name: 'phone', type: 'tel' }));
+        fields.appendChild(createField({
+            label: 'Mitgliedsstatus',
+            name: 'member_status',
+            options: [
+                { value: 'unknown', label: 'Keine Angabe' },
+                { value: 'member', label: 'Mitglied' },
+                { value: 'guest', label: 'Gast' }
+            ]
+        }));
+        fields.appendChild(createField({ label: 'Teilnehmeranzahl', name: 'participant_count', type: 'number', required: true, min: '1' }));
+        fields.appendChild(createField({ label: 'Notiz (optional)', name: 'note', rows: 4 }));
+
+        form.appendChild(fields);
+
+        const participantInput = form.elements.participant_count;
+        participantInput.value = '1';
+
+        const feedback = document.createElement('p');
+        feedback.className = 'event-registration-feedback';
+        feedback.setAttribute('aria-live', 'polite');
+
+        const submitButton = document.createElement('button');
+        submitButton.type = 'submit';
+        submitButton.className = 'btn event-registration-submit';
+        submitButton.textContent = 'Anmeldung senden';
+
+        form.appendChild(submitButton);
+        form.appendChild(feedback);
+
+        form.addEventListener('submit', async (submitEvent) => {
+            submitEvent.preventDefault();
+            feedback.textContent = '';
+            feedback.className = 'event-registration-feedback';
+
+            const fullName = String(form.elements.full_name.value || '').trim();
+            const email = String(form.elements.email.value || '').trim();
+            const phone = String(form.elements.phone.value || '').trim();
+            const memberStatus = String(form.elements.member_status.value || 'unknown');
+            const participantCount = Number.parseInt(form.elements.participant_count.value, 10);
+            const note = String(form.elements.note.value || '').trim();
+
+            if (!fullName) {
+                feedback.textContent = 'Bitte gib deinen Namen ein.';
+                feedback.classList.add('is-error');
+                form.elements.full_name.focus();
+                return;
+            }
+
+            if (!email || !form.elements.email.checkValidity()) {
+                feedback.textContent = 'Bitte gib eine gültige E-Mail-Adresse ein.';
+                feedback.classList.add('is-error');
+                form.elements.email.focus();
+                return;
+            }
+
+            if (!Number.isInteger(participantCount) || participantCount < 1) {
+                feedback.textContent = 'Bitte gib eine Teilnehmeranzahl ab 1 ein.';
+                feedback.classList.add('is-error');
+                form.elements.participant_count.focus();
+                return;
+            }
+
+            submitButton.disabled = true;
+            submitButton.textContent = 'Wird gesendet...';
+
+            try {
+                const registrationStatus = await submitPublicRegistration(event.id, {
+                    full_name: fullName,
+                    email,
+                    phone,
+                    member_status: memberStatus,
+                    participant_count: participantCount,
+                    note
+                });
+
+                feedback.classList.add('is-success');
+                feedback.textContent = registrationStatus === 'waitlist'
+                    ? 'Das Event ist voll. Du wurdest auf die Warteliste gesetzt.'
+                    : 'Danke, deine Anmeldung wurde eingetragen.';
+                form.reset();
+                participantInput.value = '1';
+            } catch (error) {
+                feedback.classList.add('is-error');
+                feedback.textContent = error?.message || 'Netzwerk- oder Supabase-Fehler. Bitte versuche es später erneut.';
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Anmeldung senden';
+            }
+        });
+
+        panel.appendChild(form);
+        return panel;
     };
 
     const createMetaItem = (label, value) => {
@@ -163,7 +455,7 @@
         const card = document.createElement('article');
         card.className = 'card public-event-card';
 
-        const imageSrc = assetUrl(event.public_image_url || event.public_image_path);
+        const imageSrc = assetUrl(event.event_image_url || event.public_image_url || event.public_image_path);
         if (imageSrc) {
             const imageWrap = document.createElement('div');
             imageWrap.className = 'public-event-image-wrap';
@@ -187,6 +479,14 @@
         category.className = 'public-event-category';
         category.textContent = getEventCategoryLabel(event.event_category);
         body.appendChild(category);
+
+        const registrationLabel = getRegistrationStatusLabel(event);
+        if (registrationLabel && event.registration_enabled) {
+            const registrationBadge = document.createElement('div');
+            registrationBadge.className = `public-event-registration-status ${getRegistrationStatusClass(event)}`.trim();
+            registrationBadge.textContent = registrationLabel;
+            body.appendChild(registrationBadge);
+        }
 
         const title = document.createElement('h3');
         title.textContent = getEventTitle(event);
@@ -236,7 +536,7 @@
         const wrapper = document.createElement('article');
         wrapper.className = 'event-detail-card';
 
-        const imageSrc = assetUrl(event.public_image_url || event.public_image_path);
+        const imageSrc = assetUrl(event.event_image_url || event.public_image_url || event.public_image_path);
         if (imageSrc) {
             const imageWrap = document.createElement('div');
             imageWrap.className = 'event-detail-image-wrap';
@@ -266,6 +566,14 @@
         category.className = 'event-detail-category';
         category.textContent = getEventCategoryLabel(event.event_category);
         body.appendChild(category);
+
+        const registrationLabel = getRegistrationStatusLabel(event);
+        if (registrationLabel && event.registration_enabled) {
+            const registrationBadge = document.createElement('div');
+            registrationBadge.className = `event-detail-registration-status ${getRegistrationStatusClass(event)}`.trim();
+            registrationBadge.textContent = registrationLabel;
+            body.appendChild(registrationBadge);
+        }
 
         const title = document.createElement('h1');
         title.textContent = getEventTitle(event);
@@ -299,9 +607,14 @@
         addFact('Uhrzeit', formatTime(event.starts_at));
         addFact('Ort', event.location);
         addFact('Treffpunkt', event.meeting_point);
-        addFact('Kontaktperson', event.contact_person);
+        addFact('Kontaktperson', event.contact_name || event.contact_person);
+        addFact('Kontakt E-Mail', event.contact_email);
+        addFact('Kontakt Telefon', event.contact_phone);
         addFact('Anmeldeschluss', formatShortDateTime(event.registration_deadline));
         addFact('Max. Teilnehmer', event.max_participants ? String(event.max_participants) : '');
+        addFact('Angemeldet', typeof event.registered_count === 'number' ? String(event.registered_count) : '');
+        addFact('Warteliste', typeof event.waitlist_count === 'number' ? String(event.waitlist_count) : '');
+        addFact('Anmeldestatus', registrationLabel);
 
         if (facts.children.length) {
             body.appendChild(facts);
@@ -329,6 +642,10 @@
 
         if (actions.children.length) {
             body.appendChild(actions);
+        }
+
+        if (event.registration_enabled) {
+            body.appendChild(createRegistrationPanel(event));
         }
 
         wrapper.appendChild(body);
