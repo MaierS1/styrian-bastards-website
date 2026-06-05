@@ -8,6 +8,8 @@
         loading: false,
         memberAreaLoading: false,
         loadedUserId: null,
+        memberContentLoading: false,
+        loadedContentUserId: null,
     };
 
     const elements = {};
@@ -32,6 +34,12 @@
             'member-fee-list',
             'member-events-status',
             'member-events-list',
+            'member-documents-status',
+            'member-documents-list',
+            'member-news-status',
+            'member-news-list',
+            'member-internal-events-status',
+            'member-internal-events-list',
         ].forEach((id) => {
             elements[id] = document.getElementById(id);
         });
@@ -95,6 +103,13 @@
         }
     }
 
+    function clearContentGrid(gridElement) {
+        if (!gridElement) return;
+        while (gridElement.firstChild) {
+            gridElement.removeChild(gridElement.firstChild);
+        }
+    }
+
     function appendListItem(listElement, text) {
         if (!listElement) return;
         const item = document.createElement('li');
@@ -104,6 +119,46 @@
 
     function normalizeArray(value) {
         return Array.isArray(value) ? value : [];
+    }
+
+    function getText(value, fallback = '-') {
+        const text = String(value || '').trim();
+        return text || fallback;
+    }
+
+    function createCard(title, meta, text) {
+        const card = document.createElement('article');
+        card.className = 'member-content-card';
+
+        const heading = document.createElement('h4');
+        heading.textContent = getText(title, 'Eintrag');
+        card.appendChild(heading);
+
+        if (meta) {
+            const metaElement = document.createElement('p');
+            metaElement.className = 'member-content-meta';
+            metaElement.textContent = meta;
+            card.appendChild(metaElement);
+        }
+
+        if (text) {
+            const textElement = document.createElement('p');
+            textElement.className = 'member-content-text';
+            textElement.textContent = text;
+            card.appendChild(textElement);
+        }
+
+        return card;
+    }
+
+    function createContentLink(href, label) {
+        const link = document.createElement('a');
+        link.className = 'member-content-link';
+        link.href = href;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = label;
+        return link;
     }
 
     function renderMemberAreaLoading() {
@@ -117,6 +172,101 @@
         clearList(elements['member-events-list']);
         elements['member-fee-list'].hidden = true;
         elements['member-events-list'].hidden = true;
+    }
+
+    function renderMemberContentLoading() {
+        elements['member-documents-status'].textContent = 'Dokumente werden geladen...';
+        elements['member-news-status'].textContent = 'Interne News werden geladen...';
+        elements['member-internal-events-status'].textContent = 'Interne Events werden geladen...';
+        clearContentGrid(elements['member-documents-list']);
+        clearContentGrid(elements['member-news-list']);
+        clearContentGrid(elements['member-internal-events-list']);
+        elements['member-documents-list'].hidden = true;
+        elements['member-news-list'].hidden = true;
+        elements['member-internal-events-list'].hidden = true;
+    }
+
+    function renderMemberContentError(error) {
+        const message = error?.message || 'Mitgliederbereich-Inhalte konnten nicht geladen werden.';
+        elements['member-documents-status'].textContent = message;
+        elements['member-news-status'].textContent = message;
+        elements['member-internal-events-status'].textContent = message;
+        clearContentGrid(elements['member-documents-list']);
+        clearContentGrid(elements['member-news-list']);
+        clearContentGrid(elements['member-internal-events-list']);
+        elements['member-documents-list'].hidden = true;
+        elements['member-news-list'].hidden = true;
+        elements['member-internal-events-list'].hidden = true;
+        setMessage(message, 'error');
+    }
+
+    function renderMemberDocuments(documents) {
+        const list = elements['member-documents-list'];
+        clearContentGrid(list);
+
+        if (documents.length === 0) {
+            elements['member-documents-status'].textContent = 'Derzeit sind keine Dokumente fuer Mitglieder hinterlegt.';
+            list.hidden = true;
+            return;
+        }
+
+        elements['member-documents-status'].textContent = `${documents.length} Dokument${documents.length === 1 ? '' : 'e'} verfuegbar.`;
+        documents.forEach((documentItem) => {
+            const meta = [documentItem.category, documentItem.sort_order !== undefined ? `Sortierung ${documentItem.sort_order}` : '']
+                .filter(Boolean)
+                .join(' - ');
+            const card = createCard(documentItem.title, meta, documentItem.description);
+            if (documentItem.file_url) {
+                card.appendChild(createContentLink(documentItem.file_url, 'Dokument oeffnen'));
+            }
+            list.appendChild(card);
+        });
+        list.hidden = false;
+    }
+
+    function renderMemberNews(newsItems) {
+        const list = elements['member-news-list'];
+        clearContentGrid(list);
+
+        if (newsItems.length === 0) {
+            elements['member-news-status'].textContent = 'Derzeit sind keine internen News hinterlegt.';
+            list.hidden = true;
+            return;
+        }
+
+        elements['member-news-status'].textContent = `${newsItems.length} interne News verfuegbar.`;
+        newsItems.forEach((newsItem) => {
+            const meta = [formatDate(newsItem.publication_date || newsItem.published_at), newsItem.category]
+                .filter((item) => item && item !== '-')
+                .join(' - ');
+            const card = createCard(newsItem.title, meta, newsItem.summary || newsItem.content);
+            if (newsItem.external_url) {
+                card.appendChild(createContentLink(newsItem.external_url, 'Mehr lesen'));
+            }
+            list.appendChild(card);
+        });
+        list.hidden = false;
+    }
+
+    function renderMemberEvents(events) {
+        const list = elements['member-internal-events-list'];
+        clearContentGrid(list);
+
+        if (events.length === 0) {
+            elements['member-internal-events-status'].textContent = 'Derzeit sind keine internen Events hinterlegt.';
+            list.hidden = true;
+            return;
+        }
+
+        elements['member-internal-events-status'].textContent = `${events.length} interne Event${events.length === 1 ? '' : 's'} verfuegbar.`;
+        events.forEach((eventItem) => {
+            const meta = [formatDate(eventItem.starts_at || eventItem.event_date), eventItem.location, eventItem.event_category]
+                .filter((item) => item && item !== '-')
+                .join(' - ');
+            const card = createCard(eventItem.title, meta, eventItem.short_description || eventItem.description);
+            list.appendChild(card);
+        });
+        list.hidden = false;
     }
 
     function renderMemberAreaSummary(summary) {
@@ -193,12 +343,42 @@
         }
     }
 
+    async function loadMemberContent(userId) {
+        if (!state.client || state.memberContentLoading) return;
+
+        state.memberContentLoading = true;
+        renderMemberContentLoading();
+
+        try {
+            const [documentsResult, newsResult, eventsResult] = await Promise.all([
+                state.client.rpc('get_member_documents'),
+                state.client.rpc('get_member_news'),
+                state.client.rpc('get_member_events'),
+            ]);
+
+            const errors = [documentsResult.error, newsResult.error, eventsResult.error].filter(Boolean);
+            if (errors.length > 0) throw errors[0];
+
+            renderMemberDocuments(normalizeArray(documentsResult.data));
+            renderMemberNews(normalizeArray(newsResult.data));
+            renderMemberEvents(normalizeArray(eventsResult.data));
+            state.loadedContentUserId = userId;
+        } catch (error) {
+            state.loadedContentUserId = null;
+            renderMemberContentError(error);
+        } finally {
+            state.memberContentLoading = false;
+        }
+    }
+
     function renderLoggedOut() {
         elements['member-status'].textContent = 'Nicht eingeloggt';
         elements['member-login-form'].hidden = false;
         elements['member-logout-button'].hidden = true;
         elements['member-private-area'].hidden = true;
         elements['member-auth-panel'].classList.remove('is-authenticated');
+        state.loadedContentUserId = null;
+        renderMemberContentLoading();
         setMessage('Bitte mit deiner Vereins-E-Mail und deinem Passwort einloggen.', 'info');
     }
 
@@ -220,6 +400,10 @@
             loadMemberAreaSummary(userId);
         }
 
+        if (state.loadedContentUserId !== userId && !state.memberContentLoading) {
+            loadMemberContent(userId);
+        }
+
         setMessage('Login erfolgreich. Mitgliedsdaten werden sicher geladen.', 'success');
     }
 
@@ -238,11 +422,15 @@
             const { data, error } = await state.client.auth.getSession();
             if (error) throw error;
             state.session = data?.session || null;
-            if (!state.session) state.loadedUserId = null;
+            if (!state.session) {
+                state.loadedUserId = null;
+                state.loadedContentUserId = null;
+            }
             render();
         } catch (error) {
             state.session = null;
             state.loadedUserId = null;
+            state.loadedContentUserId = null;
             renderLoggedOut();
             setMessage(error.message || 'Session konnte nicht geladen werden.', 'error');
         } finally {
@@ -273,10 +461,12 @@
             if (error) throw error;
             state.session = data?.session || null;
             state.loadedUserId = null;
+            state.loadedContentUserId = null;
             render();
         } catch (error) {
             state.session = null;
             state.loadedUserId = null;
+            state.loadedContentUserId = null;
             renderLoggedOut();
             setMessage(error.message || 'Login fehlgeschlagen.', 'error');
         } finally {
@@ -292,6 +482,7 @@
             if (error) throw error;
             state.session = null;
             state.loadedUserId = null;
+            state.loadedContentUserId = null;
             renderLoggedOut();
             setMessage('Logout erfolgreich.', 'success');
         } catch (error) {
@@ -316,7 +507,10 @@
 
         state.client.auth.onAuthStateChange((_event, session) => {
             state.session = session;
-            if (!session) state.loadedUserId = null;
+            if (!session) {
+                state.loadedUserId = null;
+                state.loadedContentUserId = null;
+            }
             render();
         });
 
