@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mitgliederbereich | Styrian Bastards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<style>
+body{
+    background:#050505;
+    color:#ffffff;
+    font-family:'Oswald',Arial,sans-serif;
+}
+
+.member-page{
+    min-height:100vh;
+    padding:150px 25px 80px;
+}
+
+.member-shell{
+    max-width:1150px;
+    margin:0 auto;
+}
+
+.member-kicker{
+    display:inline-flex;
+    width:max-content;
+    max-width:100%;
+    padding:6px 11px;
+    border:1px solid rgba(179,0,24,0.48);
+    border-radius:999px;
+    background:rgba(179,0,24,0.16);
+    color:#ffffff;
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:0.08em;
+    line-height:1.2;
+    text-transform:uppercase;
+}
+
+.member-hero{
+    margin-bottom:34px;
+}
+
+.member-hero h1{
+    margin:18px 0 14px;
+    font-size:clamp(2.8rem,7vw,5.8rem);
+    line-height:0.95;
+    letter-spacing:3px;
+    text-transform:uppercase;
+}
+
+.member-hero p{
+    max-width:820px;
+    color:rgba(255,255,255,0.78);
+    font-size:1.1rem;
+    line-height:1.8;
+}
+
+.member-grid{
+    display:grid;
+    grid-template-columns:minmax(280px,0.9fr) minmax(0,1.4fr);
+    gap:22px;
+    align-items:start;
+}
+
+.member-card{
+    border:1px solid rgba(255,255,255,0.1);
+    border-left:4px solid #b30018;
+    border-radius:18px;
+    background:linear-gradient(145deg, rgba(17,17,17,0.96), rgba(8,8,8,0.98));
+    padding:28px;
+}
+
+.member-card h2,
+.member-card h3{
+    margin:0 0 16px;
+    color:#ffffff;
+    line-height:1.05;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+}
+
+.member-card h2{
+    font-size:clamp(1.6rem,3vw,2.4rem);
+}
+
+.member-card h3{
+    font-size:1.1rem;
+}
+
+.member-form{
+    display:grid;
+    gap:12px;
+}
+
+.member-form label{
+    color:rgba(255,255,255,0.82);
+    font-size:0.95rem;
+    font-weight:800;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+}
+
+.member-form input{
+    width:100%;
+    min-height:46px;
+    border:1px solid rgba(255,255,255,0.14);
+    border-radius:10px;
+    background:#111111;
+    color:#ffffff;
+    font:1rem Arial,sans-serif;
+    padding:12px 14px;
+}
+
+.member-button{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:46px;
+    padding:13px 20px;
+    border:1px solid #c40018;
+    border-radius:12px;
+    background:#b30018;
+    color:#ffffff;
+    font-family:'Oswald',Arial,sans-serif;
+    font-weight:800;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    cursor:pointer;
+}
+
+.member-button:hover{
+    background:#d1001c;
+}
+
+.member-button:disabled{
+    cursor:not-allowed;
+    opacity:0.62;
+}
+
+.member-button-secondary{
+    border-color:rgba(255,255,255,0.7);
+    background:#050505;
+}
+
+.member-status-pill{
+    display:inline-flex;
+    padding:7px 12px;
+    border:1px solid rgba(255,255,255,0.14);
+    border-radius:999px;
+    background:rgba(255,255,255,0.06);
+    color:#ffffff;
+    font-size:0.9rem;
+    font-weight:800;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+}
+
+.member-auth-card.is-authenticated .member-status-pill{
+    border-color:rgba(38,190,120,0.45);
+    background:rgba(38,190,120,0.12);
+}
+
+.member-message{
+    margin-top:16px;
+    color:rgba(255,255,255,0.78);
+    font-family:Arial,sans-serif;
+    line-height:1.6;
+}
+
+.member-message[data-type="success"]{
+    color:#8ef0b6;
+}
+
+.member-message[data-type="error"]{
+    color:#ff9ba8;
+}
+
+.member-private-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:16px;
+}
+
+.member-info-card{
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:16px;
+    background:rgba(255,255,255,0.045);
+    padding:20px;
+}
+
+.member-info-card.is-wide{
+    grid-column:1/-1;
+}
+
+.member-label{
+    display:block;
+    margin-bottom:6px;
+    color:rgba(255,255,255,0.58);
+    font-size:0.82rem;
+    font-weight:800;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+}
+
+.member-value{
+    color:#ffffff;
+    font-family:Arial,sans-serif;
+    font-size:1rem;
+    line-height:1.65;
+    overflow-wrap:anywhere;
+}
+
+.member-placeholder{
+    color:rgba(255,255,255,0.72);
+    font-family:Arial,sans-serif;
+    line-height:1.75;
+}
+
+.member-list{
+    margin:12px 0 0;
+    padding-left:18px;
+    color:rgba(255,255,255,0.78);
+    font-family:Arial,sans-serif;
+    line-height:1.75;
+}
+
+@media(max-width:900px){
+    .member-page{
+        padding-top:185px;
+    }
+
+    .member-grid,
+    .member-private-grid{
+        grid-template-columns:1fr;
+    }
+
+    .member-card{
+        padding:24px 20px;
+    }
+}
+</style>
+</head>
+<body>
+<div id="navbar"></div>
+
+<main class="member-page">
+    <div class="member-shell">
+        <div class="member-hero">
+            <span class="member-kicker">Mitgliederbereich</span>
+            <h1>Mitgliederbereich</h1>
+            <p>
+                Phase 1 bereitet den gesch&uuml;tzten Zugang f&uuml;r Mitglieder vor. Nach dem Login siehst du deinen
+                Auth-Status und die Bereiche, die in Phase 2 sicher mit Profildaten, Beitragsstatus und internen
+                Hinweisen verbunden werden.
+            </p>
+        </div>
+
+        <div class="member-grid">
+            <section class="member-card member-auth-card" id="member-auth-panel" aria-labelledby="member-login-heading">
+                <h2 id="member-login-heading">Login</h2>
+                <p class="member-status-pill" id="member-status">Session wird gepr&uuml;ft</p>
+
+                <form class="member-form" id="member-login-form" hidden>
+                    <label for="member-email">E-Mail</label>
+                    <input id="member-email" name="email" type="email" autocomplete="email" required>
+
+                    <label for="member-password">Passwort</label>
+                    <input id="member-password" name="password" type="password" autocomplete="current-password" required>
+
+                    <button class="member-button" type="submit">Einloggen</button>
+                </form>
+
+                <button class="member-button member-button-secondary" id="member-logout-button" type="button" hidden>
+                    Logout
+                </button>
+
+                <p class="member-message" id="member-message" hidden></p>
+            </section>
+
+            <section class="member-card" id="member-private-area" aria-labelledby="member-area-heading" hidden>
+                <h2 id="member-area-heading">Willkommen</h2>
+
+                <div class="member-private-grid">
+                    <div class="member-info-card is-wide">
+                        <span class="member-label">Eingeloggt als</span>
+                        <strong class="member-value" id="member-display-email">-</strong>
+                    </div>
+
+                    <div class="member-info-card is-wide">
+                        <span class="member-label">User-ID</span>
+                        <span class="member-value" id="member-display-user-id">-</span>
+                    </div>
+
+                    <div class="member-info-card">
+                        <h3>Mein Profil</h3>
+                        <span class="member-label">Name / E-Mail</span>
+                        <span class="member-value" id="member-profile-name">Mitgliedsdaten werden in Phase 2 verbunden.</span>
+                    </div>
+
+                    <div class="member-info-card">
+                        <h3>Mitgliedsstatus</h3>
+                        <span class="member-label">Mitgliedsart</span>
+                        <span class="member-value" id="member-profile-type">Mitgliedsdaten werden in Phase 2 verbunden.</span>
+                        <span class="member-label">Status</span>
+                        <span class="member-value" id="member-profile-status">Mitgliedsdaten werden in Phase 2 verbunden.</span>
+                        <span class="member-label">Eintritt</span>
+                        <span class="member-value" id="member-profile-joined">Mitgliedsdaten werden in Phase 2 verbunden.</span>
+                    </div>
+
+                    <div class="member-info-card">
+                        <h3>Beitragsstatus</h3>
+                        <p class="member-placeholder" id="member-fee-status">
+                            Mitgliedsdaten werden in Phase 2 verbunden.
+                        </p>
+                        <ul class="member-list" id="member-fee-list" hidden></ul>
+                    </div>
+
+                    <div class="member-info-card">
+                        <h3>N&auml;chste Events</h3>
+                        <p class="member-placeholder" id="member-events-status">
+                            Interne Hinweise werden in Phase 2 verbunden.
+                        </p>
+                        <ul class="member-list" id="member-events-list" hidden></ul>
+                    </div>
+
+                    <div class="member-info-card is-wide">
+                        <h3>Interne Hinweise</h3>
+                        <p class="member-placeholder">
+                            Dieser Bereich bleibt in Phase 1 bewusst ein Platzhalter. Gesch&uuml;tzte Vereinsdaten sollen erst
+                            &uuml;ber eine sichere RPC oder eindeutig passende RLS-Policies angebunden werden.
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</main>
+
+<div id="footer"></div>
+<script>
+fetch('/navbar.html').then((response) => response.text()).then((html) => {
+    document.getElementById('navbar').innerHTML = html;
+});
+fetch('/footer.html').then((response) => response.text()).then((html) => {
+    document.getElementById('footer').innerHTML = html;
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/mitgliederbereich.js"></script>
+</body>
+</html>
