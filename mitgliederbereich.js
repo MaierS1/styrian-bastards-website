@@ -10,6 +10,7 @@
         loadedUserId: null,
         memberContentLoading: false,
         loadedContentUserId: null,
+        documentLinkLoadingId: null,
     };
 
     const elements = {};
@@ -161,6 +162,82 @@
         return link;
     }
 
+    function createDocumentButton(documentItem) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'member-content-link';
+        button.textContent = 'Dokument oeffnen';
+        button.disabled = !documentItem.id;
+
+        if (!documentItem.id) {
+            button.title = 'Dokument-ID fehlt.';
+            return button;
+        }
+
+        button.addEventListener('click', () => {
+            openMemberDocument(documentItem, button);
+        });
+
+        return button;
+    }
+
+    async function openMemberDocument(documentItem, button) {
+        if (!state.client || state.documentLinkLoadingId) return;
+
+        const documentId = documentItem?.id;
+
+        if (!documentId) {
+            setMessage('Dokument-ID fehlt. Link konnte nicht erzeugt werden.', 'error');
+            return;
+        }
+
+        state.documentLinkLoadingId = documentId;
+        const originalText = button.textContent;
+        button.disabled = true;
+        button.textContent = 'Link wird erstellt...';
+        elements['member-documents-status'].textContent = 'Dokument-Link wird erstellt...';
+        setMessage('', 'info');
+
+        try {
+            const { data: sessionData, error: sessionError } = await state.client.auth.getSession();
+            if (sessionError) throw sessionError;
+
+            const accessToken = sessionData?.session?.access_token;
+            if (!accessToken) {
+                throw new Error('Bitte neu einloggen, um Dokumente zu oeffnen.');
+            }
+
+            const response = await fetch(`${SUPABASE_URL}/functions/v1/member-document-link`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+                body: JSON.stringify({ document_id: documentId }),
+            });
+
+            const payload = await response.json().catch(() => ({}));
+            if (!response.ok) {
+                throw new Error(payload.error || `Dokument-Link konnte nicht erzeugt werden (${response.status}).`);
+            }
+
+            if (!payload.signedUrl) {
+                throw new Error('Die Link-Funktion hat keine signed URL geliefert.');
+            }
+
+            window.open(payload.signedUrl, '_blank', 'noopener,noreferrer');
+            elements['member-documents-status'].textContent = 'Dokument-Link wurde erstellt.';
+        } catch (error) {
+            const message = error?.message || 'Dokument-Link konnte nicht erzeugt werden.';
+            elements['member-documents-status'].textContent = message;
+            setMessage(message, 'error');
+        } finally {
+            state.documentLinkLoadingId = null;
+            button.disabled = false;
+            button.textContent = originalText;
+        }
+    }
+
     function renderMemberAreaLoading() {
         elements['member-profile-name'].textContent = 'Mitgliedsdaten werden geladen...';
         elements['member-profile-type'].textContent = 'Mitgliedsdaten werden geladen...';
@@ -216,9 +293,7 @@
                 .filter(Boolean)
                 .join(' - ');
             const card = createCard(documentItem.title, meta, documentItem.description);
-            if (documentItem.file_url) {
-                card.appendChild(createContentLink(documentItem.file_url, 'Dokument oeffnen'));
-            }
+            card.appendChild(createDocumentButton(documentItem));
             list.appendChild(card);
         });
         list.hidden = false;
