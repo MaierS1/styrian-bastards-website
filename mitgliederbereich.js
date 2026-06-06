@@ -221,11 +221,12 @@
                 throw new Error(payload.error || `Dokument-Link konnte nicht erzeugt werden (${response.status}).`);
             }
 
-            if (!payload.signedUrl) {
-                throw new Error('Die Link-Funktion hat keine signed URL geliefert.');
+            const signedUrl = payload.signedUrl || payload.signed_url;
+            if (!isAbsoluteHttpUrl(signedUrl)) {
+                throw new Error('Dokumentlink konnte nicht erstellt werden.');
             }
 
-            window.open(payload.signedUrl, '_blank', 'noopener,noreferrer');
+            window.open(signedUrl, '_blank', 'noopener,noreferrer');
             elements['member-documents-status'].textContent = 'Dokument-Link wurde erstellt.';
         } catch (error) {
             const message = error?.message || 'Dokument-Link konnte nicht erzeugt werden.';
@@ -236,6 +237,10 @@
             button.disabled = false;
             button.textContent = originalText;
         }
+    }
+
+    function isAbsoluteHttpUrl(value) {
+        return /^https?:\/\//i.test(String(value || '').trim());
     }
 
     function renderMemberAreaLoading() {
