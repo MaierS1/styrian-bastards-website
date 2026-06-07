@@ -166,7 +166,7 @@
             return 'preorder';
         }
 
-        return 'available';
+        return 'sold_out';
     };
 
     const getAvailabilityLabel = (availability) => {
@@ -337,7 +337,7 @@
             actions.className = 'public-merch-actions';
 
             const link = document.createElement('a');
-            link.className = 'btn';
+            link.className = 'btn btn-primary';
             link.href = ctaUrl;
             link.target = '_blank';
             link.rel = 'noopener noreferrer';
@@ -350,7 +350,7 @@
             actions.className = 'public-merch-actions';
 
             const link = document.createElement('a');
-            link.className = 'btn';
+            link.className = 'btn btn-primary';
             link.href = detailUrl;
             link.textContent = 'Details ansehen';
 
@@ -518,7 +518,7 @@
         form.appendChild(messageLabel);
 
         const submit = document.createElement('button');
-        submit.className = 'btn merch-order-submit';
+        submit.className = 'btn btn-primary merch-order-submit';
         submit.type = 'submit';
         submit.textContent = 'Bestellanfrage senden';
 

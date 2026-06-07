@@ -113,7 +113,10 @@ h1 {
 }
 
 .btn {
+    display: inline-block;
     padding: 16px 32px;
+    background: #c1121f;
+    color: #ffffff;
     text-decoration: none;
     text-transform: uppercase;
     font-weight: bold;
@@ -123,20 +126,26 @@ h1 {
 
 .btn-primary {
     background: #c1121f;
-    color: white;
+    color: #ffffff;
 }
 
+.btn:hover,
 .btn-primary:hover {
     background: #8d0d16;
+    border-color: #8d0d16;
+    color: #ffffff;
 }
 
 .btn-secondary {
-    color: white;
+    background: transparent;
+    color: #ffffff;
+    border-color: rgba(255,255,255,0.22);
 }
 
 .btn-secondary:hover {
-    background: white;
-    color: black;
+    background: #ffffff;
+    border-color: #ffffff;
+    color: #050505;
 }
 
 .section {
@@ -1572,7 +1581,7 @@ Unsere Partner unterstützen den Fanclub und den Hockeysport in Graz. Hier zeige
 </p>
 <div id="sponsors-content"></div>
 <div class="sponsors-actions">
-<a class="btn" href="sponsoren.html">Alle Sponsoren anzeigen</a>
+<a class="btn btn-primary" href="sponsoren.html">Alle Sponsoren anzeigen</a>
 </div>
 </section>
 

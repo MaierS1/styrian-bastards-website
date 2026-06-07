@@ -83,7 +83,8 @@ body{
 ========================================= */
 
 .hero-btn,
-.btn{
+.btn,
+.btn-primary{
     display:inline-block;
 
     background:#b30018;
@@ -100,14 +101,31 @@ body{
 
     letter-spacing:1px;
 
+    border:1px solid #b30018;
+
     transition:0.25s ease;
 }
 
 .hero-btn:hover,
-.btn:hover{
-    background:#d00020;
+.btn:hover,
+.btn-primary:hover{
+    background:#8d0d16;
+    border-color:#8d0d16;
+    color:#ffffff;
 
     transform:translateY(-2px);
+}
+
+.btn-secondary{
+    background:transparent;
+    border-color:rgba(255,255,255,0.22);
+    color:#ffffff;
+}
+
+.btn-secondary:hover{
+    background:#ffffff;
+    border-color:#ffffff;
+    color:#050505;
 }
 
 /* =========================================
