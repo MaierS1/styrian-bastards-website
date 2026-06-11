@@ -1,0 +1,38 @@
+<!-- Virtual Bastard Assistant
+     Alternative zur JS-Auto-Erzeugung: Dieses Fragment kann vor </body> eingefügt werden.
+     Wenn js/virtual-bastard.js verwendet wird, ist dieses Fragment NICHT zwingend nötig,
+     weil die JS-Datei das Widget automatisch erzeugt.
+-->
+<div id="sb-vb-assistant" class="sb-vb-widget">
+  <button class="sb-vb-toggle" type="button"
+    aria-label="Virtual Bastard Assistent öffnen"
+    aria-expanded="false"
+    aria-controls="sb-vb-panel">
+    <div class="sb-vb-mascot sb-vb-state-idle" aria-hidden="true">
+      <img class="sb-vb-head" src="/assets/virtual-bastard/vb-head.png" alt="">
+      <img class="sb-vb-head-speak" src="/assets/virtual-bastard/vb-head-speak.png" alt="">
+      <img class="sb-vb-smoke" src="/assets/virtual-bastard/vb-smoke-large.png" alt="">
+      <img class="sb-vb-glow" src="/assets/virtual-bastard/vb-glow.png" alt="">
+      <img class="sb-vb-hand" src="/assets/virtual-bastard/vb-hand-wave.png" alt="">
+      <img class="sb-vb-thumb" src="/assets/virtual-bastard/vb-thumb.png" alt="">
+      <img class="sb-vb-bubble" src="/assets/virtual-bastard/vb-bubble-speak.png" alt="">
+    </div>
+  </button>
+
+  <section class="sb-vb-panel" id="sb-vb-panel" role="dialog"
+    aria-labelledby="sb-vb-title" hidden>
+    <div class="sb-vb-panel-header">
+      <strong class="sb-vb-title" id="sb-vb-title" tabindex="-1">Virtual Bastard</strong>
+      <button class="sb-vb-close" type="button" aria-label="Virtual Bastard Assistent schließen">×</button>
+    </div>
+    <p class="sb-vb-message">Servus! Ich bin der Virtual Bastard. Wobei kann ich dir helfen?</p>
+    <nav class="sb-vb-actions" aria-label="Virtual Bastard Schnellaktionen">
+      <a class="sb-vb-action" href="/mitglied-werden.html">Mitglied werden</a>
+      <a class="sb-vb-action" href="/index.html#events">Events</a>
+      <a class="sb-vb-action" href="/index.html#public-dynamic">Shop & Fanartikel</a>
+      <a class="sb-vb-action" href="/sponsoren.html">Sponsoren</a>
+      <a class="sb-vb-action" href="/presse.html">Presse</a>
+      <a class="sb-vb-action" href="/kontakt.html">Kontakt</a>
+    </nav>
+  </section>
+</div>
