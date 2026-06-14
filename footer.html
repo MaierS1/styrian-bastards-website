@@ -3,10 +3,13 @@
 
 <footer class="sb-footer" id="contact">
     <div class="sb-footer-inner">
-        <div class="sb-footer-brand">
-            <a href="/index.html" class="sb-footer-logo-link" aria-label="Styrian Bastards Startseite">
-                <img src="/assets/images/virtual-bastard-footer.png" alt="Virtual Bastard Maskottchen" class="sb-footer-logo">
+        <div class="sb-footer-mascot" aria-label="Virtual Bastard Maskottchen">
+            <a href="/index.html" class="sb-footer-mascot-link" aria-label="Styrian Bastards Startseite">
+                <img src="/assets/images/virtual-bastard-footer.png" alt="Virtual Bastard Maskottchen" class="sb-footer-mascot-image">
             </a>
+        </div>
+
+        <div class="sb-footer-brand">
             <div class="sb-footer-brand-copy">
                 <h2>Styrian Bastards</h2>
                 <p>Fanclub des ATSE Graz</p>
@@ -109,25 +112,22 @@
     margin: 0 auto;
     padding: 54px 25px 38px;
     display: grid;
-    grid-template-columns: minmax(360px, 1.7fr) minmax(150px, 0.85fr) minmax(150px, 0.75fr) minmax(180px, 0.8fr);
-    gap: 28px;
-    align-items: start;
-    overflow: visible;
-}
-
-.sb-footer-brand {
-    display: grid;
-    grid-template-columns: max-content minmax(0, 1fr);
-    gap: 22px;
+    grid-template-columns: minmax(190px, 0.65fr) minmax(230px, 1fr) minmax(150px, 0.75fr) minmax(150px, 0.7fr) minmax(180px, 0.75fr);
+    gap: 24px;
     align-items: end;
-    min-width: 0;
     overflow: visible;
 }
 
-.sb-footer-logo-link {
+.sb-footer-mascot {
+    align-self: end;
+    justify-self: start;
+    overflow: visible;
+    line-height: 0;
+}
+
+.sb-footer-mascot-link {
     display: inline-flex;
     flex: 0 0 auto;
-    justify-self: start;
     width: auto;
     height: auto;
     max-width: none;
@@ -138,15 +138,21 @@
     line-height: 0;
 }
 
-.sb-footer-logo {
+.sb-footer-mascot-image {
     display: block;
     flex-shrink: 0;
     max-width: none;
     max-height: none;
     width: auto;
-    height: 240px;
+    height: 280px;
     object-fit: contain;
     filter: drop-shadow(0 0 12px rgba(255,255,255,0.15));
+}
+
+.sb-footer-brand {
+    align-self: end;
+    min-width: 0;
+    overflow: visible;
 }
 
 .sb-footer-brand-copy {
@@ -346,10 +352,11 @@
     .sb-footer-inner {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 26px;
+        align-items: end;
     }
 
-    .sb-footer-logo {
-        height: 180px;
+    .sb-footer-mascot-image {
+        height: 200px;
     }
 }
 
@@ -360,17 +367,16 @@
     }
 
     .sb-footer-brand {
-        grid-template-columns: 1fr;
         justify-items: center;
-        gap: 14px;
+        text-align: center;
     }
 
-    .sb-footer-logo-link {
+    .sb-footer-mascot {
         justify-self: center;
     }
 
-    .sb-footer-logo {
-        height: 140px;
+    .sb-footer-mascot-image {
+        height: 150px;
     }
 
     .sb-footer-links,
