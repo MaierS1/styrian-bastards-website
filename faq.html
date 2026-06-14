@@ -63,9 +63,11 @@ body{
 .faq-list{
     display:grid;
     gap:18px;
+    counter-reset:faq-counter;
 }
 
 .faq-item{
+    counter-increment:faq-counter;
     border:1px solid rgba(255,255,255,0.1);
     border-left:4px solid #b30018;
     border-radius:16px;
@@ -80,6 +82,11 @@ body{
     line-height:1.15;
     letter-spacing:0.06em;
     text-transform:uppercase;
+}
+
+.faq-item h2::before{
+    content:counter(faq-counter, decimal-leading-zero) ". ";
+    color:#c40018;
 }
 
 .faq-item p,
@@ -159,7 +166,7 @@ body{
 
             <section class="faq-item">
                 <h2>Wie kann ich Mitglied werden?</h2>
-                <p>Über das Formular auf der Seite <a href="mitglied-werden.html">Mitglied werden</a>.</p>
+                <p>Über das Formular auf der Seite <a href="/mitglied-werden.html">Mitglied werden</a>.</p>
             </section>
 
             <section class="faq-item">
@@ -184,7 +191,7 @@ body{
 
             <section class="faq-item">
                 <h2>Wie kann ich Kontakt aufnehmen?</h2>
-                <p>Über die <a href="kontakt.html">Kontaktseite</a> oder per E-Mail an: <a href="mailto:mail@styrian-bastards.at">mail@styrian-bastards.at</a></p>
+                <p>Über die <a href="/kontakt.html">Kontaktseite</a> oder per E-Mail an: <a href="mailto:mail@styrian-bastards.at">mail@styrian-bastards.at</a></p>
             </section>
         </div>
     </div>
