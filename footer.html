@@ -7,7 +7,7 @@
             <a href="/index.html" class="sb-footer-logo-link" aria-label="Styrian Bastards Startseite">
                 <img src="/assets/images/virtual-bastard-footer.png" alt="Virtual Bastard Maskottchen" class="sb-footer-logo">
             </a>
-            <div>
+            <div class="sb-footer-brand-copy">
                 <h2>Styrian Bastards</h2>
                 <p>Fanclub des ATSE Graz</p>
             </div>
@@ -101,6 +101,7 @@
     color: #ffffff;
     font-family: 'Oswald', Arial, sans-serif;
     border-top: 2px solid #8b000c;
+    overflow: visible;
 }
 
 .sb-footer-inner {
@@ -108,9 +109,10 @@
     margin: 0 auto;
     padding: 54px 25px 38px;
     display: grid;
-    grid-template-columns: minmax(250px, 1.4fr) minmax(150px, 0.85fr) minmax(150px, 0.75fr) minmax(180px, 0.8fr);
-    gap: 30px;
+    grid-template-columns: minmax(360px, 1.7fr) minmax(150px, 0.85fr) minmax(150px, 0.75fr) minmax(180px, 0.8fr);
+    gap: 28px;
     align-items: start;
+    overflow: visible;
 }
 
 .sb-footer-brand {
@@ -118,11 +120,14 @@
     grid-template-columns: max-content minmax(0, 1fr);
     gap: 22px;
     align-items: end;
+    min-width: 0;
+    overflow: visible;
 }
 
 .sb-footer-logo-link {
     display: inline-flex;
     flex: 0 0 auto;
+    justify-self: start;
     width: auto;
     height: auto;
     max-width: none;
@@ -135,12 +140,18 @@
 
 .sb-footer-logo {
     display: block;
+    flex-shrink: 0;
     max-width: none;
     max-height: none;
     width: auto;
     height: 240px;
     object-fit: contain;
     filter: drop-shadow(0 0 12px rgba(255,255,255,0.15));
+}
+
+.sb-footer-brand-copy {
+    align-self: end;
+    min-width: 0;
 }
 
 .sb-footer h2 {
@@ -352,6 +363,10 @@
         grid-template-columns: 1fr;
         justify-items: center;
         gap: 14px;
+    }
+
+    .sb-footer-logo-link {
+        justify-self: center;
     }
 
     .sb-footer-logo {
