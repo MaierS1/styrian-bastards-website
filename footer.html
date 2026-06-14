@@ -115,22 +115,28 @@
 
 .sb-footer-brand {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: max-content minmax(0, 1fr);
     gap: 22px;
     align-items: end;
 }
 
 .sb-footer-logo-link {
     display: inline-flex;
+    flex: 0 0 auto;
     width: auto;
     height: auto;
+    max-width: none;
+    max-height: none;
     align-items: center;
     justify-content: center;
+    overflow: visible;
+    line-height: 0;
 }
 
 .sb-footer-logo {
     display: block;
-    max-width: 100%;
+    max-width: none;
+    max-height: none;
     width: auto;
     height: 240px;
     object-fit: contain;
