@@ -13,6 +13,27 @@ html{
     scroll-behavior:smooth;
 }
 
+.section-anchor{
+    display:block;
+    height:1px;
+    scroll-margin-top:130px;
+}
+
+body .faq-page .faq-item,
+body .faq-page .faq-item p,
+body .faq-page .faq-item li{
+    text-align:left;
+}
+
+body .faq-page .faq-item p,
+body .faq-page .faq-item li{
+    line-height:1.6;
+}
+
+body .faq-page .faq-item ul{
+    text-align:left;
+}
+
 body{
     background:#050505;
     color:#ffffff;
