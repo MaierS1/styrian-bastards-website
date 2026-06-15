@@ -304,6 +304,15 @@
   }
 
   function contextFromKnowledge(entry) {
+    const categoryContexts = {
+      mitgliedschaft: "mitgliedschaft",
+      events: "events",
+      shop: "shop",
+      sponsoren: "sponsoren",
+      sponsors: "sponsoren",
+      presse: "presse",
+      press: "presse"
+    };
     const contexts = {
       mitgliedschaft: "mitgliedschaft",
       vollmitglied: "mitgliedschaft",
@@ -327,7 +336,7 @@
       pressekit: "presse",
       "radio-helsinki": "presse"
     };
-    return contexts[entry.id] || null;
+    return contexts[entry.id] || categoryContexts[entry.category] || null;
   }
 
   function fallbackLiveAnswer(intent) {
@@ -488,26 +497,65 @@
     return fallbackLiveAnswer(intent);
   }
 
+  function normalizeKnowledgeEntries(data) {
+    if (!Array.isArray(data)) {
+      throw new Error("Knowledge response is not an array");
+    }
+
+    return data
+      .filter((entry) => entry && entry.id && entry.title && entry.answer)
+      .map((entry) => ({
+        id: String(entry.id),
+        title: entry.title,
+        category: entry.category || "",
+        keywords: Array.isArray(entry.keywords) ? entry.keywords : [],
+        answer: entry.answer,
+        links: Array.isArray(entry.links) ? entry.links : [],
+        quickReplies: Array.isArray(entry.quickReplies)
+          ? entry.quickReplies
+          : Array.isArray(entry.quick_replies)
+            ? entry.quick_replies
+            : []
+      }));
+  }
+
+  async function loadSupabaseKnowledge() {
+    const data = await callSupabaseRpc("get_public_virtual_bastard_knowledge");
+    return normalizeKnowledgeEntries(data);
+  }
+
+  async function loadJsonKnowledge() {
+    const response = await fetch(KNOWLEDGE_URL, { headers: { Accept: "application/json" } });
+    if (!response.ok) {
+      throw new Error(`Knowledge request failed with status ${response.status}`);
+    }
+
+    const data = await response.json();
+    return normalizeKnowledgeEntries(data);
+  }
+
   async function loadKnowledge() {
     try {
-      const response = await fetch(KNOWLEDGE_URL, { headers: { Accept: "application/json" } });
-      if (!response.ok) {
-        throw new Error(`Knowledge request failed with status ${response.status}`);
-      }
-
-      const data = await response.json();
-      if (!Array.isArray(data)) {
-        throw new Error("Knowledge response is not an array");
-      }
-
-      const entries = data.filter((entry) => entry && entry.id && entry.title && entry.answer);
-      if (entries.length) {
-        state.knowledge = entries;
+      const supabaseEntries = await loadSupabaseKnowledge();
+      if (supabaseEntries.length) {
+        state.knowledge = supabaseEntries;
+        return;
       }
     } catch (error) {
-      console.warn("Could not load Virtual Bastard knowledge", error);
-      state.knowledge = fallbackKnowledge;
+      console.warn("Could not load Virtual Bastard knowledge from Supabase", error);
     }
+
+    try {
+      const jsonEntries = await loadJsonKnowledge();
+      if (jsonEntries.length) {
+        state.knowledge = jsonEntries;
+        return;
+      }
+    } catch (error) {
+      console.warn("Could not load local Virtual Bastard knowledge", error);
+    }
+
+    state.knowledge = fallbackKnowledge;
   }
 
   function findAnswer(query) {
