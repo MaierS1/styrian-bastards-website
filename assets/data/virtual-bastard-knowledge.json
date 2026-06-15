@@ -1,0 +1,154 @@
+[
+  {
+    "id": "mitgliedschaft",
+    "title": "Mitgliedschaft",
+    "keywords": ["mitgliedschaft", "mitglied", "mitglied werden", "beitreten", "aufnahme", "verein"],
+    "answer": "Du kannst Mitglied der Styrian Bastards werden, wenn du den ATSE Graz Hockey als Fan oder Unterstuetzer begleiten willst. Der Einstieg laeuft ueber die Seite Mitglied werden. Dort findest du das Formular und die wichtigsten Infos zur Aufnahme.",
+    "links": [
+      { "label": "Mitglied werden", "href": "/mitglied-werden.html" },
+      { "label": "FAQ", "href": "/faq.html" }
+    ],
+    "quickReplies": ["Vollmitglied", "Foerdermitglied", "Probejahr"]
+  },
+  {
+    "id": "vollmitglied",
+    "title": "Vollmitglied",
+    "keywords": ["vollmitglied", "aktive mitgliedschaft", "stimmberechtigt", "rechte", "pflichten"],
+    "answer": "Vollmitglieder sind aktive Vereinsmitglieder mit den Rechten und Pflichten laut Statuten. Wenn du dich aktiv einbringen und den Verein dauerhaft begleiten willst, ist die Vollmitgliedschaft der passende Weg.",
+    "links": [
+      { "label": "Mitglied werden", "href": "/mitglied-werden.html" },
+      { "label": "FAQ", "href": "/faq.html" }
+    ],
+    "quickReplies": ["Mitgliedsbeitraege", "Probejahr", "Kontakt"]
+  },
+  {
+    "id": "foerdermitglied",
+    "title": "Foerdermitglied",
+    "keywords": ["foerdermitglied", "foerderer", "unterstuetzen", "supporter", "finanziell"],
+    "answer": "Als Foerdermitglied unterstuetzt du die Styrian Bastards finanziell und hilfst mit, Fanfahrten, Treffen und Vereinsaktivitaeten moeglich zu machen. Das ist ideal, wenn du den Verein unterstuetzen willst, ohne dich aktiv in die Vereinsarbeit einzubringen.",
+    "links": [
+      { "label": "Mitglied werden", "href": "/mitglied-werden.html" },
+      { "label": "Kontakt", "href": "/kontakt.html" }
+    ],
+    "quickReplies": ["Mitgliedsbeitraege", "Sponsoren", "Kontakt"]
+  },
+  {
+    "id": "probejahr",
+    "title": "Probejahr",
+    "keywords": ["probejahr", "probe", "erstes jahr", "kennenlernen", "aufnahme"],
+    "answer": "Das Probejahr ist fuer neue Mitglieder gedacht, damit beide Seiten den Verein und die Gemeinschaft kennenlernen koennen. Nach dem Probejahr entscheidet der Vorstand ueber die weitere Aufnahme als Vollmitglied.",
+    "links": [
+      { "label": "Mitglied werden", "href": "/mitglied-werden.html" },
+      { "label": "FAQ", "href": "/faq.html" }
+    ],
+    "quickReplies": ["Vollmitglied", "Mitgliedsbeitraege", "Kontakt"]
+  },
+  {
+    "id": "mitgliedsbeitraege",
+    "title": "Mitgliedsbeitraege",
+    "keywords": ["mitgliedsbeitrag", "mitgliedsbeitraege", "beitrag", "kosten", "preis", "gebuehr", "jahresbeitrag"],
+    "answer": "Laut aktueller FAQ gelten diese Beitraege: Probejahr 40 EUR im ersten Jahr, Foerdermitglied 40 EUR pro Jahr und Vollmitglied 70 EUR pro Jahr. Bitte pruefe bei Detailfragen die FAQ oder kontaktiere uns direkt.",
+    "links": [
+      { "label": "FAQ", "href": "/faq.html" },
+      { "label": "Kontakt", "href": "/kontakt.html" }
+    ],
+    "quickReplies": ["Probejahr", "Vollmitglied", "Foerdermitglied"]
+  },
+  {
+    "id": "events",
+    "title": "Events",
+    "keywords": ["events", "veranstaltungen", "termine", "treffen", "turniere", "kalender"],
+    "answer": "Oeffentliche Events und Termine findest du auf der Homepage im Event-Bereich. Dazu koennen Treffen, Fanfahrten, Vereinsveranstaltungen und Turniere gehoeren.",
+    "links": [
+      { "label": "Events anzeigen", "href": "/index.html#events" },
+      { "label": "FAQ", "href": "/faq.html" }
+    ],
+    "quickReplies": ["Fanfahrten", "Kontakt", "Mitgliedschaft"]
+  },
+  {
+    "id": "fanfahrten",
+    "title": "Fanfahrten",
+    "keywords": ["fanfahrt", "fanfahrten", "auswaerts", "auswaertsspiel", "fahrt", "bus"],
+    "answer": "Fanfahrten werden ueber die oeffentlichen Events oder ueber Vereinsinfos angekuendigt. Wenn gerade keine Fanfahrt sichtbar ist, schau spaeter wieder vorbei oder kontaktiere uns direkt.",
+    "links": [
+      { "label": "Events", "href": "/index.html#events" },
+      { "label": "Kontakt", "href": "/kontakt.html" }
+    ],
+    "quickReplies": ["Events", "Mitgliedschaft", "Kontakt"]
+  },
+  {
+    "id": "shop",
+    "title": "Shop & Fanartikel",
+    "keywords": ["shop", "fanartikel", "merch", "merchandise", "artikel", "bestellen"],
+    "answer": "Fanartikel findest du im Shop-Bereich der Homepage. Dort werden oeffentlich verfuegbare Artikel angezeigt. Fuer konkrete Anfragen nutze bitte die Shop-Seite selbst.",
+    "links": [
+      { "label": "Shop & Fanartikel", "href": "/merch.html" }
+    ],
+    "quickReplies": ["Kontakt", "Sponsoren", "Events"]
+  },
+  {
+    "id": "sponsoren",
+    "title": "Sponsoren",
+    "keywords": ["sponsor", "sponsoren", "sponsoring", "partner", "unterstuetzer", "werbung"],
+    "answer": "Sponsoren, Partner und Unterstuetzer helfen den Styrian Bastards bei Veranstaltungen, Fanprojekten und Vereinsaktivitaeten. Infos und bestehende oeffentliche Sponsoren findest du auf der Sponsoren-Seite.",
+    "links": [
+      { "label": "Sponsoren", "href": "/sponsoren.html" },
+      { "label": "Kontakt", "href": "/kontakt.html" }
+    ],
+    "quickReplies": ["Kontakt", "Foerdermitglied", "Presse"]
+  },
+  {
+    "id": "presse",
+    "title": "Presse",
+    "keywords": ["presse", "news", "medien", "bericht", "artikel", "oeffentlichkeit"],
+    "answer": "Presse- und Medieninhalte findest du im Pressebereich. Fuer Presseanfragen nutze bitte die Kontaktseite.",
+    "links": [
+      { "label": "Presse", "href": "/presse.html" },
+      { "label": "Kontakt", "href": "/kontakt.html" }
+    ],
+    "quickReplies": ["Sponsoren", "Kontakt", "FAQ"]
+  },
+  {
+    "id": "kontakt",
+    "title": "Kontakt",
+    "keywords": ["kontakt", "fragen", "anschreiben", "erreichen"],
+    "answer": "Wenn du uns direkt erreichen willst, nutze bitte die Kontaktseite. Dort findest du den passenden Weg fuer Fragen zur Mitgliedschaft, zu Events, Sponsoring oder Presse.",
+    "links": [
+      { "label": "Kontakt", "href": "/kontakt.html" }
+    ],
+    "quickReplies": ["Mitgliedschaft", "Sponsoren", "Presse"]
+  },
+  {
+    "id": "faq",
+    "title": "FAQ",
+    "keywords": ["faq", "haeufige fragen", "fragen", "antworten", "hilfe"],
+    "answer": "In der FAQ findest du kompakte Antworten zu Mitgliedschaft, Beitraegen, Probejahr, Aufnahme und Kontakt. Wenn ich etwas noch nicht sicher weiss, ist die FAQ der beste naechste Schritt.",
+    "links": [
+      { "label": "FAQ", "href": "/faq.html" },
+      { "label": "Kontakt", "href": "/kontakt.html" }
+    ],
+    "quickReplies": ["Mitgliedschaft", "Mitgliedsbeitraege", "Probejahr"]
+  },
+  {
+    "id": "datenschutz",
+    "title": "Datenschutz",
+    "keywords": ["datenschutz", "privacy", "daten", "cookies", "cookie", "personenbezogene daten"],
+    "answer": "Informationen zum Datenschutz und zu Cookies findest du in der Datenschutzerklaerung. Der Virtual Bastard V2.0 nutzt nur lokale, oeffentliche Antworten und fragt keine personenbezogenen Daten ab.",
+    "links": [
+      { "label": "Datenschutz", "href": "/datenschutz.html" },
+      { "label": "Impressum", "href": "/impressum.html" }
+    ],
+    "quickReplies": ["Impressum", "Kontakt", "FAQ"]
+  },
+  {
+    "id": "impressum",
+    "title": "Impressum",
+    "keywords": ["impressum", "anbieter", "rechtliches", "verein", "verantwortlich"],
+    "answer": "Das Impressum findest du auf der Impressumsseite. Dort stehen die rechtlichen Anbieterinformationen zur Website.",
+    "links": [
+      { "label": "Impressum", "href": "/impressum.html" },
+      { "label": "Datenschutz", "href": "/datenschutz.html" }
+    ],
+    "quickReplies": ["Datenschutz", "Kontakt", "FAQ"]
+  }
+]
