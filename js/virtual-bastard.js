@@ -4,7 +4,26 @@
   const WIDGET_ID = "sb-vb-assistant";
   const ASSET_BASE = "/assets/virtual-bastard/";
   const KNOWLEDGE_URL = "/assets/data/virtual-bastard-knowledge.json";
+  const SUPABASE_URL = "https://ekaxdyysefmypkainhij.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVrYXhkeXlzZWZteXBrYWluaGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNjUyNzEsImV4cCI6MjA5Mjk0MTI3MX0.7o4jUIW5gsxvFWiqFHHjoHg87GVm4H_1UW9ftll6VmU";
   const UNKNOWN_ANSWER = "Das wei\u00df ich noch nicht sicher. Schau bitte in der FAQ nach oder kontaktiere uns direkt.";
+  const LIVE_FALLBACKS = {
+    events: "Ich kann die Events gerade nicht live laden. Schau bitte auf der Event-Seite nach.",
+    sponsors: "Ich kann die Sponsoren gerade nicht live laden. Schau bitte auf der Sponsoren-Seite nach.",
+    shop: "Ich kann den Shop gerade nicht live laden. Schau bitte im Bereich Shop & Fanartikel nach.",
+    press: "Ich kann die Pressebeitr\u00e4ge gerade nicht live laden. Schau bitte auf der Presse-Seite nach.",
+    stats: "Ich kann die Vereinszahlen gerade nicht live laden. Schau bitte sp\u00e4ter wieder vorbei oder nutze die FAQ."
+  };
+  const LIVE_LINKS = {
+    events: [{ label: "Events", href: "/index.html#events" }],
+    sponsors: [{ label: "Sponsoren", href: "/sponsoren.html" }],
+    shop: [{ label: "Shop & Fanartikel", href: "/merch.html" }],
+    press: [{ label: "Presse", href: "/presse.html" }],
+    stats: [
+      { label: "FAQ", href: "/faq.html" },
+      { label: "Kontakt", href: "/kontakt.html" }
+    ]
+  };
 
   const actions = [
     { label: "Mitglied werden", href: "/mitglied-werden.html" },
@@ -56,6 +75,244 @@
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/[^a-z0-9]+/g, " ")
       .trim();
+  }
+
+  function firstValue(...values) {
+    return values.find((value) => value !== null && value !== undefined && value !== "");
+  }
+
+  function formatDate(value) {
+    if (!value) return "";
+
+    const date = new Date(String(value).length === 10 ? `${value}T00:00:00` : value);
+    if (Number.isNaN(date.getTime())) return String(value);
+
+    return new Intl.DateTimeFormat("de-AT", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric"
+    }).format(date);
+  }
+
+  function formatCount(value) {
+    const count = Number(value);
+    return Number.isFinite(count) && count >= 0 ? new Intl.NumberFormat("de-AT").format(count) : null;
+  }
+
+  function formatAmount(cents) {
+    const value = Number(cents);
+    if (!Number.isFinite(value)) return "";
+
+    return new Intl.NumberFormat("de-AT", {
+      style: "currency",
+      currency: "EUR"
+    }).format(value / 100);
+  }
+
+  async function fetchPublicRpc(functionName, body = {}) {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${functionName}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
+      },
+      body: JSON.stringify(body)
+    });
+
+    if (!response.ok) {
+      throw new Error(`Supabase RPC ${functionName} failed with status ${response.status}`);
+    }
+
+    return response.json();
+  }
+
+  function getLiveIntent(query) {
+    const text = normalize(query);
+    if (!text) return null;
+
+    const hasAny = (words) => words.some((word) => text.includes(word));
+
+    if (hasAny(["nachstes event", "naechstes event", "veranstaltung", "termine", "cornhole", "event"])) {
+      return "events";
+    }
+
+    if (hasAny(["sponsor", "sponsoren", "partner", "unterstutzer", "unterstuetzer"])) {
+      return "sponsors";
+    }
+
+    if (hasAny(["shop", "fanartikel", "artikel", "merch"])) {
+      return "shop";
+    }
+
+    if (hasAny(["news", "presse", "bericht", "neuigkeiten"])) {
+      return "press";
+    }
+
+    if (hasAny(["wie viele", "zahlen", "mitglieder"])) {
+      return "stats";
+    }
+
+    return null;
+  }
+
+  function fallbackLiveAnswer(intent) {
+    return {
+      answer: LIVE_FALLBACKS[intent] || UNKNOWN_ANSWER,
+      links: LIVE_LINKS[intent] || LIVE_LINKS.stats
+    };
+  }
+
+  function eventDateValue(event) {
+    return firstValue(event.starts_at, event.event_date, event.start_at, event.date);
+  }
+
+  function eventTitle(event) {
+    return firstValue(event.title, event.public_title, event.name, "Event");
+  }
+
+  function sortEvents(events) {
+    return events.slice().sort((left, right) => {
+      const leftDate = new Date(eventDateValue(left) || 0).getTime();
+      const rightDate = new Date(eventDateValue(right) || 0).getTime();
+      return (Number.isNaN(leftDate) ? 0 : leftDate) - (Number.isNaN(rightDate) ? 0 : rightDate);
+    });
+  }
+
+  async function getLiveEventsAnswer() {
+    const events = await fetchPublicRpc("get_public_events");
+    if (!Array.isArray(events)) return fallbackLiveAnswer("events");
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const nextEvent = sortEvents(events)
+      .filter((event) => event && eventTitle(event))
+      .find((event) => {
+        const rawDate = eventDateValue(event);
+        if (!rawDate) return true;
+        const date = new Date(String(rawDate).length === 10 ? `${rawDate}T00:00:00` : rawDate);
+        return Number.isNaN(date.getTime()) || date >= today;
+      });
+
+    if (!nextEvent) return fallbackLiveAnswer("events");
+
+    const date = formatDate(eventDateValue(nextEvent));
+    const location = firstValue(nextEvent.location, nextEvent.venue, nextEvent.place);
+    const dateText = date ? ` am ${date}` : "";
+    const locationText = location ? ` in ${location}` : "";
+
+    return {
+      answer: `Das n\u00e4chste \u00f6ffentliche Event ist: ${eventTitle(nextEvent)}${dateText}${locationText}. Mehr findest du unter Events.`,
+      links: LIVE_LINKS.events
+    };
+  }
+
+  async function getLiveSponsorsAnswer() {
+    const sponsors = await fetchPublicRpc("get_public_sponsors");
+    if (!Array.isArray(sponsors) || !sponsors.length) return fallbackLiveAnswer("sponsors");
+
+    const names = sponsors
+      .map((sponsor) => String(firstValue(sponsor.name, sponsor.title, sponsor.company_name, "")).trim())
+      .filter(Boolean)
+      .slice(0, 5);
+
+    if (!names.length) return fallbackLiveAnswer("sponsors");
+
+    return {
+      answer: `Aktuell werden folgende Partner \u00f6ffentlich angezeigt: ${names.join(", ")}.`,
+      links: LIVE_LINKS.sponsors
+    };
+  }
+
+  function normalizeMerchItem(item = {}) {
+    const basePrice = firstValue(item.display_price_cents, item.base_price_cents, item.price_cents);
+    return {
+      title: firstValue(item.title, item.public_title, item.name, "Fanartikel"),
+      price: formatAmount(basePrice)
+    };
+  }
+
+  async function getLiveShopAnswer() {
+    const merchItems = await fetchPublicRpc("get_public_merch_items");
+    if (!Array.isArray(merchItems) || !merchItems.length) return fallbackLiveAnswer("shop");
+
+    const items = merchItems
+      .map(normalizeMerchItem)
+      .filter((item) => item.title)
+      .slice(0, 5)
+      .map((item) => item.price ? `${item.title} (${item.price})` : item.title);
+
+    if (!items.length) return fallbackLiveAnswer("shop");
+
+    return {
+      answer: `Im Shop sind aktuell folgende Fanartikel sichtbar: ${items.join(", ")}.`,
+      links: LIVE_LINKS.shop
+    };
+  }
+
+  async function getLivePressAnswer() {
+    const mediaItems = await fetchPublicRpc("get_public_media_items", {
+      p_category: null,
+      p_limit: 5,
+      p_featured_only: false
+    });
+    if (!Array.isArray(mediaItems) || !mediaItems.length) return fallbackLiveAnswer("press");
+
+    const items = mediaItems
+      .map((item) => {
+        const title = String(firstValue(item.title, item.public_title, "")).trim();
+        if (!title) return "";
+        const date = formatDate(firstValue(item.publication_date, item.published_at, item.date));
+        return date ? `${title} (${date})` : title;
+      })
+      .filter(Boolean)
+      .slice(0, 5);
+
+    if (!items.length) return fallbackLiveAnswer("press");
+
+    return {
+      answer: `Die neuesten Beitr\u00e4ge sind: ${items.join(", ")}.`,
+      links: LIVE_LINKS.press
+    };
+  }
+
+  async function getLiveStatsAnswer() {
+    const result = await fetchPublicRpc("get_public_home_stats");
+    const stats = Array.isArray(result) ? result[0] : result;
+    if (!stats || typeof stats !== "object") return fallbackLiveAnswer("stats");
+
+    const parts = [
+      ["active_members", "Mitglieder"],
+      ["upcoming_events", "geplante Events"],
+      ["public_sponsors", "Sponsoren"],
+      ["public_shop_items", "Fanartikel"]
+    ].map(([key, label]) => {
+      const count = formatCount(stats[key]);
+      return count === null ? "" : `${count} ${label}`;
+    }).filter(Boolean);
+
+    if (!parts.length) return fallbackLiveAnswer("stats");
+
+    return {
+      answer: `Aktuell zeigt die Homepage: ${parts.join(", ")}.`,
+      links: LIVE_LINKS.stats
+    };
+  }
+
+  async function getLiveAnswer(intent) {
+    try {
+      if (intent === "events") return await getLiveEventsAnswer();
+      if (intent === "sponsors") return await getLiveSponsorsAnswer();
+      if (intent === "shop") return await getLiveShopAnswer();
+      if (intent === "press") return await getLivePressAnswer();
+      if (intent === "stats") return await getLiveStatsAnswer();
+    } catch (error) {
+      console.warn(`Could not load Virtual Bastard live ${intent} answer`, error);
+    }
+
+    return fallbackLiveAnswer(intent);
   }
 
   async function loadKnowledge() {
@@ -258,11 +515,23 @@
 
     loadKnowledge();
 
-    function answerQuery(query) {
+    async function answerQuery(query) {
       const trimmed = query.trim();
       if (!trimmed) return;
 
       appendMessage(chatLog, "user", trimmed);
+
+      const liveIntent = getLiveIntent(trimmed);
+      if (liveIntent) {
+        setMascotState(root, "think", "think");
+        const liveAnswer = await getLiveAnswer(liveIntent);
+        appendMessage(chatLog, "bot", liveAnswer.answer, {
+          links: liveAnswer.links,
+          quickReplies: liveAnswer.quickReplies
+        });
+        setMascotState(root, "speak");
+        return;
+      }
 
       const match = findAnswer(trimmed);
       if (match) {
