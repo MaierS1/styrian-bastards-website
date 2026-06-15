@@ -79,7 +79,7 @@
   {
     "id": "shop",
     "title": "Shop & Fanartikel",
-    "keywords": ["shop", "fanartikel", "merch", "merchandise", "artikel", "bestellen"],
+    "keywords": ["shop", "fanartikel", "merch", "merchandise", "artikel"],
     "answer": "Fanartikel findest du im Shop-Bereich der Homepage. Dort werden oeffentlich verfuegbare Artikel angezeigt. Fuer konkrete Anfragen nutze bitte die Shop-Seite selbst.",
     "links": [
       { "label": "Shop & Fanartikel", "href": "/merch.html" }
@@ -128,6 +128,49 @@
       { "label": "Kontakt", "href": "/kontakt.html" }
     ],
     "quickReplies": ["Mitgliedschaft", "Mitgliedsbeitraege", "Probejahr"]
+  },
+  {
+    "id": "navigation",
+    "title": "Navigation",
+    "keywords": ["navigation", "navigator", "wo finde ich", "seite", "bereich", "weiterleiten"],
+    "answer": "Ich helfe dir als Virtual Bastard beim Navigieren: Mitglied werden, Events, Shop, Sponsoren, Presse, FAQ, Kontakt und Mitgliederbereich sind direkt erreichbar.",
+    "links": [
+      { "label": "Mitglied werden", "href": "/mitglied-werden.html" },
+      { "label": "FAQ", "href": "/faq.html" },
+      { "label": "Kontakt", "href": "/kontakt.html" }
+    ],
+    "quickReplies": ["Events", "Shop & Fanartikel", "Mitgliederbereich"]
+  },
+  {
+    "id": "mitgliederbereich",
+    "title": "Mitgliederbereich",
+    "keywords": ["mitgliederbereich", "mitglieder", "geschuetzter bereich", "geschutzter bereich", "intern"],
+    "answer": "Der Mitgliederbereich ist der geschuetzte Bereich fuer Mitglieder. Ich verlinke dich nur dorthin und zeige hier keine persoenlichen Mitgliederdaten an.",
+    "links": [
+      { "label": "Mitgliederbereich oeffnen", "href": "/mitgliederbereich.html" }
+    ],
+    "quickReplies": ["Login", "App", "Kontakt"]
+  },
+  {
+    "id": "app",
+    "title": "App",
+    "keywords": ["app", "mitglieder app", "vereinsapp", "anwendung"],
+    "answer": "Fuer App- oder Mitgliederbereich-Funktionen fuehre ich dich zur geschuetzten Seite. Persoenliche Daten oder App-Inhalte zeige ich hier nicht an.",
+    "links": [
+      { "label": "Mitgliederbereich oeffnen", "href": "/mitgliederbereich.html" },
+      { "label": "Kontakt", "href": "/kontakt.html" }
+    ],
+    "quickReplies": ["Mitgliederbereich", "Login", "FAQ"]
+  },
+  {
+    "id": "login",
+    "title": "Login",
+    "keywords": ["login", "einloggen", "anmelden", "zugang", "passwort"],
+    "answer": "Zum Login geht es ueber den Mitgliederbereich. Ich pruefe hier keinen Login und frage keine Zugangsdaten ab.",
+    "links": [
+      { "label": "Mitgliederbereich oeffnen", "href": "/mitgliederbereich.html" }
+    ],
+    "quickReplies": ["Mitgliederbereich", "Kontakt", "FAQ"]
   },
   {
     "id": "datenschutz",

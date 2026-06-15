@@ -25,14 +25,66 @@
     ]
   };
 
-  const actions = [
-    { label: "Mitglied werden", href: "/mitglied-werden.html" },
-    { label: "Events", href: "/index.html#events" },
-    { label: "Shop & Fanartikel", href: "/index.html#public-dynamic" },
-    { label: "Sponsoren", href: "/sponsoren.html" },
-    { label: "Presse", href: "/presse.html" },
-    { label: "Kontakt", href: "/kontakt.html" }
+  const navigatorActions = [
+    {
+      id: "mitglied",
+      label: "Mitglied werden",
+      href: "/mitglied-werden.html",
+      answer: "Du m\u00f6chtest Mitglied werden? Hier geht's direkt zum Antrag.",
+      keywords: ["mitglied werden", "mitgliedsantrag", "beitreten", "aufnahme", "ich mochte mitglied", "ich moechte mitglied"]
+    },
+    {
+      id: "events",
+      label: "Events anzeigen",
+      href: "/index.html#events",
+      answer: "Du suchst Events oder Veranstaltungen? Hier findest du die \u00f6ffentlichen Termine.",
+      keywords: ["zeig mir events", "events anzeigen", "veranstaltungen anzeigen", "termine anzeigen", "zu den events"]
+    },
+    {
+      id: "shop",
+      label: "Shop & Fanartikel",
+      href: "/merch.html",
+      answer: "Du suchst Fanartikel? Hier geht's direkt zum Shop-Bereich.",
+      keywords: ["ich suche fanartikel", "fanartikel suchen", "zum shop", "shop offnen", "shop oeffnen", "merch kaufen"]
+    },
+    {
+      id: "sponsoren",
+      label: "Sponsoren",
+      href: "/sponsoren.html",
+      answer: "Du m\u00f6chtest zu Sponsoren und Partnern? Hier geht's zur Sponsoren-Seite.",
+      keywords: ["wer sind eure sponsoren", "zu den sponsoren", "sponsoren anzeigen", "partner anzeigen", "sponsor werden"]
+    },
+    {
+      id: "presse",
+      label: "Presse & News",
+      href: "/presse.html",
+      answer: "Du suchst Presse und News? Hier findest du die \u00f6ffentlichen Beitr\u00e4ge.",
+      keywords: ["presse offnen", "presse oeffnen", "news offnen", "news oeffnen", "zu den news", "presse und news"]
+    },
+    {
+      id: "faq",
+      label: "FAQ \u00f6ffnen",
+      href: "/faq.html",
+      answer: "Du hast Fragen? Die FAQ sammelt die wichtigsten Antworten.",
+      keywords: ["faq", "fragen", "hilfe", "haeufige fragen", "haufige fragen", "antworten"]
+    },
+    {
+      id: "kontakt",
+      label: "Kontakt aufnehmen",
+      href: "/kontakt.html",
+      answer: "Du m\u00f6chtest uns erreichen? Hier geht's direkt zur Kontaktseite.",
+      keywords: ["kontakt", "kontakt aufnehmen", "anschreiben", "erreichen", "frage stellen"]
+    },
+    {
+      id: "mitgliederbereich",
+      label: "Mitgliederbereich \u00f6ffnen",
+      href: "/mitgliederbereich.html",
+      answer: "Du suchst den Mitgliederbereich oder Login? Hier geht's zur gesch\u00fctzten Seite. Ich zeige hier keine pers\u00f6nlichen Daten an.",
+      keywords: ["mitgliederbereich", "login", "app", "mitglieder app", "einloggen", "anmelden"]
+    }
   ];
+
+  const actions = navigatorActions.map(({ label, href }) => ({ label, href }));
 
   const fallbackKnowledge = [
     {
@@ -155,6 +207,25 @@
     }
 
     return null;
+  }
+
+  function getNavigatorAction(query) {
+    const text = normalize(query);
+    if (!text) return null;
+
+    return navigatorActions.find((action) => (
+      action.keywords.some((keyword) => {
+        const normalizedKeyword = normalize(keyword);
+        return normalizedKeyword && (text.includes(normalizedKeyword) || normalizedKeyword.includes(text));
+      })
+    )) || null;
+  }
+
+  function navigatorAnswer(action) {
+    return {
+      answer: action.answer,
+      links: [{ label: action.label, href: action.href }]
+    };
   }
 
   function fallbackLiveAnswer(intent) {
@@ -520,6 +591,16 @@
       if (!trimmed) return;
 
       appendMessage(chatLog, "user", trimmed);
+
+      const navigatorAction = getNavigatorAction(trimmed);
+      if (navigatorAction) {
+        const answer = navigatorAnswer(navigatorAction);
+        appendMessage(chatLog, "bot", answer.answer, {
+          links: answer.links
+        });
+        setMascotState(root, "speak");
+        return;
+      }
 
       const liveIntent = getLiveIntent(trimmed);
       if (liveIntent) {
