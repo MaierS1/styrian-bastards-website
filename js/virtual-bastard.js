@@ -6,7 +6,19 @@
   const KNOWLEDGE_URL = "/assets/data/virtual-bastard-knowledge.json";
   const SUPABASE_URL = "https://ekaxdyysefmypkainhij.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVrYXhkeXlzZWZteXBrYWluaGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNjUyNzEsImV4cCI6MjA5Mjk0MTI3MX0.7o4jUIW5gsxvFWiqFHHjoHg87GVm4H_1UW9ftll6VmU";
-  const UNKNOWN_ANSWER = "Das wei\u00df ich noch nicht sicher. Schau bitte in der FAQ nach oder kontaktiere uns direkt.";
+  const UNKNOWN_ANSWER = "Das wei\u00df ich leider noch nicht sicher. Vielleicht helfen dir diese Bereiche weiter:";
+  const UNKNOWN_LINKS = [
+    { label: "FAQ", href: "/faq.html" },
+    { label: "Kontakt", href: "/kontakt.html" },
+    { label: "Mitglied werden", href: "/mitglied-werden.html" },
+    { label: "Events", href: "/index.html#events" }
+  ];
+  const greetings = [
+    "Servus! Ich bin der Virtual Bastard. Wie kann ich dir helfen?",
+    "Willkommen bei den Styrian Bastards! Ich bin der Virtual Bastard.",
+    "Servus! Hast du Fragen zu unserem Verein, Events oder Fanartikeln?",
+    "Ich bin der Virtual Bastard. Frag mich alles rund um die Styrian Bastards."
+  ];
   const LIVE_FALLBACKS = {
     events: "Ich kann die Events gerade nicht live laden. Schau bitte auf der Event-Seite nach.",
     sponsors: "Ich kann die Sponsoren gerade nicht live laden. Schau bitte auf der Sponsoren-Seite nach.",
@@ -107,7 +119,8 @@
   ];
 
   const state = {
-    knowledge: fallbackKnowledge
+    knowledge: fallbackKnowledge,
+    context: null
   };
 
   function escapeHtml(value) {
@@ -131,6 +144,14 @@
 
   function firstValue(...values) {
     return values.find((value) => value !== null && value !== undefined && value !== "");
+  }
+
+  function randomGreeting() {
+    return greetings[Math.floor(Math.random() * greetings.length)];
+  }
+
+  function setContext(context) {
+    state.context = context || null;
   }
 
   function formatDate(value) {
@@ -209,6 +230,23 @@
     return null;
   }
 
+  function getContextualLiveIntent(query) {
+    if (!state.context) return null;
+
+    const text = normalize(query);
+    if (!text) return null;
+
+    const asksForNext = ["wann", "nachste", "naechste", "termin", "datum"].some((word) => text.includes(word));
+    const asksForItems = ["was gibt", "welche", "anzeigen", "zeige", "mehr", "neues", "neu"].some((word) => text.includes(word));
+
+    if (state.context === "events" && (asksForNext || asksForItems)) return "events";
+    if (state.context === "shop" && asksForItems) return "shop";
+    if (state.context === "sponsoren" && asksForItems) return "sponsors";
+    if (state.context === "presse" && (asksForItems || text.includes("bericht"))) return "press";
+
+    return null;
+  }
+
   function getNavigatorAction(query) {
     const text = normalize(query);
     if (!text) return null;
@@ -226,6 +264,33 @@
       answer: action.answer,
       links: [{ label: action.label, href: action.href }]
     };
+  }
+
+  function contextFromNavigator(action) {
+    const contexts = {
+      mitglied: "mitgliedschaft",
+      events: "events",
+      shop: "shop",
+      sponsoren: "sponsoren",
+      presse: "presse"
+    };
+    return contexts[action.id] || null;
+  }
+
+  function contextFromKnowledge(entry) {
+    const contexts = {
+      mitgliedschaft: "mitgliedschaft",
+      vollmitglied: "mitgliedschaft",
+      foerdermitglied: "mitgliedschaft",
+      probejahr: "mitgliedschaft",
+      mitgliedsbeitraege: "mitgliedschaft",
+      events: "events",
+      fanfahrten: "events",
+      shop: "shop",
+      sponsoren: "sponsoren",
+      presse: "presse"
+    };
+    return contexts[entry.id] || null;
   }
 
   function fallbackLiveAnswer(intent) {
@@ -512,7 +577,7 @@
           <strong class="sb-vb-title" id="sb-vb-title" tabindex="-1">Virtual Bastard</strong>
           <button class="sb-vb-close" type="button" aria-label="Virtual Bastard Assistent schlie\u00dfen">\u00d7</button>
         </div>
-        <p class="sb-vb-message">Servus! Ich bin der Virtual Bastard. Wobei kann ich dir helfen?</p>
+        <p class="sb-vb-message">${randomGreeting()}</p>
         <div class="sb-vb-chat-log" aria-live="polite" aria-label="Virtual Bastard Chatverlauf"></div>
         <form class="sb-vb-chat-form">
           <label class="sb-vb-chat-label-hidden" for="sb-vb-chat-input">Nachricht an den Virtual Bastard</label>
@@ -594,41 +659,41 @@
 
       const navigatorAction = getNavigatorAction(trimmed);
       if (navigatorAction) {
+        setContext(contextFromNavigator(navigatorAction));
         const answer = navigatorAnswer(navigatorAction);
         appendMessage(chatLog, "bot", answer.answer, {
           links: answer.links
         });
-        setMascotState(root, "speak");
+        setMascotState(root, "success");
         return;
       }
 
-      const liveIntent = getLiveIntent(trimmed);
+      const liveIntent = getLiveIntent(trimmed) || getContextualLiveIntent(trimmed);
       if (liveIntent) {
+        setContext(liveIntent === "sponsors" ? "sponsoren" : liveIntent);
         setMascotState(root, "think", "think");
         const liveAnswer = await getLiveAnswer(liveIntent);
         appendMessage(chatLog, "bot", liveAnswer.answer, {
           links: liveAnswer.links,
           quickReplies: liveAnswer.quickReplies
         });
-        setMascotState(root, "speak");
+        setMascotState(root, "success");
         return;
       }
 
       const match = findAnswer(trimmed);
       if (match) {
+        setContext(contextFromKnowledge(match));
         appendMessage(chatLog, "bot", match.answer, {
           links: match.links,
           quickReplies: match.quickReplies
         });
-        setMascotState(root, "speak");
+        setMascotState(root, "success");
         return;
       }
 
       appendMessage(chatLog, "bot", UNKNOWN_ANSWER, {
-        links: [
-          { label: "FAQ", href: "/faq.html" },
-          { label: "Kontakt", href: "/kontakt.html" }
-        ]
+        links: UNKNOWN_LINKS
       });
       setMascotState(root, "think", "think");
     }
@@ -645,6 +710,7 @@
 
     function closePanel() {
       panel.hidden = true;
+      setContext(null);
       toggle.setAttribute("aria-expanded", "false");
       toggle.setAttribute("aria-label", "Virtual Bastard Assistent \u00f6ffnen");
       setMascotState(root, "idle");
