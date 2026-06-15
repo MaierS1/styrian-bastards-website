@@ -130,6 +130,221 @@
     "quickReplies": ["Haeufige Fragen", "Kontakt", "Mitglied werden"]
   },
   {
+    "id": "vereinsgeschichte",
+    "title": "Vereinsgeschichte",
+    "keywords": ["vereinsgeschichte", "geschichte", "historie", "wer seid ihr", "seit wann gibt es euch", "entstehung"],
+    "answer": "Die Styrian Bastards sind ein Fanclub aus Graz und begleiten den ATSE Graz Hockey als offizieller Fanclub. Laut Homepage wurde der Verein 2023 gegruendet.",
+    "links": [
+      { "label": "FAQ", "href": "/faq.html" },
+      { "label": "Kontakt", "href": "/kontakt.html" }
+    ],
+    "quickReplies": ["Gruendung", "ATSE Graz", "Vereinszweck"]
+  },
+  {
+    "id": "gruendung",
+    "title": "Gruendung",
+    "keywords": ["gruendung", "gegruendet", "2023", "wann gegruendet", "vereinsgruendung"],
+    "answer": "Laut Homepage-Kachel wurden die Styrian Bastards 2023 gegruendet. Seitdem geht es darum, Fanleben, Gemeinschaft und Support rund um den ATSE Graz Hockey sichtbar zu machen.",
+    "links": [
+      { "label": "FAQ", "href": "/faq.html" }
+    ],
+    "quickReplies": ["Vereinsgeschichte", "Vereinszweck", "Mitglied werden"]
+  },
+  {
+    "id": "atse-graz",
+    "title": "ATSE Graz Hockey",
+    "keywords": ["atse", "atse graz", "atse graz hockey", "hockey", "eishockey", "offizieller fanclub"],
+    "answer": "Die Styrian Bastards sind der offizielle Fanclub des ATSE Graz Hockey. Der Fokus liegt auf Support, Gemeinschaft, Veranstaltungen und Fanaktivitaeten rund um den Verein.",
+    "links": [
+      { "label": "Events", "href": "/index.html#events" },
+      { "label": "Kontakt", "href": "/kontakt.html" }
+    ],
+    "quickReplies": ["Wer seid ihr", "Vereinsfarben", "Mitglied werden"]
+  },
+  {
+    "id": "vereinszweck",
+    "title": "Vereinszweck",
+    "keywords": ["vereinszweck", "was macht ihr", "warum gibt es euch", "zweck", "aufgabe", "fanclub"],
+    "answer": "Kurz gesagt: Wir buendeln Fanleben rund um den ATSE Graz Hockey. Dazu gehoeren Support, Treffen, Fanfahrten, Events und ein Vereinsumfeld, in dem neue Leute gut andocken koennen.",
+    "links": [
+      { "label": "Mitglied werden", "href": "/mitglied-werden.html" },
+      { "label": "Events", "href": "/index.html#events" }
+    ],
+    "quickReplies": ["Mitgliedervorteile", "Events", "Kontakt"]
+  },
+  {
+    "id": "vereinsfarben",
+    "title": "Vereinsfarben",
+    "keywords": ["vereinsfarben", "farben", "schwarz weiss", "schwarz weiß", "rot weiss blau", "rot weiss blau", "clubfarben"],
+    "answer": "Die Styrian Bastards treten hauptsaechlich in Schwarz und Weiss auf. Je nach Kontext tauchen auch ATSE-Farben wie Rot, Weiss und Blau auf.",
+    "links": [
+      { "label": "Shop & Fanartikel", "href": "/merch.html" }
+    ],
+    "quickReplies": ["Fanartikel anzeigen", "ATSE Graz", "Shop oeffnen"]
+  },
+  {
+    "id": "vorstand",
+    "title": "Vorstand",
+    "keywords": ["vorstand", "obmann", "leitung", "wer fuehrt", "verantwortlich", "funktionaere"],
+    "answer": "Der Vorstand organisiert den Verein und entscheidet bei Themen wie Aufnahme oder Vereinsentwicklung. Konkrete Namen nenne ich hier nur, wenn sie oeffentlich auf der Homepage stehen; fuer Details nutze bitte Kontakt oder Impressum.",
+    "links": [
+      { "label": "Kontakt", "href": "/kontakt.html" },
+      { "label": "Impressum", "href": "/impressum.html" }
+    ],
+    "quickReplies": ["Kontakt", "Impressum", "Mitgliedschaft"]
+  },
+  {
+    "id": "mitgliedervorteile",
+    "title": "Mitgliedervorteile",
+    "keywords": ["mitgliedervorteile", "vorteile", "was bekomme ich", "was bringt mitgliedschaft", "warum mitglied", "community"],
+    "answer": "Als Mitglied bist du naeher am Vereinsleben: du bekommst Anschluss an die Community, kannst dich einbringen und bist bei Fanaktivitaeten besser angebunden. Verbindliche Details stehen in FAQ und Mitgliedsantrag.",
+    "links": [
+      { "label": "Mitglied werden", "href": "/mitglied-werden.html" },
+      { "label": "FAQ", "href": "/faq.html" }
+    ],
+    "quickReplies": ["Vollmitglied", "Probejahr erklaeren", "Mitgliedsbeitraege"]
+  },
+  {
+    "id": "probejahr-details",
+    "title": "Probejahr Details",
+    "keywords": ["probejahr details", "probejahr erklaeren", "probejahr kosten", "erstes jahr", "neues mitglied"],
+    "answer": "Das Probejahr kostet 40 EUR im ersten Jahr und ist zum Kennenlernen gedacht. Danach wird entschieden, ob die weitere Aufnahme als Vollmitglied passt.",
+    "links": [
+      { "label": "Mitglied werden", "href": "/mitglied-werden.html" },
+      { "label": "FAQ", "href": "/faq.html" }
+    ],
+    "quickReplies": ["Vollmitglied Details", "Mitgliedsbeitraege", "Kontakt"]
+  },
+  {
+    "id": "foerdermitglied-details",
+    "title": "Foerdermitglied Details",
+    "keywords": ["foerdermitglied details", "foerdermitglied kosten", "unterstuetzen ohne aktiv", "foerderer details"],
+    "answer": "Foerdermitgliedschaft bedeutet: du unterstuetzt den Verein mit 40 EUR pro Jahr, ohne aktiv in der Vereinsarbeit dabei sein zu muessen. Das ist ein guter Weg, wenn du Support zeigen willst.",
+    "links": [
+      { "label": "Mitglied werden", "href": "/mitglied-werden.html" },
+      { "label": "Kontakt", "href": "/kontakt.html" }
+    ],
+    "quickReplies": ["Mitglied werden", "Sponsoren", "Kontakt"]
+  },
+  {
+    "id": "vollmitglied-details",
+    "title": "Vollmitglied Details",
+    "keywords": ["vollmitglied details", "vollmitglied kosten", "aktive mitgliedschaft details", "was kostet ein vollmitglied"],
+    "answer": "Die Vollmitgliedschaft kostet aktuell 70 EUR pro Jahr. Sie ist fuer alle gedacht, die aktiv am Vereinsleben teilnehmen und den Fanclub dauerhaft mittragen wollen.",
+    "links": [
+      { "label": "Mitglied werden", "href": "/mitglied-werden.html" },
+      { "label": "FAQ", "href": "/faq.html" }
+    ],
+    "quickReplies": ["Probejahr", "Mitgliedsbeitraege", "Kontakt"]
+  },
+  {
+    "id": "cornhole-turnier",
+    "title": "Cornhole Turnier",
+    "keywords": ["cornhole", "cornhole turnier", "turnier", "wurfspiel", "was ist mit cornhole"],
+    "answer": "Cornhole ist eines der Eventthemen, die bei den Styrian Bastards auftauchen koennen. Wenn ein Turnier oeffentlich geplant ist, findest du es im Event-Bereich.",
+    "links": [
+      { "label": "Events", "href": "/index.html#events" },
+      { "label": "Kontakt", "href": "/kontakt.html" }
+    ],
+    "quickReplies": ["Naechstes Event", "Events anzeigen", "Kontakt"]
+  },
+  {
+    "id": "veranstaltungen",
+    "title": "Veranstaltungen",
+    "keywords": ["veranstaltungen", "veranstaltung", "eventarten", "was macht ihr bei events", "treffen", "vereinsveranstaltungen"],
+    "answer": "Zu unseren Veranstaltungen koennen Treffen, Fanfahrten, Turniere und Vereinsaktivitaeten gehoeren. Oeffentliche Termine zeigt dir der Event-Bereich live an.",
+    "links": [
+      { "label": "Events anzeigen", "href": "/index.html#events" }
+    ],
+    "quickReplies": ["Naechstes Event", "Fanfahrten", "Cornhole"]
+  },
+  {
+    "id": "sponsoring-pakete",
+    "title": "Sponsoring-Pakete",
+    "keywords": ["sponsoring pakete", "sponsorpaket", "werbepaket", "sponsoring infos", "sponsoring moeglichkeiten"],
+    "answer": "Sponsoring kann je nach Bedarf unterschiedlich aussehen. Der Virtual Bastard gibt hier keine verbindlichen Pakete aus; fuer konkrete Moeglichkeiten fuehrt der beste Weg ueber Sponsoren-Seite oder Kontakt.",
+    "links": [
+      { "label": "Sponsoren", "href": "/sponsoren.html" },
+      { "label": "Kontakt", "href": "/kontakt.html" }
+    ],
+    "quickReplies": ["Sponsor werden", "Sponsoren anzeigen", "Kontakt"]
+  },
+  {
+    "id": "sponsor-werden",
+    "title": "Sponsor werden",
+    "keywords": ["sponsor werden", "wie werde ich sponsor", "partner werden", "unterstuetzer werden", "sponsoring anfrage"],
+    "answer": "Wenn du Sponsor oder Partner werden moechtest, schau dir zuerst die Sponsoren-Seite an und melde dich danach direkt ueber Kontakt. Dann kann alles konkret und sauber besprochen werden.",
+    "links": [
+      { "label": "Sponsoren", "href": "/sponsoren.html" },
+      { "label": "Kontakt", "href": "/kontakt.html" }
+    ],
+    "quickReplies": ["Sponsoring-Pakete", "Kontakt", "Foerdermitglied"]
+  },
+  {
+    "id": "pressekit",
+    "title": "Pressekit",
+    "keywords": ["pressekit", "pressemappe", "presse material", "medienmaterial", "logo anfrage"],
+    "answer": "Fuer Presse- oder Medienmaterial nutze bitte den Pressebereich oder die Kontaktseite. Ich gebe hier keine verbindlichen Freigaben fuer Logos, Bilder oder Texte.",
+    "links": [
+      { "label": "Presse", "href": "/presse.html" },
+      { "label": "Kontakt", "href": "/kontakt.html" }
+    ],
+    "quickReplies": ["Presse & News", "Radio Helsinki", "Kontakt"]
+  },
+  {
+    "id": "radio-helsinki",
+    "title": "Radio Helsinki",
+    "keywords": ["radio helsinki", "radio", "helsinki", "interview", "sendung", "was war bei radio helsinki"],
+    "answer": "Radio Helsinki ist ein oeffentlicher Medienbezug im Pressebereich. Wenn dazu ein Beitrag sichtbar ist, findest du ihn bei Presse und News.",
+    "links": [
+      { "label": "Presse", "href": "/presse.html" }
+    ],
+    "quickReplies": ["Presse & News", "Pressekit", "Kontakt"]
+  },
+  {
+    "id": "shop-fanartikel-details",
+    "title": "Shop & Fanartikel Details",
+    "keywords": ["shop details", "fanartikel details", "merch details", "was gibt es im shop", "fanartikel kaufen"],
+    "answer": "Im Shop-Bereich werden oeffentlich sichtbare Fanartikel angezeigt. Der Virtual Bastard zeigt keine Bestellungen oder persoenlichen Kaufdaten an.",
+    "links": [
+      { "label": "Shop & Fanartikel", "href": "/merch.html" }
+    ],
+    "quickReplies": ["Fanartikel anzeigen", "Shop oeffnen", "Kontakt"]
+  },
+  {
+    "id": "app-homepage",
+    "title": "App und Homepage",
+    "keywords": ["app homepage", "homepage", "website", "app", "wofuer ist die app", "was ist auf der homepage"],
+    "answer": "Die Homepage ist fuer oeffentliche Infos wie Events, Sponsoren, Presse, Shop und Kontakt da. Persoenliche Mitgliedsdaten gehoeren in den geschuetzten Mitgliederbereich oder die App.",
+    "links": [
+      { "label": "Mitgliederbereich", "href": "/mitgliederbereich.html" },
+      { "label": "Kontakt", "href": "/kontakt.html" }
+    ],
+    "quickReplies": ["Mitgliederbereich", "Datenschutz", "FAQ"]
+  },
+  {
+    "id": "datenschutz-hinweis",
+    "title": "Datenschutz Hinweis",
+    "keywords": ["datenschutz hinweis", "datenschutz", "personenbezogene daten", "persoenliche daten", "daten im assistenten"],
+    "answer": "Datenschutz ist wichtig: Der Virtual Bastard beantwortet oeffentliche Fragen und zeigt keine persoenlichen Mitgliedsdaten, keine Bestellungen und keine Beitragsdaten an.",
+    "links": [
+      { "label": "Datenschutz", "href": "/datenschutz.html" },
+      { "label": "Impressum", "href": "/impressum.html" }
+    ],
+    "quickReplies": ["Datenschutz", "Mitgliederbereich", "Kontakt"]
+  },
+  {
+    "id": "kontaktwege",
+    "title": "Kontaktwege",
+    "keywords": ["kontaktwege", "wie erreiche ich euch", "kontakt aufnehmen", "email", "anschreiben", "frage stellen"],
+    "answer": "Am einfachsten erreichst du die Styrian Bastards ueber die Kontaktseite. Dort passt alles hin: Mitgliedschaft, Events, Sponsoring, Presse oder allgemeine Fragen.",
+    "links": [
+      { "label": "Kontakt", "href": "/kontakt.html" },
+      { "label": "FAQ", "href": "/faq.html" }
+    ],
+    "quickReplies": ["Kontakt", "FAQ", "Mitglied werden"]
+  },
+  {
     "id": "navigation",
     "title": "Navigation",
     "keywords": ["navigation", "navigator", "wo finde ich", "seite", "bereich", "weiterleiten"],
@@ -145,7 +360,7 @@
     "id": "mitgliederbereich",
     "title": "Mitgliederbereich",
     "keywords": ["mitgliederbereich", "mitglieder", "geschuetzter bereich", "geschutzter bereich", "intern"],
-    "answer": "Der Mitgliederbereich ist der geschuetzte Bereich fuer Mitglieder. Ich verlinke dich nur dorthin und zeige hier keine persoenlichen Mitgliederdaten an.",
+    "answer": "Der Mitgliederbereich ist der geschuetzte Bereich fuer Mitglieder und App-Funktionen. Ich verlinke dich nur dorthin und zeige hier keine persoenlichen Mitgliederdaten an.",
     "links": [
       { "label": "Mitgliederbereich oeffnen", "href": "/mitgliederbereich.html" }
     ],
@@ -176,7 +391,7 @@
     "id": "datenschutz",
     "title": "Datenschutz",
     "keywords": ["datenschutz", "privacy", "daten", "cookies", "cookie", "personenbezogene daten"],
-    "answer": "Informationen zum Datenschutz und zu Cookies findest du in der Datenschutzerklaerung. Der Virtual Bastard V2.0 nutzt nur lokale, oeffentliche Antworten und fragt keine personenbezogenen Daten ab.",
+    "answer": "Informationen zum Datenschutz und zu Cookies findest du in der Datenschutzerklaerung. Der Virtual Bastard beantwortet oeffentliche Fragen und fragt keine personenbezogenen Daten ab.",
     "links": [
       { "label": "Datenschutz", "href": "/datenschutz.html" },
       { "label": "Impressum", "href": "/impressum.html" }

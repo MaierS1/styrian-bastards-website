@@ -64,7 +64,7 @@
       label: "Sponsoren",
       href: "/sponsoren.html",
       answer: "Du m\u00f6chtest zu Sponsoren und Partnern? Hier geht's zur Sponsoren-Seite.",
-      keywords: ["wer sind eure sponsoren", "zu den sponsoren", "sponsoren anzeigen", "partner anzeigen", "sponsor werden"]
+      keywords: ["wer sind eure sponsoren", "zu den sponsoren", "sponsoren anzeigen", "partner anzeigen", "sponsor werden", "wie werde ich sponsor"]
     },
     {
       id: "presse",
@@ -122,6 +122,32 @@
     knowledge: fallbackKnowledge,
     context: null
   };
+  const STOP_WORDS = new Set([
+    "aber",
+    "bei",
+    "bin",
+    "das",
+    "der",
+    "die",
+    "dir",
+    "du",
+    "ein",
+    "eine",
+    "euch",
+    "fuer",
+    "habt",
+    "ich",
+    "ihr",
+    "ist",
+    "mit",
+    "und",
+    "war",
+    "was",
+    "welche",
+    "wer",
+    "wie",
+    "zu"
+  ]);
 
   function escapeHtml(value) {
     return String(value ?? "").replace(/[&<>"']/g, (char) => ({
@@ -284,11 +310,22 @@
       foerdermitglied: "mitgliedschaft",
       probejahr: "mitgliedschaft",
       mitgliedsbeitraege: "mitgliedschaft",
+      mitgliedervorteile: "mitgliedschaft",
+      "probejahr-details": "mitgliedschaft",
+      "foerdermitglied-details": "mitgliedschaft",
+      "vollmitglied-details": "mitgliedschaft",
       events: "events",
       fanfahrten: "events",
+      "cornhole-turnier": "events",
+      veranstaltungen: "events",
       shop: "shop",
+      "shop-fanartikel-details": "shop",
       sponsoren: "sponsoren",
-      presse: "presse"
+      "sponsoring-pakete": "sponsoren",
+      "sponsor-werden": "sponsoren",
+      presse: "presse",
+      pressekit: "presse",
+      "radio-helsinki": "presse"
     };
     return contexts[entry.id] || null;
   }
@@ -477,9 +514,13 @@
     const normalizedQuery = normalize(query);
     if (!normalizedQuery) return null;
 
-    const queryWords = normalizedQuery.split(" ").filter(Boolean);
+    const queryWords = normalizedQuery
+      .split(" ")
+      .filter((word) => word.length > 2 && !STOP_WORDS.has(word));
+    let bestMatch = null;
+    let bestScore = 0;
 
-    return state.knowledge.find((entry) => {
+    state.knowledge.forEach((entry) => {
       const title = normalize(entry.title);
       const haystackWords = normalize([
         entry.id,
@@ -488,13 +529,43 @@
       ].join(" ")).split(" ").filter(Boolean);
       const haystack = haystackWords.join(" ");
 
-      if (!haystack) return false;
+      if (!haystack) return;
       if (haystack.includes(normalizedQuery) || (title && normalizedQuery.includes(title))) {
-        return true;
+        bestMatch = entry;
+        bestScore = Number.MAX_SAFE_INTEGER;
+        return;
       }
 
-      return queryWords.some((word) => word.length > 2 && haystackWords.includes(word));
-    }) || null;
+      const score = queryWords.reduce((total, word) => (
+        total + (haystackWords.includes(word) ? 1 : 0)
+      ), 0);
+
+      if (score > bestScore) {
+        bestMatch = entry;
+        bestScore = score;
+      }
+    });
+
+    return bestScore > 0 ? bestMatch : null;
+  }
+
+  function findExplanatoryAnswer(query) {
+    const normalizedQuery = normalize(query);
+    if (!normalizedQuery) return null;
+
+    const asksForExplanation = [
+      "was ist",
+      "was war",
+      "wer seid",
+      "was macht",
+      "warum gibt",
+      "welche farben",
+      "was bekomme"
+    ].some((phrase) => normalizedQuery.includes(phrase));
+
+    if (!asksForExplanation) return null;
+
+    return findAnswer(query);
   }
 
   function linksMarkup(links) {
@@ -663,6 +734,17 @@
         const answer = navigatorAnswer(navigatorAction);
         appendMessage(chatLog, "bot", answer.answer, {
           links: answer.links
+        });
+        setMascotState(root, "success");
+        return;
+      }
+
+      const explanatoryMatch = findExplanatoryAnswer(trimmed);
+      if (explanatoryMatch) {
+        setContext(contextFromKnowledge(explanatoryMatch));
+        appendMessage(chatLog, "bot", explanatoryMatch.answer, {
+          links: explanatoryMatch.links,
+          quickReplies: explanatoryMatch.quickReplies
         });
         setMascotState(root, "success");
         return;
