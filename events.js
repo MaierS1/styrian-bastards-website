@@ -369,7 +369,7 @@
 
         const submitButton = document.createElement('button');
         submitButton.type = 'submit';
-        submitButton.className = 'btn event-registration-submit';
+        submitButton.className = 'btn btn-primary event-registration-submit';
         submitButton.textContent = 'Anmeldung senden';
 
         form.appendChild(submitButton);
@@ -635,7 +635,7 @@
         const infoUrl = externalUrl(event.public_external_url);
 
         if (registrationUrl) {
-            const link = createLink(registrationUrl, 'Anmeldung öffnen', 'btn event-detail-btn');
+            const link = createLink(registrationUrl, 'Anmeldung öffnen', 'btn btn-primary event-detail-btn');
             link.target = '_blank';
             link.rel = 'noopener noreferrer';
             actions.appendChild(link);

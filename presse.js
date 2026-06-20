@@ -126,7 +126,7 @@
         }
 
         const more = document.createElement('span');
-        more.className = 'btn press-read-more';
+        more.className = 'btn btn-primary press-read-more';
         more.textContent = 'Weiterlesen';
         body.appendChild(more);
 
@@ -174,7 +174,7 @@
         detail.className = 'press-detail';
 
         const back = document.createElement('a');
-        back.className = 'btn press-back';
+        back.className = 'btn btn-primary press-back';
         back.href = '/presse.html';
         back.textContent = 'Zurück zu Presse';
         detail.appendChild(back);
@@ -220,7 +220,7 @@
         root.innerHTML = '';
         root.appendChild(createHero('Nicht gefunden', 'Der angefragte Presseartikel ist nicht verfügbar.'));
         const back = document.createElement('a');
-        back.className = 'btn';
+        back.className = 'btn btn-primary';
         back.href = '/presse.html';
         back.textContent = 'Zurück zu Presse';
         root.appendChild(back);

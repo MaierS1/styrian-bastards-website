@@ -258,11 +258,11 @@
             actions.className = 'public-media-actions';
 
             if (articleUrl) {
-                actions.appendChild(createAction(articleUrl, 'Artikel lesen', 'btn'));
+                actions.appendChild(createAction(articleUrl, 'Artikel lesen', 'btn btn-primary'));
             }
 
             if (audioUrl) {
-                actions.appendChild(createAction(audioUrl, getAudioLabel(item), articleUrl ? 'btn btn-secondary' : 'btn'));
+                actions.appendChild(createAction(audioUrl, getAudioLabel(item), articleUrl ? 'btn btn-secondary' : 'btn btn-primary'));
             }
 
             body.appendChild(actions);
