@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /mitgliederbereich.html
+Disallow: /galerie-admin.html
+Disallow: /navbar.html
+Disallow: /footer.html
+
+Sitemap: https://www.styrian-bastards.at/sitemap.xml
