@@ -13,12 +13,55 @@
     { label: "Mitglied werden", href: "/mitglied-werden.html" },
     { label: "Events", href: "/index.html#events" }
   ];
-  const greetings = [
-    "Servus! Ich bin der Virtual Bastard. Wie kann ich dir helfen?",
-    "Willkommen bei den Styrian Bastards! Ich bin der Virtual Bastard.",
-    "Servus! Hast du Fragen zu unserem Verein, Events oder Fanartikeln?",
-    "Ich bin der Virtual Bastard. Frag mich alles rund um die Styrian Bastards."
-  ];
+  const PERSONALITY = Object.freeze({
+    identity: {
+      name: "Virtual Bastard",
+      clubName: "Styrian Bastards",
+      perspective: "langj\u00e4hriges Vereinsmitglied"
+    },
+    tone: ["freundlich", "locker", "hilfsbereit", "humorvoll", "motivierend", "authentisch"],
+    politeness: {
+      respectful: true,
+      exaggerated: false,
+      preferredOpeners: ["Servus!", "Hallo!", "Gerne!", "Klar!", "Nat\u00fcrlich!"],
+      prohibitedPhrases: ["Sehr geehrte Damen und Herren", "Mit freundlichen Gr\u00fc\u00dfen", "Ich entschuldige mich", "Werte Nutzer"]
+    },
+    emoji: {
+      maxPerAnswer: 2,
+      preferred: [],
+      chainsAllowed: false
+    },
+    answerStyle: {
+      maxWords: 120,
+      shortParagraphs: true,
+      concreteFirst: true,
+      optionalFollowUp: true
+    },
+    clubReference: {
+      useClubNameNaturally: true,
+      avoidCallcenterLanguage: true,
+      avoidAuthorityLanguage: true,
+      avoidAiSelfReference: true
+    },
+    greetings: [
+      "Servus!",
+      "Hallo und willkommen!",
+      "Sch\u00f6n, dass du da bist!",
+      "Willkommen bei den Styrian Bastards!"
+    ],
+    farewells: [
+      "Bis bald!",
+      "Wir sehen uns beim n\u00e4chsten Event!",
+      "Viel Spa\u00df und bis bald!",
+      "Hoffentlich bis bald bei den Bastards!"
+    ],
+    responseOpeners: ["Gerne!", "Klar!", "Nat\u00fcrlich!"]
+  });
+  const personalityState = {
+    lastGreeting: null,
+    lastFarewell: null,
+    lastResponseOpener: null
+  };
   const LIVE_FALLBACKS = {
     events: "Gerade kann ich die Events nicht live laden. Auf der Event-Seite findest du alle Termine.",
     sponsors: "Gerade kann ich die Sponsoren nicht live laden. Auf der Sponsoren-Seite findest du alle Partner.",
@@ -267,8 +310,70 @@
     return values.find((value) => value !== null && value !== undefined && value !== "");
   }
 
-  function randomGreeting() {
-    return greetings[Math.floor(Math.random() * greetings.length)];
+  function pickVariedPhrase(phrases, stateKey) {
+    const available = phrases.filter((phrase) => phrase !== personalityState[stateKey]);
+    const choices = available.length ? available : phrases;
+    const phrase = choices[Math.floor(Math.random() * choices.length)];
+    personalityState[stateKey] = phrase;
+    return phrase;
+  }
+
+  function greetingMessage() {
+    const greeting = pickVariedPhrase(PERSONALITY.greetings, "lastGreeting");
+    return `${greeting} Ich bin der Virtual Bastard. Wobei kann ich dir helfen?`;
+  }
+
+  function farewellMessage() {
+    return pickVariedPhrase(PERSONALITY.farewells, "lastFarewell");
+  }
+
+  function isGreeting(query) {
+    return ["servus", "hallo", "hi", "guten tag", "gruss dich", "gruess dich"]
+      .includes(normalize(query));
+  }
+
+  function isFarewell(query) {
+    return ["danke", "vielen dank", "danke dir", "tschuss", "tschuess", "ciao", "bis bald", "auf wiedersehen"]
+      .includes(normalize(query));
+  }
+
+  function applyPersonality(content) {
+    let text = String(content ?? "").trim();
+
+    PERSONALITY.politeness.prohibitedPhrases.forEach((phrase) => {
+      text = text.replace(new RegExp(phrase, "gi"), "").replace(/\s{2,}/g, " ").trim();
+    });
+
+    let emojiCount = 0;
+    text = text.replace(/\p{Extended_Pictographic}/gu, (emoji) => {
+      emojiCount += 1;
+      return emojiCount <= PERSONALITY.emoji.maxPerAnswer ? emoji : "";
+    });
+
+    const words = text.split(/\s+/).filter(Boolean);
+    if (words.length > PERSONALITY.answerStyle.maxWords) {
+      text = `${words.slice(0, PERSONALITY.answerStyle.maxWords).join(" ")}\u2026`;
+    }
+
+    const approvedStarts = [
+      ...PERSONALITY.politeness.preferredOpeners,
+      ...PERSONALITY.greetings,
+      ...PERSONALITY.farewells,
+      "Das habe ich",
+      "Meinst du",
+      "Gerade",
+      "Aktuell",
+      "Neu im",
+      "Das n\u00e4chste"
+    ];
+    const hasApprovedStart = approvedStarts.some((start) => normalize(text).startsWith(normalize(start)));
+
+    if (text && !hasApprovedStart && !text.endsWith("?")) {
+      const opener = pickVariedPhrase(PERSONALITY.responseOpeners, "lastResponseOpener");
+      text = `${opener} ${text}`;
+    }
+
+    return text;
   }
 
   function setConversationContext({ intent, topic, entityType, entityName, entityUrl } = {}) {
@@ -865,10 +970,11 @@
     message.className = `sb-vb-chat-message sb-vb-chat-message-${type}`;
 
     const label = type === "user" ? "Du" : "Virtual Bastard";
+    const displayedContent = type === "bot" ? applyPersonality(content) : content;
     message.innerHTML = `
       <span class="sb-vb-chat-label">${label}</span>
       <div class="sb-vb-chat-bubble">
-        <p>${escapeHtml(content)}</p>
+        <p>${escapeHtml(displayedContent)}</p>
         ${linksMarkup(options.links)}
         ${quickRepliesMarkup(options.quickReplies)}
       </div>
@@ -911,7 +1017,7 @@
           <strong class="sb-vb-title" id="sb-vb-title" tabindex="-1">Virtual Bastard</strong>
           <button class="sb-vb-close" type="button" aria-label="Virtual Bastard Assistent schlie\u00dfen">\u00d7</button>
         </div>
-        <p class="sb-vb-message">${randomGreeting()}</p>
+        <p class="sb-vb-message">${greetingMessage()}</p>
         <div class="sb-vb-chat-log" aria-live="polite" aria-label="Virtual Bastard Chatverlauf"></div>
         <form class="sb-vb-chat-form">
           <label class="sb-vb-chat-label-hidden" for="sb-vb-chat-input">Nachricht an den Virtual Bastard</label>
@@ -992,6 +1098,21 @@
       await knowledgeReady;
       appendMessage(chatLog, "user", trimmed);
       const detectedIntent = detectIntent(trimmed);
+
+      if (isGreeting(trimmed)) {
+        appendMessage(chatLog, "bot", greetingMessage(), {
+          quickReplies: quickRepliesForIntent(INTENTS.GENERAL)
+        });
+        setMascotState(root, "speak");
+        return;
+      }
+
+      if (isFarewell(trimmed)) {
+        appendMessage(chatLog, "bot", farewellMessage());
+        resetConversationContext();
+        setMascotState(root, "wave");
+        return;
+      }
 
       const navigatorAction = getNavigatorAction(trimmed);
       if (navigatorAction) {
