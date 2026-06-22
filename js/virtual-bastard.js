@@ -520,7 +520,7 @@
   }
 
   async function loadSupabaseKnowledge() {
-    const data = await callSupabaseRpc("get_public_virtual_bastard_knowledge");
+    const data = await fetchPublicRpc("get_public_virtual_bastard_knowledge");
     return normalizeKnowledgeEntries(data);
   }
 
@@ -768,12 +768,13 @@
     const chatForm = root.querySelector(".sb-vb-chat-form");
     const chatInput = root.querySelector(".sb-vb-chat-input");
 
-    loadKnowledge();
+    const knowledgeReady = loadKnowledge();
 
     async function answerQuery(query) {
       const trimmed = query.trim();
       if (!trimmed) return;
 
+      await knowledgeReady;
       appendMessage(chatLog, "user", trimmed);
 
       const navigatorAction = getNavigatorAction(trimmed);
