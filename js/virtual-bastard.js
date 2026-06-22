@@ -90,17 +90,48 @@
     STATS: "stats",
     GENERAL: "general"
   });
-  const INTENT_QUICK_REPLIES = {
-    [INTENTS.EVENTS]: ["Wo findet das statt?", "Welche Events gibt es?", "Events anzeigen"],
-    [INTENTS.MEMBERSHIP]: ["Was kostet das?", "Mitglied werden", "Probejahr erklaeren"],
-    [INTENTS.SHOP]: ["Wo finde ich das?", "Fanartikel anzeigen", "Kontakt"],
-    [INTENTS.SPONSORS]: ["Gibt es dazu mehr Infos?", "Sponsor werden", "Kontakt"],
-    [INTENTS.PRESS]: ["Wo finde ich das?", "Presse oeffnen", "Kontakt"],
-    [INTENTS.CONTACT]: ["Kontakt oeffnen", "FAQ oeffnen", "Mitglied werden"],
-    [INTENTS.HELP]: ["Events anzeigen", "Mitglied werden", "Kontakt"],
-    [INTENTS.STATS]: ["Naechstes Event", "Sponsoren anzeigen", "Fanartikel anzeigen"],
-    [INTENTS.GENERAL]: ["Events anzeigen", "Mitglied werden", "Shop & Fanartikel"]
-  };
+  const INTENT_ACTIONS = Object.freeze({
+    [INTENTS.EVENTS]: [
+      { label: "Eventdetails", query: "Wo findet das statt?" },
+      { label: "Anmeldung", query: "Kontakt aufnehmen" },
+      { label: "Alle Events", query: "Events anzeigen" }
+    ],
+    [INTENTS.MEMBERSHIP]: [
+      { label: "Mitgliedsantrag", query: "Mitglied werden" },
+      { label: "Vorteile", query: "Welche Vorteile hat eine Mitgliedschaft?" },
+      { label: "Beitrag", query: "Was kostet das?" }
+    ],
+    [INTENTS.SHOP]: [
+      { label: "Shop öffnen", query: "Shop öffnen" },
+      { label: "Fanartikel ansehen", query: "Welche Fanartikel gibt es aktuell?" }
+    ],
+    [INTENTS.SPONSORS]: [
+      { label: "Sponsoren ansehen", query: "Sponsoren anzeigen" },
+      { label: "Sponsor werden", query: "Sponsor werden" }
+    ],
+    [INTENTS.PRESS]: [
+      { label: "Presse ansehen", query: "Presse öffnen" },
+      { label: "Aktuelle Beiträge", query: "Was gibt es Neues in der Presse?" }
+    ],
+    [INTENTS.CONTACT]: [
+      { label: "Kontakt öffnen", query: "Kontakt aufnehmen" }
+    ],
+    [INTENTS.HELP]: [
+      { label: "FAQ öffnen", query: "FAQ öffnen" },
+      { label: "Kontakt öffnen", query: "Kontakt aufnehmen" },
+      { label: "Themen anzeigen", query: "Wobei kannst du helfen?" }
+    ],
+    [INTENTS.STATS]: [
+      { label: "Nächstes Event", query: "Wann ist das nächste Event?" },
+      { label: "Sponsoren", query: "Welche Sponsoren gibt es aktuell?" },
+      { label: "Fanartikel", query: "Welche Fanartikel gibt es aktuell?" }
+    ],
+    [INTENTS.GENERAL]: [
+      { label: "Events", query: "Events anzeigen" },
+      { label: "Mitglied werden", query: "Mitglied werden" },
+      { label: "Shop & Fanartikel", query: "Welche Fanartikel gibt es aktuell?" }
+    ]
+  });
   const INTENT_RULES = [
     {
       intent: INTENTS.EVENTS,
@@ -394,8 +425,18 @@
   }
 
   function quickRepliesForIntent(intent, preferredReplies) {
-    if (Array.isArray(preferredReplies) && preferredReplies.length) return preferredReplies;
-    return INTENT_QUICK_REPLIES[intent] || INTENT_QUICK_REPLIES[INTENTS.GENERAL];
+    const configuredActions = INTENT_ACTIONS[intent] || INTENT_ACTIONS[INTENTS.GENERAL];
+    if (!Array.isArray(preferredReplies) || !preferredReplies.length) return configuredActions;
+
+    const mergedActions = [...configuredActions, ...preferredReplies];
+    const seenQueries = new Set();
+    return mergedActions.filter((action) => {
+      const query = typeof action === "string" ? action : action?.query;
+      const normalizedQuery = normalize(query);
+      if (!normalizedQuery || seenQueries.has(normalizedQuery)) return false;
+      seenQueries.add(normalizedQuery);
+      return true;
+    });
   }
 
   function clarificationAnswer() {
@@ -955,9 +996,12 @@
 
     return `
       <div class="sb-vb-quick-replies" aria-label="Weitere Vorschl\u00e4ge">
-        ${replies.slice(0, 3).map((reply) => (
-          `<button class="sb-vb-quick-reply" type="button" data-vb-query="${escapeHtml(reply)}">${escapeHtml(reply)}</button>`
-        )).join("")}
+        ${replies.slice(0, 3).map((reply) => {
+          const label = typeof reply === "string" ? reply : reply?.label;
+          const query = typeof reply === "string" ? reply : reply?.query;
+          if (!label || !query) return "";
+          return `<button class="sb-vb-quick-reply" type="button" data-vb-query="${escapeHtml(query)}">${escapeHtml(label)}</button>`;
+        }).join("")}
       </div>`;
   }
 
