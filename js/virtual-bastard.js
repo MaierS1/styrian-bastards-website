@@ -171,8 +171,14 @@
   ];
 
   const state = {
-    knowledge: fallbackKnowledge,
-    context: null
+    knowledge: fallbackKnowledge
+  };
+  const conversationContext = {
+    lastIntent: null,
+    lastTopic: null,
+    lastEntityType: null,
+    lastEntityName: null,
+    lastEntityUrl: null
   };
   const STOP_WORDS = new Set([
     "aber",
@@ -254,8 +260,21 @@
     return greetings[Math.floor(Math.random() * greetings.length)];
   }
 
-  function setContext(context) {
-    state.context = context || null;
+  function setConversationContext({ intent, topic, entityType, entityName, entityUrl } = {}) {
+    conversationContext.lastIntent = intent || null;
+    conversationContext.lastTopic = topic || null;
+    conversationContext.lastEntityType = entityType || null;
+    conversationContext.lastEntityName = entityName || null;
+    conversationContext.lastEntityUrl = entityUrl || null;
+  }
+
+  function resetConversationContext() {
+    setConversationContext();
+  }
+
+  function firstLinkUrl(links) {
+    if (!Array.isArray(links)) return null;
+    return links.find((link) => link && link.href)?.href || null;
   }
 
   function formatDate(value) {
@@ -306,7 +325,7 @@
   }
 
   function getContextualLiveIntent(query) {
-    if (!state.context) return null;
+    if (!conversationContext.lastTopic) return null;
 
     const text = normalize(query);
     if (!text) return null;
@@ -314,10 +333,10 @@
     const asksForNext = ["wann", "nachste", "naechste", "termin", "datum"].some((word) => text.includes(word));
     const asksForItems = ["was gibt", "welche", "anzeigen", "zeige", "mehr", "neues", "neu"].some((word) => text.includes(word));
 
-    if (state.context === "events" && (asksForNext || asksForItems)) return "events";
-    if (state.context === "shop" && asksForItems) return "shop";
-    if (state.context === "sponsoren" && asksForItems) return "sponsors";
-    if (state.context === "presse" && (asksForItems || text.includes("bericht"))) return "press";
+    if (conversationContext.lastTopic === "events" && (asksForNext || asksForItems)) return "events";
+    if (conversationContext.lastTopic === "shop" && asksForItems) return "shop";
+    if (conversationContext.lastTopic === "sponsoren" && asksForItems) return "sponsors";
+    if (conversationContext.lastTopic === "presse" && (asksForItems || text.includes("bericht"))) return "press";
 
     return null;
   }
@@ -388,6 +407,89 @@
     return contexts[entry.id] || categoryContexts[entry.category] || null;
   }
 
+  function rememberNavigatorContext(intent, action) {
+    setConversationContext({
+      intent,
+      topic: contextFromNavigator(action),
+      entityType: "navigation",
+      entityName: action.label,
+      entityUrl: action.href
+    });
+  }
+
+  function rememberKnowledgeContext(intent, entry) {
+    setConversationContext({
+      intent,
+      topic: contextFromKnowledge(entry),
+      entityType: entry.category || "knowledge",
+      entityName: entry.title,
+      entityUrl: firstLinkUrl(entry.links)
+    });
+  }
+
+  function topicFromLiveIntent(intent) {
+    const topics = {
+      events: "events",
+      shop: "shop",
+      sponsors: "sponsoren",
+      press: "presse",
+      stats: "stats"
+    };
+    return topics[intent] || null;
+  }
+
+  function rememberLiveContext(intent, liveAnswer) {
+    setConversationContext({
+      intent,
+      topic: topicFromLiveIntent(intent),
+      entityType: liveAnswer.entityType || intent,
+      entityName: liveAnswer.entityName || null,
+      entityUrl: liveAnswer.entityUrl || firstLinkUrl(liveAnswer.links)
+    });
+  }
+
+  function findRememberedKnowledgeEntry() {
+    const rememberedName = normalize(conversationContext.lastEntityName);
+    if (!rememberedName) return null;
+
+    return state.knowledge.find((entry) => normalize(entry.title) === rememberedName) || null;
+  }
+
+  function getConversationFollowUp(query) {
+    if (!conversationContext.lastTopic) return null;
+
+    const text = normalize(query);
+    if (!text) return null;
+
+    const asksForLocation = ["wo findet das statt", "wo ist das", "welcher ort", "wo genau"]
+      .some((phrase) => text.includes(phrase));
+    const asksForPrice = ["was kostet das", "wie viel kostet das", "wieviel kostet das", "welcher preis"]
+      .some((phrase) => text.includes(phrase));
+    const asksWhereToFind = ["wo finde ich das", "wo gibt es das", "wo kann ich das finden"]
+      .some((phrase) => text.includes(phrase));
+    const asksForMore = ["gibt es dazu mehr infos", "mehr informationen dazu", "mehr infos dazu", "mehr erfahren"]
+      .some((phrase) => text.includes(phrase));
+
+    if (conversationContext.lastTopic === "events" && asksForLocation) {
+      return { liveIntent: INTENTS.EVENTS };
+    }
+
+    if (conversationContext.lastTopic === "mitgliedschaft" && asksForPrice) {
+      const entry = findRememberedKnowledgeEntry();
+      if (entry) return { knowledgeEntry: entry };
+    }
+
+    if ((asksWhereToFind || asksForMore) && conversationContext.lastEntityUrl) {
+      const entityName = conversationContext.lastEntityName || conversationContext.lastTopic;
+      return {
+        answer: `Mehr zu ${entityName} findest du hier.`,
+        links: [{ label: entityName, href: conversationContext.lastEntityUrl }]
+      };
+    }
+
+    return null;
+  }
+
   function fallbackLiveAnswer(intent) {
     return {
       answer: LIVE_FALLBACKS[intent] || UNKNOWN_ANSWER,
@@ -436,7 +538,10 @@
 
     return {
       answer: `Das n\u00e4chste \u00f6ffentliche Event ist: ${eventTitle(nextEvent)}${dateText}${locationText}. Mehr findest du unter Events.`,
-      links: LIVE_LINKS.events
+      links: LIVE_LINKS.events,
+      entityType: "event",
+      entityName: eventTitle(nextEvent),
+      entityUrl: firstLinkUrl(LIVE_LINKS.events)
     };
   }
 
@@ -453,7 +558,10 @@
 
     return {
       answer: `Aktuell werden folgende Partner \u00f6ffentlich angezeigt: ${names.join(", ")}.`,
-      links: LIVE_LINKS.sponsors
+      links: LIVE_LINKS.sponsors,
+      entityType: "sponsor",
+      entityName: names[0],
+      entityUrl: firstLinkUrl(LIVE_LINKS.sponsors)
     };
   }
 
@@ -469,17 +577,21 @@
     const merchItems = await fetchPublicRpc("get_public_merch_items");
     if (!Array.isArray(merchItems) || !merchItems.length) return fallbackLiveAnswer("shop");
 
-    const items = merchItems
+    const normalizedItems = merchItems
       .map(normalizeMerchItem)
       .filter((item) => item.title)
-      .slice(0, 5)
+      .slice(0, 5);
+    const items = normalizedItems
       .map((item) => item.price ? `${item.title} (${item.price})` : item.title);
 
     if (!items.length) return fallbackLiveAnswer("shop");
 
     return {
       answer: `Im Shop sind aktuell folgende Fanartikel sichtbar: ${items.join(", ")}.`,
-      links: LIVE_LINKS.shop
+      links: LIVE_LINKS.shop,
+      entityType: "shop-item",
+      entityName: normalizedItems[0].title,
+      entityUrl: firstLinkUrl(LIVE_LINKS.shop)
     };
   }
 
@@ -491,21 +603,28 @@
     });
     if (!Array.isArray(mediaItems) || !mediaItems.length) return fallbackLiveAnswer("press");
 
-    const items = mediaItems
+    const normalizedItems = mediaItems
       .map((item) => {
         const title = String(firstValue(item.title, item.public_title, "")).trim();
-        if (!title) return "";
+        if (!title) return null;
         const date = formatDate(firstValue(item.publication_date, item.published_at, item.date));
-        return date ? `${title} (${date})` : title;
+        return {
+          title,
+          label: date ? `${title} (${date})` : title
+        };
       })
       .filter(Boolean)
       .slice(0, 5);
+    const items = normalizedItems.map((item) => item.label);
 
     if (!items.length) return fallbackLiveAnswer("press");
 
     return {
       answer: `Die neuesten Beitr\u00e4ge sind: ${items.join(", ")}.`,
-      links: LIVE_LINKS.press
+      links: LIVE_LINKS.press,
+      entityType: "press-item",
+      entityName: normalizedItems[0].title,
+      entityUrl: firstLinkUrl(LIVE_LINKS.press)
     };
   }
 
@@ -829,7 +948,7 @@
 
       const navigatorAction = getNavigatorAction(trimmed);
       if (navigatorAction) {
-        setContext(contextFromNavigator(navigatorAction));
+        rememberNavigatorContext(detectedIntent, navigatorAction);
         const answer = navigatorAnswer(navigatorAction);
         appendMessage(chatLog, "bot", answer.answer, {
           links: answer.links
@@ -838,9 +957,29 @@
         return;
       }
 
+      const followUp = getConversationFollowUp(trimmed);
+      if (followUp?.knowledgeEntry) {
+        const entry = followUp.knowledgeEntry;
+        rememberKnowledgeContext(conversationContext.lastIntent || detectedIntent, entry);
+        appendMessage(chatLog, "bot", entry.answer, {
+          links: entry.links,
+          quickReplies: entry.quickReplies
+        });
+        setMascotState(root, "success");
+        return;
+      }
+
+      if (followUp?.answer) {
+        appendMessage(chatLog, "bot", followUp.answer, {
+          links: followUp.links
+        });
+        setMascotState(root, "success");
+        return;
+      }
+
       const explanatoryMatch = findExplanatoryAnswer(trimmed);
       if (explanatoryMatch) {
-        setContext(contextFromKnowledge(explanatoryMatch));
+        rememberKnowledgeContext(detectedIntent, explanatoryMatch);
         appendMessage(chatLog, "bot", explanatoryMatch.answer, {
           links: explanatoryMatch.links,
           quickReplies: explanatoryMatch.quickReplies
@@ -849,13 +988,13 @@
         return;
       }
 
-      const liveIntent = LIVE_INTENTS.has(detectedIntent)
+      const liveIntent = followUp?.liveIntent || (LIVE_INTENTS.has(detectedIntent)
         ? detectedIntent
-        : getContextualLiveIntent(trimmed);
+        : getContextualLiveIntent(trimmed));
       if (liveIntent) {
-        setContext(liveIntent === "sponsors" ? "sponsoren" : liveIntent);
         setMascotState(root, "think", "think");
         const liveAnswer = await getLiveAnswer(liveIntent);
+        rememberLiveContext(liveIntent, liveAnswer);
         appendMessage(chatLog, "bot", liveAnswer.answer, {
           links: liveAnswer.links,
           quickReplies: liveAnswer.quickReplies
@@ -866,7 +1005,7 @@
 
       const match = findAnswer(trimmed);
       if (match) {
-        setContext(contextFromKnowledge(match));
+        rememberKnowledgeContext(detectedIntent, match);
         appendMessage(chatLog, "bot", match.answer, {
           links: match.links,
           quickReplies: match.quickReplies
@@ -893,7 +1032,7 @@
 
     function closePanel() {
       panel.hidden = true;
-      setContext(null);
+      resetConversationContext();
       toggle.setAttribute("aria-expanded", "false");
       toggle.setAttribute("aria-label", "Virtual Bastard Assistent \u00f6ffnen");
       setMascotState(root, "idle");
