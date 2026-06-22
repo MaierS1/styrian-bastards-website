@@ -36,6 +36,58 @@
       { label: "Kontakt", href: "/kontakt.html" }
     ]
   };
+  const INTENTS = Object.freeze({
+    EVENTS: "events",
+    MEMBERSHIP: "membership",
+    SHOP: "shop",
+    SPONSORS: "sponsors",
+    PRESS: "press",
+    CONTACT: "contact",
+    HELP: "help",
+    STATS: "stats",
+    GENERAL: "general"
+  });
+  const INTENT_RULES = [
+    {
+      intent: INTENTS.EVENTS,
+      keywords: ["nachstes event", "naechstes event", "veranstaltung", "veranstaltungen", "termine", "cornhole", "event", "events"]
+    },
+    {
+      intent: INTENTS.SHOP,
+      keywords: ["shop", "fanartikel", "artikel", "merch", "merchandise"]
+    },
+    {
+      intent: INTENTS.SPONSORS,
+      keywords: ["sponsor", "sponsoren", "sponsoring", "partner", "unterstutzer", "unterstuetzer"]
+    },
+    {
+      intent: INTENTS.PRESS,
+      keywords: ["news", "presse", "bericht", "neuigkeiten", "medien"]
+    },
+    {
+      intent: INTENTS.STATS,
+      keywords: ["wie viele", "vereinszahlen", "zahlen", "mitglieder"]
+    },
+    {
+      intent: INTENTS.MEMBERSHIP,
+      keywords: ["mitgliedschaft", "mitglied", "beitreten", "aufnahme", "probejahr", "vollmitglied", "foerdermitglied", "beitrag"]
+    },
+    {
+      intent: INTENTS.CONTACT,
+      keywords: ["kontakt", "anschreiben", "erreichen", "email"]
+    },
+    {
+      intent: INTENTS.HELP,
+      keywords: ["hilfe", "faq", "haufige fragen", "haeufige fragen", "antworten"]
+    }
+  ];
+  const LIVE_INTENTS = new Set([
+    INTENTS.EVENTS,
+    INTENTS.SHOP,
+    INTENTS.SPONSORS,
+    INTENTS.PRESS,
+    INTENTS.STATS
+  ]);
 
   const navigatorActions = [
     {
@@ -168,6 +220,32 @@
       .trim();
   }
 
+  function intentKeywordScore(text, keyword) {
+    const normalizedKeyword = normalize(keyword);
+    if (!normalizedKeyword || !text.includes(normalizedKeyword)) return 0;
+
+    const wordCount = normalizedKeyword.split(" ").length;
+    return (wordCount * 100) + normalizedKeyword.length;
+  }
+
+  function detectIntent(query) {
+    const text = normalize(query);
+    if (!text) return INTENTS.GENERAL;
+
+    let detectedIntent = INTENTS.GENERAL;
+    let bestScore = 0;
+
+    INTENT_RULES.forEach((rule) => {
+      const score = Math.max(...rule.keywords.map((keyword) => intentKeywordScore(text, keyword)));
+      if (score > bestScore) {
+        detectedIntent = rule.intent;
+        bestScore = score;
+      }
+    });
+
+    return detectedIntent;
+  }
+
   function firstValue(...values) {
     return values.find((value) => value !== null && value !== undefined && value !== "");
   }
@@ -225,35 +303,6 @@
     }
 
     return response.json();
-  }
-
-  function getLiveIntent(query) {
-    const text = normalize(query);
-    if (!text) return null;
-
-    const hasAny = (words) => words.some((word) => text.includes(word));
-
-    if (hasAny(["nachstes event", "naechstes event", "veranstaltung", "termine", "cornhole", "event"])) {
-      return "events";
-    }
-
-    if (hasAny(["sponsor", "sponsoren", "partner", "unterstutzer", "unterstuetzer"])) {
-      return "sponsors";
-    }
-
-    if (hasAny(["shop", "fanartikel", "artikel", "merch"])) {
-      return "shop";
-    }
-
-    if (hasAny(["news", "presse", "bericht", "neuigkeiten"])) {
-      return "press";
-    }
-
-    if (hasAny(["wie viele", "zahlen", "mitglieder"])) {
-      return "stats";
-    }
-
-    return null;
   }
 
   function getContextualLiveIntent(query) {
@@ -776,6 +825,7 @@
 
       await knowledgeReady;
       appendMessage(chatLog, "user", trimmed);
+      const detectedIntent = detectIntent(trimmed);
 
       const navigatorAction = getNavigatorAction(trimmed);
       if (navigatorAction) {
@@ -799,7 +849,9 @@
         return;
       }
 
-      const liveIntent = getLiveIntent(trimmed) || getContextualLiveIntent(trimmed);
+      const liveIntent = LIVE_INTENTS.has(detectedIntent)
+        ? detectedIntent
+        : getContextualLiveIntent(trimmed);
       if (liveIntent) {
         setContext(liveIntent === "sponsors" ? "sponsoren" : liveIntent);
         setMascotState(root, "think", "think");
