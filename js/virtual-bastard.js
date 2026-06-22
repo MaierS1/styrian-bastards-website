@@ -6,7 +6,7 @@
   const KNOWLEDGE_URL = "/assets/data/virtual-bastard-knowledge.json";
   const SUPABASE_URL = "https://ekaxdyysefmypkainhij.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVrYXhkeXlzZWZteXBrYWluaGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNjUyNzEsImV4cCI6MjA5Mjk0MTI3MX0.7o4jUIW5gsxvFWiqFHHjoHg87GVm4H_1UW9ftll6VmU";
-  const UNKNOWN_ANSWER = "Das wei\u00df ich leider noch nicht sicher. Vielleicht helfen dir diese Bereiche weiter:";
+  const UNKNOWN_ANSWER = "Das habe ich noch nicht ganz verstanden. Geht es um Events, Mitgliedschaft, Shop oder Kontakt?";
   const UNKNOWN_LINKS = [
     { label: "FAQ", href: "/faq.html" },
     { label: "Kontakt", href: "/kontakt.html" },
@@ -20,11 +20,11 @@
     "Ich bin der Virtual Bastard. Frag mich alles rund um die Styrian Bastards."
   ];
   const LIVE_FALLBACKS = {
-    events: "Ich kann die Events gerade nicht live laden. Schau bitte auf der Event-Seite nach.",
-    sponsors: "Ich kann die Sponsoren gerade nicht live laden. Schau bitte auf der Sponsoren-Seite nach.",
-    shop: "Ich kann den Shop gerade nicht live laden. Schau bitte im Bereich Shop & Fanartikel nach.",
-    press: "Ich kann die Pressebeitr\u00e4ge gerade nicht live laden. Schau bitte auf der Presse-Seite nach.",
-    stats: "Ich kann die Vereinszahlen gerade nicht live laden. Schau bitte sp\u00e4ter wieder vorbei oder nutze die FAQ."
+    events: "Gerade kann ich die Events nicht live laden. Auf der Event-Seite findest du alle Termine.",
+    sponsors: "Gerade kann ich die Sponsoren nicht live laden. Auf der Sponsoren-Seite findest du alle Partner.",
+    shop: "Gerade kann ich den Shop nicht live laden. Schau bitte direkt bei Shop & Fanartikel vorbei.",
+    press: "Gerade kann ich die Pressebeitr\u00e4ge nicht live laden. Im Pressebereich findest du alle Beitr\u00e4ge.",
+    stats: "Gerade kann ich die Vereinszahlen nicht live laden. Versuch es bitte sp\u00e4ter noch einmal."
   };
   const LIVE_LINKS = {
     events: [{ label: "Events", href: "/index.html#events" }],
@@ -47,6 +47,17 @@
     STATS: "stats",
     GENERAL: "general"
   });
+  const INTENT_QUICK_REPLIES = {
+    [INTENTS.EVENTS]: ["Wo findet das statt?", "Welche Events gibt es?", "Events anzeigen"],
+    [INTENTS.MEMBERSHIP]: ["Was kostet das?", "Mitglied werden", "Probejahr erklaeren"],
+    [INTENTS.SHOP]: ["Wo finde ich das?", "Fanartikel anzeigen", "Kontakt"],
+    [INTENTS.SPONSORS]: ["Gibt es dazu mehr Infos?", "Sponsor werden", "Kontakt"],
+    [INTENTS.PRESS]: ["Wo finde ich das?", "Presse oeffnen", "Kontakt"],
+    [INTENTS.CONTACT]: ["Kontakt oeffnen", "FAQ oeffnen", "Mitglied werden"],
+    [INTENTS.HELP]: ["Events anzeigen", "Mitglied werden", "Kontakt"],
+    [INTENTS.STATS]: ["Naechstes Event", "Sponsoren anzeigen", "Fanartikel anzeigen"],
+    [INTENTS.GENERAL]: ["Events anzeigen", "Mitglied werden", "Shop & Fanartikel"]
+  };
   const INTENT_RULES = [
     {
       intent: INTENTS.EVENTS,
@@ -94,49 +105,49 @@
       id: "mitglied",
       label: "Mitglied werden",
       href: "/mitglied-werden.html",
-      answer: "Du m\u00f6chtest Mitglied werden? Hier geht's direkt zum Antrag.",
+      answer: "Klar! Hier geht's direkt zur Mitgliedschaft.",
       keywords: ["mitglied werden", "mitgliedsantrag", "beitreten", "aufnahme", "ich mochte mitglied", "ich moechte mitglied"]
     },
     {
       id: "events",
       label: "Events anzeigen",
       href: "/index.html#events",
-      answer: "Du suchst Events oder Veranstaltungen? Hier findest du die \u00f6ffentlichen Termine.",
+      answer: "Gerne! Hier findest du unsere \u00f6ffentlichen Events und Termine.",
       keywords: ["zeig mir events", "events anzeigen", "veranstaltungen anzeigen", "termine anzeigen", "zu den events"]
     },
     {
       id: "shop",
       label: "Shop & Fanartikel",
       href: "/merch.html",
-      answer: "Du suchst Fanartikel? Hier geht's direkt zum Shop-Bereich.",
+      answer: "Gerne! Hier findest du unsere Fanartikel.",
       keywords: ["ich suche fanartikel", "fanartikel suchen", "zum shop", "shop offnen", "shop oeffnen", "merch kaufen"]
     },
     {
       id: "sponsoren",
       label: "Sponsoren",
       href: "/sponsoren.html",
-      answer: "Du m\u00f6chtest zu Sponsoren und Partnern? Hier geht's zur Sponsoren-Seite.",
+      answer: "Gerne! Hier findest du unsere Sponsoren und Partner.",
       keywords: ["wer sind eure sponsoren", "zu den sponsoren", "sponsoren anzeigen", "partner anzeigen", "sponsor werden", "wie werde ich sponsor"]
     },
     {
       id: "presse",
       label: "Presse & News",
       href: "/presse.html",
-      answer: "Du suchst Presse und News? Hier findest du die \u00f6ffentlichen Beitr\u00e4ge.",
+      answer: "Gerne! Hier findest du Pressebeitr\u00e4ge und News.",
       keywords: ["presse offnen", "presse oeffnen", "news offnen", "news oeffnen", "zu den news", "presse und news"]
     },
     {
       id: "faq",
       label: "FAQ \u00f6ffnen",
       href: "/faq.html",
-      answer: "Du hast Fragen? Die FAQ sammelt die wichtigsten Antworten.",
+      answer: "Gerne! In den FAQ findest du die wichtigsten Antworten.",
       keywords: ["faq", "fragen", "hilfe", "haeufige fragen", "haufige fragen", "antworten"]
     },
     {
       id: "kontakt",
       label: "Kontakt aufnehmen",
       href: "/kontakt.html",
-      answer: "Du m\u00f6chtest uns erreichen? Hier geht's direkt zur Kontaktseite.",
+      answer: "Klar! Hier kannst du direkt Kontakt mit uns aufnehmen.",
       keywords: ["kontakt", "kontakt aufnehmen", "anschreiben", "erreichen", "frage stellen"]
     },
     {
@@ -275,6 +286,36 @@
   function firstLinkUrl(links) {
     if (!Array.isArray(links)) return null;
     return links.find((link) => link && link.href)?.href || null;
+  }
+
+  function quickRepliesForIntent(intent, preferredReplies) {
+    if (Array.isArray(preferredReplies) && preferredReplies.length) return preferredReplies;
+    return INTENT_QUICK_REPLIES[intent] || INTENT_QUICK_REPLIES[INTENTS.GENERAL];
+  }
+
+  function clarificationAnswer() {
+    const topicLabels = {
+      events: "das letzte Event",
+      mitgliedschaft: "die Mitgliedschaft",
+      shop: "den Shop",
+      sponsoren: "die Sponsoren",
+      presse: "Presse und News",
+      stats: "die Vereinszahlen"
+    };
+    const topicLabel = topicLabels[conversationContext.lastTopic];
+
+    if (topicLabel) {
+      return {
+        answer: `Meinst du noch ${topicLabel}, oder geht es um etwas anderes?`,
+        quickReplies: quickRepliesForIntent(conversationContext.lastIntent)
+      };
+    }
+
+    return {
+      answer: UNKNOWN_ANSWER,
+      links: UNKNOWN_LINKS,
+      quickReplies: quickRepliesForIntent(INTENTS.GENERAL)
+    };
   }
 
   function formatDate(value) {
@@ -482,7 +523,7 @@
     if ((asksWhereToFind || asksForMore) && conversationContext.lastEntityUrl) {
       const entityName = conversationContext.lastEntityName || conversationContext.lastTopic;
       return {
-        answer: `Mehr zu ${entityName} findest du hier.`,
+        answer: `Gerne! Mehr zu ${entityName} findest du hier.`,
         links: [{ label: entityName, href: conversationContext.lastEntityUrl }]
       };
     }
@@ -493,7 +534,8 @@
   function fallbackLiveAnswer(intent) {
     return {
       answer: LIVE_FALLBACKS[intent] || UNKNOWN_ANSWER,
-      links: LIVE_LINKS[intent] || LIVE_LINKS.stats
+      links: LIVE_LINKS[intent] || LIVE_LINKS.stats,
+      quickReplies: quickRepliesForIntent(intent)
     };
   }
 
@@ -537,8 +579,9 @@
     const locationText = location ? ` in ${location}` : "";
 
     return {
-      answer: `Das n\u00e4chste \u00f6ffentliche Event ist: ${eventTitle(nextEvent)}${dateText}${locationText}. Mehr findest du unter Events.`,
+      answer: `Das n\u00e4chste \u00f6ffentliche Event ist ${eventTitle(nextEvent)}${dateText}${locationText}.`,
       links: LIVE_LINKS.events,
+      quickReplies: quickRepliesForIntent(INTENTS.EVENTS),
       entityType: "event",
       entityName: eventTitle(nextEvent),
       entityUrl: firstLinkUrl(LIVE_LINKS.events)
@@ -557,8 +600,9 @@
     if (!names.length) return fallbackLiveAnswer("sponsors");
 
     return {
-      answer: `Aktuell werden folgende Partner \u00f6ffentlich angezeigt: ${names.join(", ")}.`,
+      answer: `Aktuell unterst\u00fctzen uns: ${names.join(", ")}.`,
       links: LIVE_LINKS.sponsors,
+      quickReplies: quickRepliesForIntent(INTENTS.SPONSORS),
       entityType: "sponsor",
       entityName: names[0],
       entityUrl: firstLinkUrl(LIVE_LINKS.sponsors)
@@ -587,8 +631,9 @@
     if (!items.length) return fallbackLiveAnswer("shop");
 
     return {
-      answer: `Im Shop sind aktuell folgende Fanartikel sichtbar: ${items.join(", ")}.`,
+      answer: `Aktuell findest du im Shop: ${items.join(", ")}.`,
       links: LIVE_LINKS.shop,
+      quickReplies: quickRepliesForIntent(INTENTS.SHOP),
       entityType: "shop-item",
       entityName: normalizedItems[0].title,
       entityUrl: firstLinkUrl(LIVE_LINKS.shop)
@@ -620,8 +665,9 @@
     if (!items.length) return fallbackLiveAnswer("press");
 
     return {
-      answer: `Die neuesten Beitr\u00e4ge sind: ${items.join(", ")}.`,
+      answer: `Neu im Pressebereich: ${items.join(", ")}.`,
       links: LIVE_LINKS.press,
+      quickReplies: quickRepliesForIntent(INTENTS.PRESS),
       entityType: "press-item",
       entityName: normalizedItems[0].title,
       entityUrl: firstLinkUrl(LIVE_LINKS.press)
@@ -647,7 +693,8 @@
 
     return {
       answer: `Aktuell zeigt die Homepage: ${parts.join(", ")}.`,
-      links: LIVE_LINKS.stats
+      links: LIVE_LINKS.stats,
+      quickReplies: quickRepliesForIntent(INTENTS.STATS)
     };
   }
 
@@ -951,7 +998,8 @@
         rememberNavigatorContext(detectedIntent, navigatorAction);
         const answer = navigatorAnswer(navigatorAction);
         appendMessage(chatLog, "bot", answer.answer, {
-          links: answer.links
+          links: answer.links,
+          quickReplies: quickRepliesForIntent(detectedIntent)
         });
         setMascotState(root, "success");
         return;
@@ -963,7 +1011,7 @@
         rememberKnowledgeContext(conversationContext.lastIntent || detectedIntent, entry);
         appendMessage(chatLog, "bot", entry.answer, {
           links: entry.links,
-          quickReplies: entry.quickReplies
+          quickReplies: quickRepliesForIntent(conversationContext.lastIntent, entry.quickReplies)
         });
         setMascotState(root, "success");
         return;
@@ -971,7 +1019,8 @@
 
       if (followUp?.answer) {
         appendMessage(chatLog, "bot", followUp.answer, {
-          links: followUp.links
+          links: followUp.links,
+          quickReplies: quickRepliesForIntent(conversationContext.lastIntent)
         });
         setMascotState(root, "success");
         return;
@@ -982,7 +1031,7 @@
         rememberKnowledgeContext(detectedIntent, explanatoryMatch);
         appendMessage(chatLog, "bot", explanatoryMatch.answer, {
           links: explanatoryMatch.links,
-          quickReplies: explanatoryMatch.quickReplies
+          quickReplies: quickRepliesForIntent(detectedIntent, explanatoryMatch.quickReplies)
         });
         setMascotState(root, "success");
         return;
@@ -997,7 +1046,7 @@
         rememberLiveContext(liveIntent, liveAnswer);
         appendMessage(chatLog, "bot", liveAnswer.answer, {
           links: liveAnswer.links,
-          quickReplies: liveAnswer.quickReplies
+          quickReplies: quickRepliesForIntent(liveIntent, liveAnswer.quickReplies)
         });
         setMascotState(root, "success");
         return;
@@ -1008,14 +1057,16 @@
         rememberKnowledgeContext(detectedIntent, match);
         appendMessage(chatLog, "bot", match.answer, {
           links: match.links,
-          quickReplies: match.quickReplies
+          quickReplies: quickRepliesForIntent(detectedIntent, match.quickReplies)
         });
         setMascotState(root, "success");
         return;
       }
 
-      appendMessage(chatLog, "bot", UNKNOWN_ANSWER, {
-        links: UNKNOWN_LINKS
+      const clarification = clarificationAnswer();
+      appendMessage(chatLog, "bot", clarification.answer, {
+        links: clarification.links,
+        quickReplies: clarification.quickReplies
       });
       setMascotState(root, "think", "think");
     }
