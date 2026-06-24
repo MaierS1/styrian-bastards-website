@@ -1,4 +1,4 @@
-const CLIENT_VERSION = "epic-009-sprint-2";
+const CLIENT_VERSION = "epic-009-sprint-3";
 
 function createRequestId() {
   if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
