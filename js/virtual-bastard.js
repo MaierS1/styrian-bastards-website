@@ -6,6 +6,8 @@
   const KNOWLEDGE_URL = "/assets/data/virtual-bastard-knowledge.json";
   const SUPABASE_URL = "https://ekaxdyysefmypkainhij.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVrYXhkeXlzZWZteXBrYWluaGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNjUyNzEsImV4cCI6MjA5Mjk0MTI3MX0.7o4jUIW5gsxvFWiqFHHjoHg87GVm4H_1UW9ftll6VmU";
+  const USE_PLATFORM_AI = false;
+  const AI_TRANSPORT_MODE = "mock";
   const UNKNOWN_ANSWER = "Das habe ich noch nicht ganz verstanden. Geht es um Events, Mitgliedschaft, Shop oder Kontakt?";
   const UNKNOWN_LINKS = [
     { label: "FAQ", href: "/faq.html" },
@@ -256,7 +258,9 @@
   ];
 
   const state = {
-    knowledge: fallbackKnowledge
+    knowledge: fallbackKnowledge,
+    platformAiSession: null,
+    platformAiClient: null
   };
   const conversationContext = {
     lastIntent: null,
@@ -1028,6 +1032,37 @@
     scrollChatToEnd(log);
   }
 
+  async function getPlatformAiClient() {
+    if (state.platformAiClient) return state.platformAiClient;
+
+    state.platformAiClient = await import("./virtual-bastard/index.js");
+    state.platformAiSession = state.platformAiSession || state.platformAiClient.createSession();
+
+    return state.platformAiClient;
+  }
+
+  async function answerWithPlatformAi(chatLog, query) {
+    const client = await getPlatformAiClient();
+    const result = await client.sendMessage({
+      message: query,
+      sessionId: state.platformAiSession.sessionId,
+      conversation: state.platformAiSession.conversationHistory,
+      mode: AI_TRANSPORT_MODE
+    });
+    const rendered = client.renderResponse(result);
+
+    state.platformAiSession.conversationHistory.push(
+      { role: "user", message: query },
+      { role: "assistant", message: rendered.message }
+    );
+    state.platformAiSession.currentIntent = result.intent || state.platformAiSession.currentIntent;
+    state.platformAiSession.lastTool = result.selectedTool?.toolId || state.platformAiSession.lastTool;
+
+    appendMessage(chatLog, "bot", rendered.message, {
+      quickReplies: rendered.quickReplies
+    });
+  }
+
   function mascotMarkup(stateName = "idle", bubble = "speak") {
     const bubbleFile = bubble === "think" ? "vb-bubble-think.png" : "vb-bubble-speak.png";
     return `
@@ -1141,6 +1176,14 @@
 
       await knowledgeReady;
       appendMessage(chatLog, "user", trimmed);
+
+      if (USE_PLATFORM_AI) {
+        setMascotState(root, "think", "think");
+        await answerWithPlatformAi(chatLog, trimmed);
+        setMascotState(root, "success");
+        return;
+      }
+
       const detectedIntent = detectIntent(trimmed);
 
       if (isGreeting(trimmed)) {
