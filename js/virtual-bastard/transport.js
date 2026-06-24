@@ -1,5 +1,5 @@
 export const MODE = "mock";
-const AI_ENDPOINT = "/api/ai/chat";
+const AI_ENDPOINT = "https://ekaxdyysefmypkainhij.supabase.co/functions/v1/ai-chat";
 
 function isDevelopment() {
   const hostname = globalThis.location?.hostname || "";

@@ -6,8 +6,8 @@
   const KNOWLEDGE_URL = "/assets/data/virtual-bastard-knowledge.json";
   const SUPABASE_URL = "https://ekaxdyysefmypkainhij.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVrYXhkeXlzZWZteXBrYWluaGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNjUyNzEsImV4cCI6MjA5Mjk0MTI3MX0.7o4jUIW5gsxvFWiqFHHjoHg87GVm4H_1UW9ftll6VmU";
-  const USE_PLATFORM_AI = false;
-  const AI_TRANSPORT_MODE = "mock";
+  const USE_PLATFORM_AI = true;
+  const AI_TRANSPORT_MODE = "platform";
   const UNKNOWN_ANSWER = "Das habe ich noch nicht ganz verstanden. Geht es um Events, Mitgliedschaft, Shop oder Kontakt?";
   const UNKNOWN_LINKS = [
     { label: "FAQ", href: "/faq.html" },
