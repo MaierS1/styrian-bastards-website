@@ -230,6 +230,20 @@
   cursor: pointer;
 }
 
+.sb-vb-quick-replies-used .sb-vb-quick-reply {
+  cursor: default;
+  opacity: .48;
+}
+
+.sb-vb-quick-replies-used .sb-vb-quick-reply-used {
+  opacity: .82;
+  border-color: rgba(255,255,255,.28);
+}
+
+.sb-vb-quick-reply:disabled {
+  pointer-events: none;
+}
+
 .sb-vb-chat-link:hover,
 .sb-vb-quick-reply:hover {
   background: rgba(255,255,255,.18);

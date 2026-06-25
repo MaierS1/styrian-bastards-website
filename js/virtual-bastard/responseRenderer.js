@@ -2,13 +2,24 @@ function normalizeSuggestion(suggestion) {
   if (typeof suggestion === "string") {
     return {
       label: suggestion,
-      query: suggestion
+      query: suggestion,
+      action: "",
+      prompt: suggestion,
+      type: "",
+      value: suggestion
     };
   }
 
+  const label = suggestion?.label || suggestion?.title || suggestion?.query || suggestion?.prompt || suggestion?.value || "";
+  const prompt = suggestion?.prompt || suggestion?.query || suggestion?.value || label;
+
   return {
-    label: suggestion?.label || suggestion?.title || suggestion?.query || "",
-    query: suggestion?.query || suggestion?.label || suggestion?.title || ""
+    label,
+    query: suggestion?.query || prompt,
+    action: suggestion?.action || "",
+    prompt,
+    type: suggestion?.type || "",
+    value: suggestion?.value || prompt
   };
 }
 

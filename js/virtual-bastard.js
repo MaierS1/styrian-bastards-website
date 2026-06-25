@@ -22,6 +22,81 @@
     { label: "Fanartikel", query: "Welche Fanartikel gibt es aktuell?" },
     { label: "Kontakt", query: "Kontakt aufnehmen" }
   ];
+  const FOLLOW_UP_ACTIONS = [
+    {
+      action: "membership",
+      labels: ["beitritt", "mitglied werden", "mitgliedschaft", "mitgliedsantrag", "beitrag"],
+      answer: "Hier kannst du Mitglied werden. Auf der Mitgliedschaftsseite findest du Antrag, Ablauf und die wichtigsten Infos zum Beitritt.",
+      links: [{ label: "Mitglied werden", href: "/mitglied-werden.html" }],
+      quickReplies: [
+        { label: "Beitrag", query: "Was kostet die Mitgliedschaft?" },
+        { label: "Kontakt", query: "Kontakt aufnehmen" },
+        { label: "Events", query: "Wann ist das nächste Event?" }
+      ]
+    },
+    {
+      action: "events-query",
+      labels: ["events", "nachste events", "naechste events", "event", "termine"],
+      prompt: "Wann ist das nächste Event?"
+    },
+    {
+      action: "event-details",
+      labels: ["details", "eventdetails", "anfahrt", "anmeldung"],
+      answer: "Details, Anmeldung und Anfahrt findest du direkt im Eventbereich. Wenn du konkrete Fragen hast, schreib uns am besten über Kontakt.",
+      links: [
+        { label: "Events", href: "/index.html#events" },
+        { label: "Kontakt", href: "/kontakt.html" }
+      ],
+      quickReplies: [
+        { label: "Kontakt", query: "Kontakt aufnehmen" },
+        { label: "Fanartikel", query: "Welche Fanartikel gibt es aktuell?" }
+      ]
+    },
+    {
+      action: "shop-query",
+      labels: ["fanartikel", "shop", "merch"],
+      prompt: "Welche Fanartikel gibt es aktuell?"
+    },
+    {
+      action: "shop-details",
+      labels: ["hoodies", "t-shirts", "verfuegbarkeit", "verfügbarkeit"],
+      answer: "Für konkrete Größen, Varianten oder Verfügbarkeit öffnest du am besten den Shop. Dort siehst du die aktuellen Fanartikel und Details.",
+      links: [{ label: "Shop & Fanartikel", href: "/merch.html" }],
+      quickReplies: [
+        { label: "Kontakt", query: "Kontakt aufnehmen" },
+        { label: "Nächste Events", query: "Wann ist das nächste Event?" }
+      ]
+    },
+    {
+      action: "sponsors-details",
+      labels: ["sponsorendetails", "partner werden", "sponsor werden"],
+      answer: "Wenn du Partner oder Sponsor werden möchtest, ist die Sponsoren-Seite der richtige Einstieg. Für konkrete Möglichkeiten kannst du uns direkt kontaktieren.",
+      links: [
+        { label: "Sponsoren", href: "/sponsoren.html" },
+        { label: "Kontakt", href: "/kontakt.html" }
+      ],
+      quickReplies: [
+        { label: "Kontakt", query: "Kontakt aufnehmen" },
+        { label: "Fanartikel", query: "Welche Fanartikel gibt es aktuell?" }
+      ]
+    },
+    {
+      action: "sponsors-query",
+      labels: ["sponsoren", "partner"],
+      prompt: "Welche Sponsoren habt ihr?"
+    },
+    {
+      action: "contact",
+      labels: ["kontakt", "e-mail", "email", "telefon", "ansprechperson"],
+      answer: "Hier kommst du direkt zur Kontaktseite. Dort erreichst du die Styrian Bastards für Fragen zu Mitgliedschaft, Events, Sponsoring oder Presse.",
+      links: [{ label: "Kontakt", href: "/kontakt.html" }],
+      quickReplies: [
+        { label: "Mitglied werden", query: "Mitglied werden" },
+        { label: "Nächste Events", query: "Wann ist das nächste Event?" },
+        { label: "Sponsoren", query: "Welche Sponsoren habt ihr?" }
+      ]
+    }
+  ];
   const PERSONALITY = Object.freeze({
     identity: {
       name: "Virtual Bastard",
@@ -453,6 +528,60 @@
       seenQueries.add(normalizedQuery);
       return true;
     });
+  }
+
+  function normalizeQuickReply(reply) {
+    if (typeof reply === "string") {
+      return {
+        label: reply,
+        query: reply,
+        action: "",
+        prompt: reply,
+        type: "",
+        value: reply
+      };
+    }
+
+    const label = reply?.label || reply?.title || reply?.query || reply?.prompt || reply?.value || "";
+    const prompt = reply?.prompt || reply?.query || reply?.value || label;
+
+    return {
+      label,
+      query: reply?.query || prompt,
+      action: reply?.action || "",
+      prompt,
+      type: reply?.type || "",
+      value: reply?.value || prompt
+    };
+  }
+
+  function followUpActionFor(reply) {
+    const normalizedReply = normalizeQuickReply(reply);
+    const candidates = [
+      normalizedReply.action,
+      normalizedReply.type,
+      normalizedReply.value,
+      normalizedReply.prompt,
+      normalizedReply.query,
+      normalizedReply.label
+    ].map(normalize).filter(Boolean);
+
+    const exactMatch = FOLLOW_UP_ACTIONS.find((entry) => (
+      candidates.some((candidate) => (
+        normalize(entry.action) === candidate ||
+        entry.labels.some((label) => candidate === normalize(label))
+      ))
+    ));
+    if (exactMatch) return exactMatch;
+
+    return FOLLOW_UP_ACTIONS.find((entry) => (
+      candidates.some((candidate) => (
+        entry.labels.some((label) => {
+          const normalizedLabel = normalize(label);
+          return normalizedLabel && candidate.includes(normalizedLabel);
+        })
+      ))
+    )) || null;
   }
 
   function clarificationAnswer() {
@@ -1013,10 +1142,12 @@
     return `
       <div class="sb-vb-quick-replies" aria-label="Weitere Vorschl\u00e4ge">
         ${replies.slice(0, 3).map((reply) => {
-          const label = typeof reply === "string" ? reply : reply?.label;
-          const query = typeof reply === "string" ? reply : reply?.query;
+          const normalizedReply = normalizeQuickReply(reply);
+          const label = normalizedReply.label;
+          const query = normalizedReply.query || normalizedReply.prompt || normalizedReply.value;
           if (!label || !query) return "";
-          return `<button class="sb-vb-quick-reply" type="button" data-vb-query="${escapeHtml(query)}">${escapeHtml(label)}</button>`;
+          const action = followUpActionFor(normalizedReply)?.action || normalizedReply.action || "";
+          return `<button class="sb-vb-quick-reply" type="button" data-vb-query="${escapeHtml(query)}" data-vb-action="${escapeHtml(action)}" data-vb-prompt="${escapeHtml(normalizedReply.prompt)}" data-vb-type="${escapeHtml(normalizedReply.type)}" data-vb-value="${escapeHtml(normalizedReply.value)}">${escapeHtml(label)}</button>`;
         }).join("")}
       </div>`;
   }
@@ -1093,7 +1224,7 @@
   async function getPlatformAiClient() {
     if (state.platformAiClient) return state.platformAiClient;
 
-    state.platformAiClient = await import("./virtual-bastard/index.js?v=4.4.0");
+    state.platformAiClient = await import("./virtual-bastard/index.js?v=4.4.1");
     state.platformAiSession = state.platformAiSession || state.platformAiClient.createSession();
 
     return state.platformAiClient;
@@ -1231,12 +1362,15 @@
 
     const knowledgeReady = loadKnowledge();
 
-    async function answerQuery(query) {
+    async function answerQuery(query, options = {}) {
       const trimmed = query.trim();
       if (!trimmed) return;
+      const displayUserMessage = options.displayUserMessage !== false;
 
       await knowledgeReady;
-      appendMessage(chatLog, "user", trimmed);
+      if (displayUserMessage) {
+        appendMessage(chatLog, "user", trimmed);
+      }
 
       const detectedIntent = detectIntent(trimmed);
 
@@ -1358,6 +1492,50 @@
       setMascotState(root, "think", "think");
     }
 
+    function markQuickRepliesUsed(button) {
+      const group = button.closest(".sb-vb-quick-replies");
+      if (!group) return;
+
+      group.classList.add("sb-vb-quick-replies-used");
+      group.querySelectorAll(".sb-vb-quick-reply").forEach((replyButton) => {
+        replyButton.disabled = true;
+        replyButton.setAttribute("aria-disabled", "true");
+      });
+      button.classList.add("sb-vb-quick-reply-used");
+    }
+
+    async function handleQuickReply(quickReply) {
+      if (quickReply.disabled) return;
+
+      markQuickRepliesUsed(quickReply);
+
+      const reply = {
+        label: quickReply.textContent || "",
+        query: quickReply.dataset.vbQuery || "",
+        action: quickReply.dataset.vbAction || "",
+        prompt: quickReply.dataset.vbPrompt || "",
+        type: quickReply.dataset.vbType || "",
+        value: quickReply.dataset.vbValue || ""
+      };
+      const action = followUpActionFor(reply);
+      const userLabel = reply.label.trim() || reply.query.trim();
+      if (userLabel) {
+        appendMessage(chatLog, "user", userLabel);
+      }
+
+      if (action?.answer) {
+        appendMessage(chatLog, "bot", action.answer, {
+          links: action.links,
+          quickReplies: action.quickReplies || FRIENDLY_QUICK_REPLIES
+        });
+        setMascotState(root, "success");
+        return;
+      }
+
+      const prompt = action?.prompt || reply.prompt || reply.query || reply.value || reply.label;
+      await answerQuery(prompt, { displayUserMessage: false });
+    }
+
     function openPanel() {
       panel.hidden = false;
       toggle.setAttribute("aria-expanded", "true");
@@ -1398,7 +1576,7 @@
       const quickReply = event.target.closest(".sb-vb-quick-reply");
       if (!quickReply) return;
 
-      answerQuery(quickReply.dataset.vbQuery || quickReply.textContent || "");
+      handleQuickReply(quickReply);
       chatInput.focus({ preventScroll: true });
     });
 
