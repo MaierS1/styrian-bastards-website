@@ -183,6 +183,27 @@
   margin: 0;
 }
 
+.sb-vb-chat-bubble p + p {
+  margin-top: 7px;
+}
+
+.sb-vb-chat-bubble ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+
+.sb-vb-chat-bubble li + li {
+  margin-top: 4px;
+}
+
+.sb-vb-chat-message-loading {
+  opacity: .78;
+}
+
+.sb-vb-chat-message-loading .sb-vb-chat-bubble {
+  font-style: italic;
+}
+
 .sb-vb-chat-links,
 .sb-vb-quick-replies {
   display: flex;

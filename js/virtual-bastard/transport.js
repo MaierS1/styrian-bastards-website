@@ -1,5 +1,6 @@
 export const MODE = "mock";
 const AI_ENDPOINT = "https://ekaxdyysefmypkainhij.supabase.co/functions/v1/ai-chat";
+const AI_UNAVAILABLE_MESSAGE = "Entschuldige, ich erreiche meine KI gerade nicht zuverlässig. Du kannst mir trotzdem Fragen zu Mitgliedschaft, Events, Shop, Sponsoren oder Kontakt stellen – ich versuche dir mit den vorhandenen Vereinsinfos zu helfen.";
 
 function isDevelopment() {
   const hostname = globalThis.location?.hostname || "";
@@ -25,7 +26,7 @@ function platformRequestBody(request) {
 
 function normalizePlatformResponse(data, request) {
   const response = data?.response || data || {};
-  const selectedTool = data?.selectedTool || response.selectedTool || null;
+  const selectedTool = normalizeSelectedTool(data?.selectedTool || response.selectedTool || null);
 
   return {
     success: Boolean(data?.success ?? response.success),
@@ -54,6 +55,22 @@ function normalizePlatformResponse(data, request) {
   };
 }
 
+function normalizeSelectedTool(selectedTool) {
+  if (!selectedTool) return null;
+
+  if (typeof selectedTool === "string") {
+    return {
+      toolId: selectedTool,
+      reason: null
+    };
+  }
+
+  return {
+    ...selectedTool,
+    toolId: selectedTool.toolId || selectedTool.id || selectedTool.name || null
+  };
+}
+
 function mockResponse(request) {
   return {
     success: true,
@@ -64,10 +81,10 @@ function mockResponse(request) {
     },
     response: {
       success: true,
-      message: `Mock Response: "${request.message}" wurde fuer den Platform-AI-Client vorbereitet.`,
+      message: AI_UNAVAILABLE_MESSAGE,
       confidence: 1,
-      followUps: ["Events", "Mitgliedschaft", "Shop"],
-      suggestedActions: ["Events", "Mitgliedschaft", "Shop"],
+      followUps: ["Mitglied werden", "Nächste Events", "Fanartikel", "Kontakt"],
+      suggestedActions: ["Mitglied werden", "Nächste Events", "Fanartikel", "Kontakt"],
       tool: null,
       source: "mock",
       sources: ["mock"]

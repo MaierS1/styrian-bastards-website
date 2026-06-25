@@ -15,6 +15,13 @@
     { label: "Mitglied werden", href: "/mitglied-werden.html" },
     { label: "Events", href: "/index.html#events" }
   ];
+  const AI_UNAVAILABLE_MESSAGE = "Entschuldige, ich erreiche meine KI gerade nicht zuverlässig. Du kannst mir trotzdem Fragen zu Mitgliedschaft, Events, Shop, Sponsoren oder Kontakt stellen – ich versuche dir mit den vorhandenen Vereinsinfos zu helfen.";
+  const FRIENDLY_QUICK_REPLIES = [
+    { label: "Mitglied werden", query: "Mitglied werden" },
+    { label: "Nächste Events", query: "Wann ist das nächste Event?" },
+    { label: "Fanartikel", query: "Welche Fanartikel gibt es aktuell?" },
+    { label: "Kontakt", query: "Kontakt aufnehmen" }
+  ];
   const PERSONALITY = Object.freeze({
     identity: {
       name: "Virtual Bastard",
@@ -358,18 +365,23 @@
     return `${greeting} Ich bin der Virtual Bastard. Wobei kann ich dir helfen?`;
   }
 
+  function friendlyGreetingMessage() {
+    return "Servus! Ich bin der Virtual Bastard. Frag mich gerne zu Mitgliedschaft, Events, Fanartikeln, Sponsoren oder Kontakt.";
+  }
+
   function farewellMessage() {
-    return pickVariedPhrase(PERSONALITY.farewells, "lastFarewell");
+    return "Gerne! Bis bald und schwarz-weiße Grüße.";
   }
 
   function isGreeting(query) {
-    return ["servus", "hallo", "hi", "guten tag", "gruss dich", "gruess dich"]
+    return ["servus", "hallo", "hi", "guten tag", "guten morgen", "guten abend", "gruss dich", "gruess dich"]
       .includes(normalize(query));
   }
 
   function isFarewell(query) {
+    const text = normalize(query);
     return ["danke", "vielen dank", "danke dir", "tschuss", "tschuess", "ciao", "bis bald", "auf wiedersehen"]
-      .includes(normalize(query));
+      .includes(text) || text.includes("servus bis bald");
   }
 
   function applyPersonality(content) {
@@ -1013,6 +1025,36 @@
     log.scrollTop = log.scrollHeight;
   }
 
+  function messageContentMarkup(content) {
+    const lines = String(content ?? "").replace(/\r\n?/g, "\n").split("\n");
+    const html = [];
+    let bulletItems = [];
+
+    function flushBullets() {
+      if (!bulletItems.length) return;
+      html.push(`<ul>${bulletItems.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`);
+      bulletItems = [];
+    }
+
+    lines.forEach((line) => {
+      const trimmed = line.trim();
+      const bulletMatch = trimmed.match(/^[-*]\s+(.+)$/);
+
+      if (bulletMatch) {
+        bulletItems.push(bulletMatch[1]);
+        return;
+      }
+
+      flushBullets();
+      if (trimmed) {
+        html.push(`<p>${escapeHtml(trimmed)}</p>`);
+      }
+    });
+
+    flushBullets();
+    return html.length ? html.join("") : "<p></p>";
+  }
+
   function appendMessage(log, type, content, options = {}) {
     const message = document.createElement("article");
     message.className = `sb-vb-chat-message sb-vb-chat-message-${type}`;
@@ -1022,7 +1064,7 @@
     message.innerHTML = `
       <span class="sb-vb-chat-label">${label}</span>
       <div class="sb-vb-chat-bubble">
-        <p>${escapeHtml(displayedContent)}</p>
+        ${messageContentMarkup(displayedContent)}
         ${linksMarkup(options.links)}
         ${quickRepliesMarkup(options.quickReplies)}
       </div>
@@ -1030,12 +1072,28 @@
 
     log.appendChild(message);
     scrollChatToEnd(log);
+    return message;
+  }
+
+  function appendLoadingMessage(log) {
+    const existing = log.querySelector(".sb-vb-chat-message-loading");
+    if (existing) return existing;
+
+    const message = appendMessage(log, "bot", "Virtual Bastard denkt kurz nach …");
+    message.classList.add("sb-vb-chat-message-loading");
+    return message;
+  }
+
+  function removeLoadingMessage(message) {
+    if (message?.isConnected) {
+      message.remove();
+    }
   }
 
   async function getPlatformAiClient() {
     if (state.platformAiClient) return state.platformAiClient;
 
-    state.platformAiClient = await import("./virtual-bastard/index.js");
+    state.platformAiClient = await import("./virtual-bastard/index.js?v=4.4.0");
     state.platformAiSession = state.platformAiSession || state.platformAiClient.createSession();
 
     return state.platformAiClient;
@@ -1056,7 +1114,10 @@
       { role: "assistant", message: rendered.message }
     );
     state.platformAiSession.currentIntent = result.intent || state.platformAiSession.currentIntent;
-    state.platformAiSession.lastTool = result.selectedTool?.toolId || state.platformAiSession.lastTool;
+    const selectedToolId = typeof result.selectedTool === "string"
+      ? result.selectedTool
+      : result.selectedTool?.toolId;
+    state.platformAiSession.lastTool = selectedToolId || state.platformAiSession.lastTool;
 
     appendMessage(chatLog, "bot", rendered.message, {
       quickReplies: rendered.quickReplies
@@ -1177,27 +1238,45 @@
       await knowledgeReady;
       appendMessage(chatLog, "user", trimmed);
 
-      if (USE_PLATFORM_AI) {
-        setMascotState(root, "think", "think");
-        await answerWithPlatformAi(chatLog, trimmed);
-        setMascotState(root, "success");
-        return;
-      }
-
       const detectedIntent = detectIntent(trimmed);
 
       if (isGreeting(trimmed)) {
-        appendMessage(chatLog, "bot", greetingMessage(), {
-          quickReplies: quickRepliesForIntent(INTENTS.GENERAL)
+        appendMessage(chatLog, "bot", friendlyGreetingMessage(), {
+          quickReplies: FRIENDLY_QUICK_REPLIES
         });
         setMascotState(root, "speak");
         return;
       }
 
       if (isFarewell(trimmed)) {
-        appendMessage(chatLog, "bot", farewellMessage());
+        appendMessage(chatLog, "bot", farewellMessage(), {
+          quickReplies: FRIENDLY_QUICK_REPLIES
+        });
         resetConversationContext();
         setMascotState(root, "wave");
+        return;
+      }
+
+      if (USE_PLATFORM_AI) {
+        setMascotState(root, "think", "think");
+        const loadingMessage = appendLoadingMessage(chatLog);
+
+        try {
+          await answerWithPlatformAi(chatLog, trimmed);
+          setMascotState(root, "success");
+        } catch (error) {
+          if (globalThis.location?.hostname === "localhost" || globalThis.location?.hostname === "127.0.0.1") {
+            console.warn("Virtual Bastard Platform AI failed.", error);
+          }
+
+          appendMessage(chatLog, "bot", AI_UNAVAILABLE_MESSAGE, {
+            quickReplies: FRIENDLY_QUICK_REPLIES
+          });
+          setMascotState(root, "think", "think");
+        } finally {
+          removeLoadingMessage(loadingMessage);
+        }
+
         return;
       }
 
