@@ -1,7 +1,8 @@
 {
   "scripts": {
     "check:encoding": "node scripts/check-encoding.js",
-    "build": "npm run check:encoding && node scripts/build.js",
+    "check:hero": "node scripts/check-hero.js",
+    "build": "npm run check:encoding && npm run check:hero && node scripts/build.js",
     "dev": "node scripts/dev.js"
   }
 }
