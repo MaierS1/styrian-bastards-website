@@ -1,0 +1,12 @@
+/* Restores the original homepage hero design after the CSP cleanup. */
+section.hero {
+    min-height: 100vh;
+    background-image:
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.85)),
+        url("/assets/images/styrian-bastards-background.png") !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    background-color: #050505 !important;
+    background-blend-mode: normal !important;
+}
