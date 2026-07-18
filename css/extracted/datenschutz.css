@@ -1,0 +1,436 @@
+/* Extracted from datenschutz.html style block 1 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #050505;
+    color: white;
+    font-family: 'Oswald', sans-serif;
+    overflow-x: hidden;
+}
+
+.hero {
+    min-height: 100vh;
+    background-image:
+        linear-gradient(to bottom, rgba(0,0,0,0.45), rgba(0,0,0,0.85)),
+        url("assets/images/styrian-bastards-background.png");
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+}
+
+nav {
+    width: 100%;
+    padding: 24px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(6px);
+}
+
+.logo {
+    font-family: 'Cinzel', serif;
+    font-size: 2rem;
+    color: white;
+}
+
+.logo span {
+    color: #c1121f;
+}
+
+nav ul {
+    display: flex;
+    gap: 30px;
+    list-style: none;
+}
+
+nav a {
+    text-decoration: none;
+    color: white;
+    font-size: 1rem;
+    transition: 0.3s;
+}
+
+nav a:hover {
+    color: #c1121f;
+}
+
+.content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 80px;
+}
+
+.textbox {
+    max-width: 700px;
+    background: rgba(0,0,0,0.55);
+    padding: 40px;
+    border-left: 4px solid #c1121f;
+    backdrop-filter: blur(4px);
+}
+
+.subtitle {
+    color: #c1121f;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+h1 {
+    font-size: 6rem;
+    line-height: 0.9;
+    text-transform: uppercase;
+    margin-bottom: 25px;
+}
+
+.textbox p {
+    color: #ddd;
+    font-size: 1.3rem;
+    line-height: 1.7;
+    margin-bottom: 35px;
+}
+
+.buttons {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 16px 32px;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-weight: bold;
+    transition: 0.3s;
+    border: 2px solid #c1121f;
+}
+
+.btn-primary {
+    background: #c1121f;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #8d0d16;
+}
+
+.btn-secondary {
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: white;
+    color: black;
+}
+
+.section {
+    padding: 100px 30px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.section h2 {
+    font-size: 3rem;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
+    gap: 25px;
+    margin-top: 40px;
+}
+
+.card {
+    background: #111;
+    border: 1px solid #222;
+    padding: 30px;
+    border-radius: 14px;
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: #c1121f;
+}
+
+.card h3 {
+    margin-bottom: 15px;
+    color: #c1121f;
+}
+
+footer {
+    padding: 40px;
+    text-align: center;
+    background: black;
+    color: #777;
+}
+
+@media(max-width: 900px) {
+    nav {
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px;
+    }
+
+    nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .content {
+        padding: 30px;
+    }
+
+    .textbox {
+        padding: 25px;
+    }
+
+    h1 {
+        font-size: 3.5rem;
+    }
+}
+
+/* Extracted from datenschutz.html style block 2 */
+.hero{
+    background:#000 !important;
+    min-height:100vh;
+    position:relative;
+}
+
+.hero::before,
+.hero::after{
+    display:none !important;
+}
+
+.content{
+    position:relative;
+    z-index:5;
+}
+
+.hero-clean{
+    position:absolute;
+    right:8%;
+    top:18%;
+    width:34%;
+    background:#050505;
+    padding:45px;
+    border-left:4px solid #b00018;
+}
+
+.hero-clean h2{
+    font-size:72px;
+    line-height:0.95;
+    text-transform:uppercase;
+    margin-bottom:25px;
+}
+
+.hero-clean p{
+    font-size:22px;
+    line-height:1.5;
+    color:#f2f2f2;
+}
+
+.hero-clean-points{
+    margin-top:25px;
+    display:grid;
+    gap:12px;
+    text-transform:uppercase;
+}
+
+@media(max-width:1000px){
+    .hero-clean{
+        position:relative;
+        width:90%;
+        right:auto;
+        top:auto;
+        margin:30px auto;
+    }
+
+    .hero-clean h2{
+        font-size:52px;
+    }
+}
+
+/* Extracted from datenschutz.html style block 3 */
+.logo img,
+.brand img{
+    display:block;
+    max-width:420px;
+    width:min(34vw,420px);
+    height:auto;
+}
+
+.logo,
+.brand{
+    display:flex;
+    align-items:center;
+}
+
+/* Extracted from datenschutz.html style block 4 */
+.impressum {
+    padding: 70px 8vw;
+    background: #080808;
+    border-top: 2px solid #b00018;
+    color: #f2f2f2;
+}
+
+.impressum h2 {
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 30px;
+}
+
+.impressum-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(220px, 1fr));
+    gap: 32px;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.impressum h3 {
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.impressum p {
+    margin-bottom: 12px;
+}
+
+.impressum a {
+    color: #ffffff;
+}
+
+@media (max-width: 800px) {
+    .impressum-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Extracted from datenschutz.html style block 5 */
+section.hero {
+    background-image: url("hero.jpg") !important;
+    background-size: cover !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    background-color: transparent !important;
+    background-blend-mode: normal !important;
+}
+
+section.hero::before,
+section.hero::after {
+    display: none !important;
+    content: none !important;
+    background: transparent !important;
+}
+
+/* Extracted from datenschutz.html style block 6 */
+.social-links{
+    display:flex;
+    gap:18px;
+    margin-top:18px;
+    justify-content:center;
+    align-items:center;
+}
+
+.social-links a{
+    color:#ffffff;
+    font-size:28px;
+    transition:0.25s ease;
+}
+
+.social-links a:hover{
+    color:#c00018;
+    transform:translateY(-3px);
+}
+
+/* Extracted from datenschutz.html style block 7 */
+.privacy-section {
+    padding: 90px 10%;
+    background: #050505;
+}
+
+.privacy-wrapper {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.privacy-section h2 {
+    font-size: clamp(2.2rem, 5vw, 4.5rem);
+    text-transform: uppercase;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.privacy-lead {
+    max-width: 900px;
+    margin: 0 auto 55px auto;
+    text-align: center;
+    color: #d8d8d8;
+    font-size: 1.15rem;
+    line-height: 1.8;
+}
+
+.privacy-card {
+    background: rgba(10,10,10,0.88);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-left: 5px solid #b00018;
+    padding: 30px;
+    margin-bottom: 26px;
+    box-shadow: 0 20px 45px rgba(0,0,0,0.35);
+}
+
+.privacy-card h3 {
+    font-size: 1.65rem;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    color: #ffffff;
+}
+
+.privacy-card p,
+.privacy-card li {
+    color: #d2d2d2;
+    font-size: 1.05rem;
+    line-height: 1.75;
+}
+
+.privacy-card ul {
+    margin-left: 22px;
+    margin-top: 10px;
+}
+
+.privacy-card a {
+    color: #ffffff;
+    text-decoration: underline;
+    text-decoration-color: #b00018;
+}
+
+.privacy-note {
+    margin-top: 45px;
+    color: #aaaaaa;
+    text-align: center;
+    font-size: 0.95rem;
+}
+
+@media (max-width: 800px) {
+    .privacy-section {
+        padding: 70px 22px;
+    }
+
+    .privacy-card {
+        padding: 24px 20px;
+    }
+
+    .privacy-card h3 {
+        font-size: 1.35rem;
+    }
+}

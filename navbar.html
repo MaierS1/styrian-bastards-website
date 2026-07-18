@@ -1,102 +1,12 @@
 <!-- Favicon -->
 <meta name="robots" content="noindex,nofollow">
+<link rel="stylesheet" href="/css/extracted/navbar.css">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" href="/favicon.ico">
 
 <!-- Styrian Bastards Navbar -->
-<style>
-
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600&display=swap');
-
-.sb-navbar{
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    z-index:9999;
-
-    background:rgba(0,0,0,0.88);
-    backdrop-filter:blur(8px);
-
-    border-bottom:1px solid rgba(255,255,255,0.08);
-
-    padding:14px 28px;
-    box-sizing:border-box;
-}
-
-.sb-navbar-container{
-    width:100%;
-
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-}
-
-/* LOGO */
-
-.sb-navbar-logo img{
-    height:62px;
-    width:auto;
-    display:block;
-}
-
-/* MENÜ */
-
-.sb-navbar-menu{
-    display:flex;
-    align-items:center;
-    gap:30px;
-}
-
-.sb-navbar-menu a{
-    color:#ffffff;
-    text-decoration:none;
-
-    font-family:'Oswald', sans-serif;
-    font-size:1rem;
-    font-weight:500;
-
-    text-transform:uppercase;
-    letter-spacing:1px;
-
-    transition:0.25s ease;
-}
-
-.sb-navbar-menu a:hover{
-    color:#b30018;
-}
-
-/* MOBILE */
-
-@media (max-width:950px){
-
-    .sb-navbar{
-        padding:18px;
-    }
-
-    .sb-navbar-container{
-        flex-direction:column;
-        gap:18px;
-    }
-
-    .sb-navbar-logo img{
-        height:52px;
-    }
-
-    .sb-navbar-menu{
-        flex-wrap:wrap;
-        justify-content:center;
-        gap:16px;
-    }
-
-    .sb-navbar-menu a{
-        font-size:0.92rem;
-    }
-}
-
-</style>
 
 <nav class="sb-navbar">
 

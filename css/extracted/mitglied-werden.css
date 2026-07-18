@@ -1,0 +1,651 @@
+/* Extracted from mitglied-werden.html style block 1 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #050505;
+    color: white;
+    font-family: 'Oswald', sans-serif;
+    overflow-x: hidden;
+}
+
+.hero {
+    padding-top: 130px;
+    min-height: 100vh;
+    background-image:
+        linear-gradient(to bottom, rgba(0,0,0,0.45), rgba(0,0,0,0.85)),
+        url("assets/images/styrian-bastards-background.png");
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+}
+
+nav {
+    width: 100%;
+    padding: 24px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(6px);
+}
+
+.logo {
+    font-family: 'Cinzel', serif;
+    font-size: 2rem;
+    color: white;
+}
+
+.logo span {
+    color: #c1121f;
+}
+
+nav ul {
+    display: flex;
+    gap: 30px;
+    list-style: none;
+}
+
+nav a {
+    text-decoration: none;
+    color: white;
+    font-size: 1rem;
+    transition: 0.3s;
+}
+
+nav a:hover {
+    color: #c1121f;
+}
+
+.content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 80px;
+}
+
+.textbox {
+    max-width: 700px;
+    background: rgba(0,0,0,0.55);
+    padding: 40px;
+    border-left: 4px solid #c1121f;
+    backdrop-filter: blur(4px);
+}
+
+.subtitle {
+    color: #c1121f;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+h1 {
+    font-size: 6rem;
+    line-height: 0.9;
+    text-transform: uppercase;
+    margin-bottom: 25px;
+}
+
+.textbox p {
+    color: #ddd;
+    font-size: 1.3rem;
+    line-height: 1.7;
+    margin-bottom: 35px;
+}
+
+.buttons {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 16px 32px;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-weight: bold;
+    transition: 0.3s;
+    border: 2px solid #c1121f;
+}
+
+.btn-primary {
+    background: #c1121f;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #8d0d16;
+}
+
+.btn-secondary {
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: white;
+    color: black;
+}
+
+.section {
+    padding: 100px 30px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.section h2 {
+    font-size: 3rem;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
+    gap: 25px;
+    margin-top: 40px;
+}
+
+.card {
+    background: #111;
+    border: 1px solid #222;
+    padding: 30px;
+    border-radius: 14px;
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: #c1121f;
+}
+
+.card h3 {
+    margin-bottom: 15px;
+    color: #c1121f;
+}
+
+footer {
+    padding: 40px;
+    text-align: center;
+    background: black;
+    color: #777;
+}
+
+@media(max-width: 900px) {
+    nav {
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px;
+    }
+
+    nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .content {
+        padding: 30px;
+    }
+
+    .textbox {
+        padding: 25px;
+    }
+
+    h1 {
+        font-size: 3.5rem;
+    }
+}
+
+.file-validation-message{
+    display:block;
+    margin-top:8px;
+    color:rgba(255,255,255,0.72);
+    font-size:0.92rem;
+    line-height:1.4;
+}
+
+.file-validation-message.error{
+    color:#ff6b6b;
+}
+
+.file-validation-message.ok{
+    color:#7CFF9B;
+}
+
+/* Extracted from mitglied-werden.html style block 2 */
+.hero{
+    background:#000 !important;
+    min-height:100vh;
+    position:relative;
+}
+
+.hero::before,
+.hero::after{
+    display:none !important;
+}
+
+.content{
+    position:relative;
+    z-index:5;
+}
+
+.hero-clean{
+    position:absolute;
+    right:8%;
+    top:18%;
+    width:34%;
+    background:#050505;
+    padding:45px;
+    border-left:4px solid #b00018;
+}
+
+.hero-clean h2{
+    font-size:72px;
+    line-height:0.95;
+    text-transform:uppercase;
+    margin-bottom:25px;
+}
+
+.hero-clean p{
+    font-size:22px;
+    line-height:1.5;
+    color:#f2f2f2;
+}
+
+.hero-clean-points{
+    margin-top:25px;
+    display:grid;
+    gap:12px;
+    text-transform:uppercase;
+}
+
+@media(max-width:1000px){
+    .hero-clean{
+        position:relative;
+        width:90%;
+        right:auto;
+        top:auto;
+        margin:30px auto;
+    }
+
+    .hero-clean h2{
+        font-size:52px;
+    }
+}
+
+/* Extracted from mitglied-werden.html style block 3 */
+.logo img,
+.brand img{
+    display:block;
+    max-width:420px;
+    width:min(34vw,420px);
+    height:auto;
+}
+
+.logo,
+.brand{
+    display:flex;
+    align-items:center;
+}
+
+/* Extracted from mitglied-werden.html style block 4 */
+.impressum {
+    padding: 70px 8vw;
+    background: #080808;
+    border-top: 2px solid #b00018;
+    color: #f2f2f2;
+}
+
+.impressum h2 {
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 30px;
+}
+
+.impressum-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(220px, 1fr));
+    gap: 32px;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.impressum h3 {
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.impressum p {
+    margin-bottom: 12px;
+}
+
+.impressum a {
+    color: #ffffff;
+}
+
+@media (max-width: 800px) {
+    .impressum-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Extracted from mitglied-werden.html style block 5 */
+section.hero {
+    background-image: url("hero.jpg") !important;
+    background-size: cover !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    background-color: transparent !important;
+    background-blend-mode: normal !important;
+}
+
+section.hero::before,
+section.hero::after {
+    display: none !important;
+    content: none !important;
+    background: transparent !important;
+}
+
+/* Extracted from mitglied-werden.html style block 6 */
+.social-links{
+    display:flex;
+    gap:18px;
+    margin-top:18px;
+    justify-content:center;
+    align-items:center;
+}
+
+.social-links a{
+    color:#ffffff;
+    font-size:28px;
+    transition:0.25s ease;
+}
+
+.social-links a:hover{
+    color:#c00018;
+    transform:translateY(-3px);
+}
+
+/* Extracted from mitglied-werden.html style block 7 */
+.membership-intro {
+    max-width: 900px;
+    margin: 0 auto 40px auto;
+    text-align: center;
+    color: #d9d9d9;
+    font-size: 1.15rem;
+}
+
+.membership-form {
+    max-width: 980px;
+    margin: 0 auto;
+    background: rgba(15,15,15,0.96);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-left: 5px solid #b00018;
+    padding: 42px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.55);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.full {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.95rem;
+    color: #ffffff;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    background: #090909;
+    color: #ffffff;
+    border: 1px solid rgba(255,255,255,0.18);
+    padding: 15px 16px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 1rem;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #b00018;
+    box-shadow: 0 0 0 2px rgba(176,0,24,0.28);
+}
+
+.checkbox-row {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    color: #d9d9d9;
+    font-size: 1rem;
+    line-height: 1.55;
+}
+
+.checkbox-row input {
+    width: auto;
+    margin-top: 6px;
+    transform: scale(1.25);
+    accent-color: #b00018;
+}
+
+.form-note {
+    margin-top: 22px;
+    color: #bdbdbd;
+    font-size: 0.95rem;
+    line-height: 1.55;
+}
+
+.membership-info {
+    margin: 38px 0 34px;
+    display: grid;
+    gap: 24px;
+}
+
+.membership-info-card {
+    background: linear-gradient(145deg, rgba(17,17,17,0.96), rgba(8,8,8,0.98));
+    border: 1px solid rgba(255,255,255,0.08);
+    border-left: 4px solid #b00018;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.28);
+}
+
+.membership-info-card h3 {
+    color: #ffffff;
+    font-size: clamp(1.55rem, 3vw, 2.35rem);
+    line-height: 1;
+    margin-bottom: 18px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.membership-benefits,
+.membership-steps {
+    display: grid;
+    gap: 12px;
+    color: #d9d9d9;
+    line-height: 1.55;
+}
+
+.membership-benefits {
+    list-style: none;
+}
+
+.membership-benefits li {
+    position: relative;
+    padding-left: 22px;
+}
+
+.membership-benefits li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.65em;
+    width: 8px;
+    height: 8px;
+    background: #b00018;
+}
+
+.membership-types {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.membership-type {
+    background: #111;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 22px;
+}
+
+.membership-type h4 {
+    color: #ffffff;
+    font-size: 1.25rem;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.membership-price {
+    color: #b00018;
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.membership-type p {
+    color: #d0d0d0;
+    line-height: 1.55;
+}
+
+.membership-steps {
+    margin-left: 20px;
+    padding-left: 12px;
+}
+
+.membership-steps li::marker {
+    color: #b00018;
+    font-weight: 700;
+}
+
+.success-box {
+    display: none;
+    margin-top: 28px;
+    padding: 22px;
+    border-left: 5px solid #b00018;
+    background: #101010;
+    color: #ffffff;
+    font-size: 1.1rem;
+}
+
+.success-box:target {
+    display: block;
+}
+
+.submit-row {
+    margin-top: 30px;
+}
+
+.submit-row button {
+    width: 100%;
+    background: #b00018;
+    color: #ffffff;
+    border: 0;
+    padding: 17px 24px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.submit-row button:hover {
+    background: #d0001f;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 800px) {
+    .membership-info-card {
+        padding: 24px 20px;
+    }
+
+    .membership-types {
+        grid-template-columns: 1fr;
+    }
+
+    .membership-form {
+        padding: 26px 20px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .hero {
+        min-height: 78vh;
+    }
+
+    .textbox {
+        width: 92%;
+    }
+}
+
+/* Extracted from mitglied-werden.html style block 8 */
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 26px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+nav ul li {
+    list-style: none;
+}
+
+nav ul li a {
+    color: #ffffff;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+nav ul li a:hover {
+    color: #b00018;
+}
+
+@media (max-width: 800px) {
+    nav ul {
+        justify-content: center;
+        gap: 14px;
+    }
+}
+
+.membership-download-actions {
+    justify-content: center;
+    margin-top: 30px;
+    text-align: center;
+}

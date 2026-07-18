@@ -36,6 +36,7 @@ Start with a shorter `max-age` during rollout if there is uncertainty about subd
 
 ## Known hardening follow-ups
 
-- The site still contains inline scripts and inline styles. The CSP therefore keeps `'unsafe-inline'` for `script-src` and `style-src` to avoid regressions. A stricter nonce/hash-based CSP requires moving inline scripts and styles into external files or generating per-page hashes.
+- Executable inline scripts and inline styles have been moved to external files. `script-src` and `style-src` no longer require `'unsafe-inline'`.
+- JSON-LD structured data remains inline on `index.html` and `faq.html`; both blocks are allowed through SHA-256 hashes in `script-src`.
 - External CDN resources currently do not use SRI. Candidates for future SRI are Font Awesome from `cdnjs.cloudflare.com` and the Supabase browser client from `cdn.jsdelivr.net`. Do not add SRI until the exact CDN versions are pinned.
 - The Facebook iframe remains blocked by consent markup and only receives `src` after `external-media` consent.

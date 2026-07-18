@@ -1,0 +1,150 @@
+/* Extracted from kontakt.html style block 1 */
+body{
+    background:#050505;
+    color:#ffffff;
+    font-family:'Oswald',Arial,sans-serif;
+}
+
+.contact-page{
+    min-height:100vh;
+    padding:150px 25px 80px;
+}
+
+.contact-shell{
+    max-width:1100px;
+    margin:0 auto;
+}
+
+.contact-kicker{
+    display:inline-flex;
+    width:max-content;
+    max-width:100%;
+    padding:6px 11px;
+    border:1px solid rgba(179,0,24,0.48);
+    border-radius:999px;
+    background:rgba(179,0,24,0.16);
+    color:#ffffff;
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:0.08em;
+    line-height:1.2;
+    text-transform:uppercase;
+}
+
+.contact-hero{
+    margin-bottom:34px;
+}
+
+.contact-hero h1{
+    margin:18px 0 14px;
+    font-size:clamp(2.8rem,7vw,5.8rem);
+    line-height:0.95;
+    letter-spacing:3px;
+    text-transform:uppercase;
+}
+
+.contact-hero p{
+    max-width:780px;
+    color:rgba(255,255,255,0.78);
+    font-size:1.1rem;
+    line-height:1.8;
+}
+
+.contact-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:24px;
+}
+
+.contact-card{
+    border:1px solid rgba(255,255,255,0.1);
+    border-left:4px solid #b30018;
+    border-radius:18px;
+    background:linear-gradient(145deg, rgba(17,17,17,0.96), rgba(8,8,8,0.98));
+    padding:30px;
+}
+
+.contact-card.is-wide{
+    grid-column:1/-1;
+}
+
+.contact-card h2{
+    margin:0 0 16px;
+    color:#ffffff;
+    font-size:clamp(1.5rem,3vw,2.25rem);
+    line-height:1;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+}
+
+.contact-list{
+    display:grid;
+    gap:14px;
+    list-style:none;
+}
+
+.contact-list li,
+.contact-card p{
+    color:rgba(255,255,255,0.8);
+    font-family:Arial,sans-serif;
+    font-size:1rem;
+    line-height:1.8;
+}
+
+.contact-list strong{
+    display:block;
+    color:#ffffff;
+    font-family:'Oswald',Arial,sans-serif;
+    font-size:0.95rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+}
+
+.contact-card a{
+    color:#ffffff;
+}
+
+.contact-card a:hover{
+    color:#c40018;
+}
+
+.social-links{
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+}
+
+.social-links a{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:44px;
+    padding:10px 16px;
+    border:1px solid rgba(255,255,255,0.14);
+    border-radius:10px;
+    background:#111;
+    color:#ffffff;
+    text-decoration:none;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    font-weight:800;
+}
+
+.social-links a:hover{
+    border-color:rgba(179,0,24,0.7);
+    color:#ffffff;
+}
+
+@media(max-width:900px){
+    .contact-page{
+        padding-top:185px;
+    }
+
+    .contact-grid{
+        grid-template-columns:1fr;
+    }
+
+    .contact-card{
+        padding:24px 20px;
+    }
+}

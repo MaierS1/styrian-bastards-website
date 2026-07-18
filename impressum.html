@@ -20,111 +20,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&family=Cinzel:wght@700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css">
-<style>
-body{
-    background:#050505;
-    color:#ffffff;
-    font-family:'Oswald',Arial,sans-serif;
-}
 
-.impressum-page{
-    min-height:100vh;
-    padding:150px 25px 80px;
-}
-
-.impressum-shell{
-    max-width:1100px;
-    margin:0 auto;
-}
-
-.impressum-kicker{
-    display:inline-flex;
-    width:max-content;
-    max-width:100%;
-    padding:6px 11px;
-    border:1px solid rgba(179,0,24,0.48);
-    border-radius:999px;
-    background:rgba(179,0,24,0.16);
-    color:#ffffff;
-    font-size:12px;
-    font-weight:800;
-    letter-spacing:0.08em;
-    line-height:1.2;
-    text-transform:uppercase;
-}
-
-.impressum-hero{
-    margin-bottom:34px;
-}
-
-.impressum-hero h1{
-    margin:18px 0 14px;
-    font-size:clamp(2.8rem,7vw,5.8rem);
-    line-height:0.95;
-    letter-spacing:3px;
-    text-transform:uppercase;
-}
-
-.impressum-card{
-    border:1px solid rgba(255,255,255,0.1);
-    border-radius:18px;
-    background:rgba(255,255,255,0.045);
-    padding:30px;
-}
-
-.impressum-grid{
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:22px;
-}
-
-.impressum-block{
-    min-width:0;
-}
-
-.impressum-block.is-wide{
-    grid-column:1/-1;
-}
-
-.impressum-block h2{
-    margin:0 0 10px;
-    color:#ffffff;
-    font-size:1.25rem;
-    letter-spacing:0.08em;
-    text-transform:uppercase;
-}
-
-.impressum-block p{
-    margin:0;
-    color:rgba(255,255,255,0.8);
-    font-family:Arial,sans-serif;
-    font-size:1rem;
-    line-height:1.8;
-}
-
-.impressum-block a{
-    color:#ffffff;
-}
-
-.impressum-block a:hover{
-    color:#c40018;
-}
-
-@media(max-width:900px){
-    .impressum-page{
-        padding-top:185px;
-    }
-
-    .impressum-grid{
-        grid-template-columns:1fr;
-    }
-
-    .impressum-card{
-        padding:22px;
-    }
-}
-</style>
 <link rel="stylesheet" href="/css/consent-manager.css">
+<link rel="stylesheet" href="/css/extracted/impressum.css">
 </head>
 <body>
 <div id="navbar"></div>
@@ -198,14 +96,7 @@ body{
 </main>
 
 <div id="footer"></div>
-<script>
-fetch('/navbar.html').then((response) => response.text()).then((html) => {
-    document.getElementById('navbar').innerHTML = html;
-});
-fetch('/footer.html').then((response) => response.text()).then((html) => {
-    document.getElementById('footer').innerHTML = html;
-});
-</script>
+<script src="/js/extracted/impressum.js"></script>
 <script src="/js/consent-manager.js" defer></script>
 
 </body>
