@@ -20,6 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&family=Cinzel:wght@700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/virtual-bastard.css">
+<link rel="stylesheet" href="/css/consent-manager.css">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -1330,6 +1331,10 @@ section.hero::after {
     background:#fff;
 }
 
+.facebook-feed-inner[hidden]{
+    display:none;
+}
+
 .facebook-feed-box iframe{
     display:block;
     width:500px;
@@ -1649,11 +1654,24 @@ Unsere Partner unterstützen den Fanclub und den Hockeysport in Graz. Hier zeige
         </div>
 
         <div class="facebook-feed-box">
-            <div class="facebook-feed-inner">
+            <div class="facebook-feed-placeholder" data-external-media-placeholder="facebook">
+                <div class="facebook-feed-placeholder-content">
+                    <h3>Facebook-Inhalte blockiert</h3>
+                    <p>
+                        Aus Datenschutzgr&uuml;nden wird der Facebook-Feed erst geladen, wenn du externe Medien aktivierst.
+                    </p>
+                    <button type="button" class="facebook-feed-consent-button" data-consent-enable="external-media">
+                        Facebook-Inhalte aktivieren
+                    </button>
+                </div>
+            </div>
+            <div class="facebook-feed-inner" hidden>
                 <iframe
-                    src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fstyrian.bastards&tabs=timeline&width=500&height=700&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=false"
+                    data-src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fstyrian.bastards&tabs=timeline&width=500&height=700&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=false"
+                    data-consent-category="external-media"
                     width="500"
                     height="700"
+                    title="Facebook-Feed der Styrian Bastards"
                     style="border:none;overflow:hidden"
                     scrolling="no"
                     frameborder="0"
@@ -1780,6 +1798,7 @@ fetch('footer.html')
 <script src="/merch-public-20260530.js"></script>
 <script src="events.js"></script>
 <script src="/js/virtual-bastard.js"></script>
+<script src="/js/consent-manager.js" defer></script>
 
 </body>
 </html>

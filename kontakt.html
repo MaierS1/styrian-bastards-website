@@ -171,6 +171,7 @@ body{
     }
 }
 </style>
+<link rel="stylesheet" href="/css/consent-manager.css">
 </head>
 <body>
 <div id="navbar"></div>
@@ -227,5 +228,7 @@ fetch('/footer.html').then((response) => response.text()).then((html) => {
     document.getElementById('footer').innerHTML = html;
 });
 </script>
+<script src="/js/consent-manager.js" defer></script>
+
 </body>
 </html>

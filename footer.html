@@ -31,6 +31,9 @@
                 <h3>Rechtliches</h3>
                 <a href="/impressum.html">Impressum</a>
                 <a href="/datenschutz.html">Datenschutz</a>
+                <button type="button" class="sb-footer-cookie-settings" data-consent-open>
+                    Cookie-Einstellungen
+                </button>
             </nav>
 
             <div class="sb-footer-socials" aria-label="Social Media">
@@ -79,25 +82,6 @@
         <span>Graz, &Ouml;sterreich</span>
     </div>
 </footer>
-
-<!-- COOKIE BANNER -->
-<div id="cookie-banner" class="sb-cookie-banner">
-    <div class="sb-cookie-content">
-
-        <div class="sb-cookie-text">
-            <strong>Datenschutz & Cookies</strong><br>
-            Diese Website verwendet technisch notwendige Funktionen sowie externe Inhalte
-            wie Social-Media-Links oder eingebettete Medien. Weitere Informationen findest du in der
-            <a href="/datenschutz.html">Datenschutzerkl&auml;rung</a>.
-        </div>
-
-        <button class="sb-cookie-btn"
-                onclick="localStorage.setItem('sbCookiesAccepted','true'); this.closest('#cookie-banner').style.opacity='0'; setTimeout(() => this.closest('#cookie-banner').style.display='none', 250);">
-            Akzeptieren
-        </button>
-
-    </div>
-</div>
 
 <style>
 .sb-footer {
@@ -220,7 +204,24 @@
     position: relative;
 }
 
-.sb-footer-links a::after {
+.sb-footer-cookie-settings {
+    width: max-content;
+    max-width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: rgba(255,255,255,0.82);
+    font: inherit;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-align: left;
+    text-transform: uppercase;
+    cursor: pointer;
+    position: relative;
+}
+
+.sb-footer-links a::after,
+.sb-footer-cookie-settings::after {
     content: "";
     position: absolute;
     left: 0;
@@ -231,8 +232,15 @@
     transition: width 0.25s ease;
 }
 
-.sb-footer-links a:hover::after {
+.sb-footer-links a:hover::after,
+.sb-footer-cookie-settings:hover::after,
+.sb-footer-cookie-settings:focus-visible::after {
     width: 100%;
+}
+
+.sb-footer-cookie-settings:hover,
+.sb-footer-cookie-settings:focus-visible {
+    color: #c40018;
 }
 
 .sb-footer-social-icons {
@@ -439,106 +447,6 @@
 
     .sb-footer-cta-button {
         width: 100%;
-    }
-}
-
-/* =========================================
-   COOKIE BANNER
-========================================= */
-
-.sb-cookie-banner{
-    position:fixed;
-    bottom:22px;
-    left:22px;
-    right:22px;
-
-    z-index:999999;
-
-    background:rgba(10,10,10,0.96);
-    border:1px solid rgba(255,255,255,0.12);
-
-    backdrop-filter:blur(10px);
-
-    border-radius:16px;
-
-    padding:22px 24px;
-
-    box-shadow:0 10px 40px rgba(0,0,0,0.45);
-
-    transition:0.3s ease;
-}
-
-.sb-cookie-content{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:25px;
-}
-
-.sb-cookie-text{
-    color:#ffffff;
-    font-size:0.96rem;
-    line-height:1.6;
-}
-
-.sb-cookie-text strong{
-    display:block;
-    margin-bottom:4px;
-    font-size:1rem;
-}
-
-.sb-cookie-text a{
-    color:#ffffff;
-    text-decoration:underline;
-}
-
-.sb-cookie-text a:hover{
-    color:#c40018;
-}
-
-.sb-cookie-btn{
-    background:#b30018;
-    color:#ffffff;
-
-    border:none;
-    outline:none;
-
-    padding:13px 22px;
-
-    border-radius:10px;
-
-    font-family:'Oswald', Arial, sans-serif;
-    font-size:0.95rem;
-    text-transform:uppercase;
-    letter-spacing:1px;
-
-    cursor:pointer;
-
-    transition:0.25s ease;
-}
-
-.sb-cookie-btn:hover{
-    background:#d1001c;
-    transform:translateY(-2px);
-}
-
-@media (max-width: 900px){
-
-    .sb-cookie-banner{
-        left:14px;
-        right:14px;
-        bottom:14px;
-
-        padding:18px;
-    }
-
-    .sb-cookie-content{
-        flex-direction:column;
-        align-items:flex-start;
-    }
-
-    .sb-cookie-btn{
-        width:100%;
     }
 }
 </style>

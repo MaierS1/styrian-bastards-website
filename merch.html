@@ -78,6 +78,7 @@ body{background:#050505;color:#ffffff;font-family:'Oswald',Arial,sans-serif}
 @media(max-width:900px){.merch-detail-page{padding-top:185px}.merch-detail-layout,.merch-detail-facts{grid-template-columns:1fr}.merch-detail-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:700px){.merch-order-form{grid-template-columns:1fr}.merch-order-request{padding:18px}.merch-order-submit{width:100%;justify-self:stretch}}
 </style>
+<link rel="stylesheet" href="/css/consent-manager.css">
 </head>
 <body>
 <div id="navbar"></div>
@@ -103,5 +104,7 @@ fetch('/footer.html').then((response) => response.text()).then((html) => {
 });
 </script>
 <script src="/merch-public-20260530.js"></script>
+<script src="/js/consent-manager.js" defer></script>
+
 </body>
 </html>

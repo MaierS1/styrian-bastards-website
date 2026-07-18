@@ -472,6 +472,7 @@ section.hero::after {
 }
 </style>
 
+<link rel="stylesheet" href="/css/consent-manager.css">
 </head>
 
 <body>
@@ -608,6 +609,15 @@ section.hero::after {
                 sind die jeweiligen Anbieter verantwortlich.
             </p>
             <p>
+                Eingebettete Facebook-Inhalte, insbesondere der Facebook-Feed auf der Startseite, werden aus Datenschutzgr&uuml;nden
+                standardm&auml;&szlig;ig blockiert. Eine Verbindung zu Facebook oder Facebook-Plugin-Domains wird erst hergestellt,
+                nachdem du der Kategorie "Externe Medien" aktiv zugestimmt hast.
+            </p>
+            <p>
+                Du kannst deine Einwilligung jederzeit &uuml;ber den Link "Cookie-Einstellungen" im Footer widerrufen.
+                Nach einem Widerruf wird der Facebook-Feed wieder entfernt und erst nach erneuter Zustimmung geladen.
+            </p>
+            <p>
                 Wir haben keinen Einfluss darauf, welche Daten diese Anbieter nach dem Anklicken des Links verarbeiten.
                 Bitte beachte die Datenschutzhinweise der jeweiligen Plattformen.
             </p>
@@ -723,6 +733,8 @@ fetch('footer.html')
         document.getElementById('footer').innerHTML = data;
     });
 </script>
+
+<script src="/js/consent-manager.js" defer></script>
 
 </body>
 </html>

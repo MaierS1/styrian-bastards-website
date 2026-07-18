@@ -47,6 +47,7 @@ body{background:#050505;color:#ffffff;font-family:'Oswald',Arial,sans-serif}
 .press-back{margin-bottom:28px}
 @media(max-width:900px){.press-page{padding-top:185px}.press-grid,.press-card{grid-template-columns:1fr}.press-image-wrap{border-right:0;border-bottom:1px solid rgba(255,255,255,.08)}}
 </style>
+<link rel="stylesheet" href="/css/consent-manager.css">
 </head>
 <body>
 <div id="navbar"></div>
@@ -70,5 +71,7 @@ fetch('/footer.html').then((response) => response.text()).then((html) => {
 });
 </script>
 <script src="/presse.js"></script>
+<script src="/js/consent-manager.js" defer></script>
+
 </body>
 </html>
