@@ -1,12 +1,7 @@
 /* Restores the current homepage hero design after the CSP cleanup. */
 section.hero {
-    min-height: 100vh;
-    background-image:
-        linear-gradient(to bottom, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.85)),
-        url("/hero.jpg") !important;
-    background-size: cover !important;
-    background-position: center center !important;
-    background-repeat: no-repeat !important;
-    background-color: #050505 !important;
-    background-blend-mode: normal !important;
+    min-height: 100vh !important;
+    background:
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.65)),
+        url("/hero.jpg?v=20260718-2") center center / cover no-repeat !important;
 }
