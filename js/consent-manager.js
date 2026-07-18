@@ -1,272 +1,412 @@
-(() => {
-  'use strict';
+(function () {
+    'use strict';
 
-  const STORAGE_KEY = 'sbConsent';
-  const LEGACY_KEY = 'sbCookiesAccepted';
-  const CONSENT_VERSION = 1;
-  const FACEBOOK_SELECTOR = 'iframe[src*="facebook.com/plugins"], iframe[data-src*="facebook.com/plugins"]';
-
-  const state = {
-    consent: null,
-    lastFocused: null
-  };
-
-  const defaultConsent = () => ({
-    version: CONSENT_VERSION,
-    necessary: true,
-    externalMedia: false,
-    statistics: false,
-    updatedAt: new Date().toISOString()
-  });
-
-  const readConsent = () => {
-    try {
-      const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
-      if (!parsed || parsed.version !== CONSENT_VERSION) return null;
-      return {
-        ...defaultConsent(),
-        ...parsed,
-        necessary: true
-      };
-    } catch (_) {
-      return null;
+    if (
+        window.StyrianConsentManager &&
+        (window.StyrianConsentManager.initialized || window.StyrianConsentManager.loading)
+    ) {
+        return;
     }
-  };
 
-  const saveConsent = (next) => {
-    state.consent = {
-      ...defaultConsent(),
-      ...next,
-      version: CONSENT_VERSION,
-      necessary: true,
-      updatedAt: new Date().toISOString()
+    window.StyrianConsentManager = {
+        loading: true,
+        initialized: false
     };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state.consent));
-    localStorage.removeItem(LEGACY_KEY);
-    applyConsent();
-    document.dispatchEvent(new CustomEvent('sb:consent-changed', { detail: state.consent }));
-  };
 
-  const hasExternalMediaConsent = () => Boolean(state.consent?.externalMedia);
+    const STORAGE_KEY = 'sbConsentSettings';
+    const LEGACY_KEY = 'sbCookiesAccepted';
+    const CONSENT_VERSION = '2026-07-18';
+    const CATEGORY_EXTERNAL_MEDIA = 'external-media';
+    const FOCUSABLE_SELECTOR = [
+        'a[href]',
+        'button:not([disabled])',
+        'input:not([disabled])',
+        'select:not([disabled])',
+        'textarea:not([disabled])',
+        '[tabindex]:not([tabindex="-1"])'
+    ].join(',');
 
-  const getFacebookUrl = (iframe) => iframe.dataset.src || iframe.getAttribute('src') || '';
+    const defaultConsent = Object.freeze({
+        necessary: true,
+        externalMedia: false
+    });
 
-  const replaceFacebookWithPlaceholder = (iframe) => {
-    const url = getFacebookUrl(iframe);
-    if (!url) return;
+    let state = loadState();
+    let initialized = false;
+    let previousFocus = null;
 
-    iframe.dataset.src = url;
-    iframe.removeAttribute('src');
-
-    let placeholder = iframe.parentElement?.querySelector(':scope > .sb-external-placeholder');
-    if (!placeholder) {
-      placeholder = document.createElement('div');
-      placeholder.className = 'sb-external-placeholder';
-      placeholder.innerHTML = `
-        <div class="sb-external-placeholder__content">
-          <h3>Facebook-Inhalte blockiert</h3>
-          <p>Der Facebook-Feed wird erst geladen, wenn du externe Medien erlaubst. Dabei können Daten an Meta übertragen werden.</p>
-          <button type="button" class="sb-consent-button sb-consent-button--primary" data-sb-enable-facebook>
-            Facebook-Inhalte aktivieren
-          </button>
-        </div>`;
-      iframe.insertAdjacentElement('afterend', placeholder);
+    function normalizeCategory(category) {
+        return category === CATEGORY_EXTERNAL_MEDIA ? 'externalMedia' : category;
     }
 
-    iframe.hidden = true;
-    placeholder.hidden = false;
-  };
+    function loadState() {
+        let parsed = null;
 
-  const enableFacebookIframe = (iframe) => {
-    const url = iframe.dataset.src;
-    if (!url) return;
-    if (!iframe.getAttribute('src')) iframe.setAttribute('src', url);
-    iframe.hidden = false;
-    const placeholder = iframe.parentElement?.querySelector(':scope > .sb-external-placeholder');
-    if (placeholder) placeholder.hidden = true;
-  };
+        try {
+            parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        } catch (error) {
+            parsed = null;
+        }
 
-  const applyExternalMedia = () => {
-    document.querySelectorAll(FACEBOOK_SELECTOR).forEach((iframe) => {
-      if (hasExternalMediaConsent()) enableFacebookIframe(iframe);
-      else replaceFacebookWithPlaceholder(iframe);
-    });
-  };
+        const versionMatches = parsed && parsed.version === CONSENT_VERSION;
+        const categories = parsed && parsed.categories && typeof parsed.categories === 'object'
+            ? parsed.categories
+            : {};
 
-  const addFooterSettingsLink = () => {
-    const legalNav = document.querySelector('.sb-footer-meta .sb-footer-links');
-    if (!legalNav || legalNav.querySelector('[data-sb-open-consent]')) return;
+        return {
+            version: parsed && parsed.version ? parsed.version : null,
+            decided: Boolean(parsed && parsed.decided && versionMatches),
+            categories: {
+                necessary: true,
+                externalMedia: versionMatches ? Boolean(categories.externalMedia) : false
+            }
+        };
+    }
 
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'sb-cookie-settings-link';
-    button.dataset.sbOpenConsent = '';
-    button.textContent = 'Cookie-Einstellungen';
-    legalNav.appendChild(button);
-  };
+    function persistState() {
+        const payload = {
+            version: CONSENT_VERSION,
+            decided: true,
+            categories: {
+                necessary: true,
+                externalMedia: Boolean(state.categories.externalMedia)
+            },
+            updatedAt: new Date().toISOString()
+        };
 
-  const removeLegacyBanner = () => {
-    document.querySelector('#cookie-banner')?.remove();
-  };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+        localStorage.removeItem(LEGACY_KEY);
+        state = loadState();
+    }
 
-  const closeBanner = () => document.querySelector('.sb-consent-banner')?.remove();
+    function hasConsent(category) {
+        const key = normalizeCategory(category);
+        return key === 'necessary' || Boolean(state.categories[key]);
+    }
 
-  const closeModal = () => {
-    document.querySelector('.sb-consent-backdrop')?.remove();
-    document.body.style.overflow = '';
-    state.lastFocused?.focus?.();
-  };
+    function setConsent(nextCategories) {
+        state.categories = {
+            ...defaultConsent,
+            ...state.categories,
+            ...nextCategories,
+            necessary: true
+        };
+        state.version = CONSENT_VERSION;
+        state.decided = true;
+        persistState();
+        applyConsent();
+        hideBanner();
+        closeModal();
+        document.dispatchEvent(new CustomEvent('sb:consent-changed', {
+            detail: {
+                categories: { ...state.categories },
+                version: CONSENT_VERSION
+            }
+        }));
+    }
 
-  const openSettings = () => {
-    closeModal();
-    state.lastFocused = document.activeElement;
+    function acceptNecessary() {
+        setConsent({ externalMedia: false });
+    }
 
-    const current = state.consent || defaultConsent();
-    const backdrop = document.createElement('div');
-    backdrop.className = 'sb-consent-backdrop';
-    backdrop.innerHTML = `
-      <section class="sb-consent-modal" role="dialog" aria-modal="true" aria-labelledby="sb-consent-title">
-        <div class="sb-consent-modal__header">
-          <div>
-            <h2 id="sb-consent-title">Cookie-Einstellungen</h2>
-            <p>Du entscheidest, welche optionalen Inhalte geladen werden. Deine Auswahl kannst du jederzeit ändern.</p>
-          </div>
-          <button type="button" class="sb-consent-close" aria-label="Einstellungen schließen" data-sb-close-consent>&times;</button>
-        </div>
+    function acceptAll() {
+        setConsent({ externalMedia: true });
+    }
 
-        <div class="sb-consent-category">
-          <div class="sb-consent-category__row">
-            <div>
-              <h3>Notwendig</h3>
-              <p>Diese Funktionen sind für den sicheren Betrieb der Website erforderlich und können nicht deaktiviert werden.</p>
-            </div>
-            <label class="sb-consent-switch" aria-label="Notwendige Funktionen immer aktiv">
-              <input type="checkbox" checked disabled>
-              <span></span>
-            </label>
-          </div>
-        </div>
+    function saveSettings() {
+        const externalMediaInput = document.querySelector('[data-consent-input="external-media"]');
+        setConsent({ externalMedia: Boolean(externalMediaInput && externalMediaInput.checked) });
+    }
 
-        <div class="sb-consent-category">
-          <div class="sb-consent-category__row">
-            <div>
-              <h3>Externe Medien</h3>
-              <p>Erlaubt eingebettete Inhalte wie den Facebook-Feed. Dabei können Daten an externe Anbieter übertragen werden.</p>
-            </div>
-            <label class="sb-consent-switch" aria-label="Externe Medien erlauben">
-              <input type="checkbox" id="sb-consent-external" ${current.externalMedia ? 'checked' : ''}>
-              <span></span>
-            </label>
-          </div>
-        </div>
+    function applyConsent() {
+        const externalMediaAllowed = hasConsent(CATEGORY_EXTERNAL_MEDIA);
 
-        <div class="sb-consent-category">
-          <div class="sb-consent-category__row">
-            <div>
-              <h3>Statistik</h3>
-              <p>Diese Kategorie ist vorbereitet, wird derzeit aber nicht verwendet.</p>
-            </div>
-            <label class="sb-consent-switch" aria-label="Statistik derzeit nicht verfügbar">
-              <input type="checkbox" disabled>
-              <span></span>
-            </label>
-          </div>
-        </div>
+        document.querySelectorAll('[data-consent-category="external-media"][data-src]').forEach((element) => {
+            const container = element.closest('.facebook-feed-inner');
 
-        <p style="margin-top:18px">Weitere Informationen findest du in der <a href="/datenschutz.html">Datenschutzerklärung</a>.</p>
+            if (externalMediaAllowed) {
+                if (!element.getAttribute('src')) {
+                    element.setAttribute('src', element.getAttribute('data-src'));
+                }
+                if (container) {
+                    container.hidden = false;
+                }
+                return;
+            }
 
-        <div class="sb-consent-modal__footer">
-          <button type="button" class="sb-consent-button" data-sb-reject>Nur notwendige</button>
-          <button type="button" class="sb-consent-button sb-consent-button--primary" data-sb-save>Auswahl speichern</button>
-        </div>
-      </section>`;
+            element.removeAttribute('src');
+            if (container) {
+                container.hidden = true;
+            }
+        });
 
-    document.body.appendChild(backdrop);
-    document.body.style.overflow = 'hidden';
-    backdrop.querySelector('.sb-consent-close')?.focus();
-  };
+        document.querySelectorAll('[data-external-media-placeholder]').forEach((placeholder) => {
+            placeholder.hidden = externalMediaAllowed;
+        });
+    }
 
-  const showBanner = () => {
-    if (document.querySelector('.sb-consent-banner')) return;
-    const banner = document.createElement('section');
-    banner.className = 'sb-consent-banner';
-    banner.setAttribute('role', 'dialog');
-    banner.setAttribute('aria-label', 'Datenschutz-Einstellungen');
-    banner.innerHTML = `
-      <div class="sb-consent-banner__inner">
+    function ensureUi() {
+        if (!document.getElementById('sb-consent-banner')) {
+            document.body.insertAdjacentHTML('beforeend', bannerMarkup());
+        }
+
+        if (!document.getElementById('sb-consent-modal')) {
+            document.body.insertAdjacentHTML('beforeend', modalMarkup());
+        }
+    }
+
+    function bannerMarkup() {
+        return `
+<section class="sb-consent-banner" id="sb-consent-banner" role="region" aria-label="Cookie- und Datenschutzeinstellungen" hidden>
+    <div class="sb-consent-banner-inner">
         <div>
-          <h2>Wir respektieren deine Privatsphäre</h2>
-          <p>Technisch notwendige Funktionen sind immer aktiv. Externe Inhalte wie Facebook laden wir erst nach deiner Zustimmung. Mehr dazu in der <a href="/datenschutz.html">Datenschutzerklärung</a>.</p>
+            <p class="sb-consent-kicker">Datenschutz &amp; Cookies</p>
+            <p class="sb-consent-copy">
+                Wir verwenden notwendige Funktionen und laden externe Medien wie Facebook erst nach deiner Einwilligung.
+                Details findest du in der <a href="/datenschutz.html">Datenschutzerkl&auml;rung</a>.
+            </p>
         </div>
         <div class="sb-consent-actions">
-          <button type="button" class="sb-consent-button" data-sb-reject>Nur notwendige</button>
-          <button type="button" class="sb-consent-button" data-sb-open-consent>Einstellungen</button>
-          <button type="button" class="sb-consent-button sb-consent-button--primary" data-sb-accept>Alle akzeptieren</button>
+            <button type="button" class="sb-consent-button sb-consent-button-secondary" data-consent-necessary>Nur notwendige</button>
+            <button type="button" class="sb-consent-button sb-consent-button-secondary" data-consent-open>Einstellungen</button>
+            <button type="button" class="sb-consent-button sb-consent-button-primary" data-consent-accept-all>Alle akzeptieren</button>
         </div>
-      </div>`;
-    document.body.appendChild(banner);
-  };
-
-  const applyConsent = () => {
-    removeLegacyBanner();
-    addFooterSettingsLink();
-    applyExternalMedia();
-    if (state.consent) closeBanner();
-  };
-
-  const handleClick = (event) => {
-    const target = event.target.closest('button, [data-sb-open-consent]');
-    if (!target) return;
-
-    if (target.matches('[data-sb-open-consent]')) {
-      event.preventDefault();
-      openSettings();
-    } else if (target.matches('[data-sb-close-consent]')) {
-      closeModal();
-    } else if (target.matches('[data-sb-accept]')) {
-      saveConsent({ externalMedia: true, statistics: false });
-    } else if (target.matches('[data-sb-reject]')) {
-      saveConsent({ externalMedia: false, statistics: false });
-      closeModal();
-    } else if (target.matches('[data-sb-save]')) {
-      saveConsent({
-        externalMedia: Boolean(document.querySelector('#sb-consent-external')?.checked),
-        statistics: false
-      });
-      closeModal();
-    } else if (target.matches('[data-sb-enable-facebook]')) {
-      saveConsent({ externalMedia: true, statistics: false });
+    </div>
+</section>`;
     }
-  };
 
-  const handleKeydown = (event) => {
-    if (event.key === 'Escape' && document.querySelector('.sb-consent-backdrop')) closeModal();
-  };
+    function modalMarkup() {
+        return `
+<div class="sb-consent-modal" id="sb-consent-modal" role="dialog" aria-modal="true" aria-labelledby="sb-consent-title" hidden>
+    <div class="sb-consent-dialog" role="document" tabindex="-1">
+        <div class="sb-consent-dialog-header">
+            <h2 class="sb-consent-dialog-title" id="sb-consent-title">Cookie-Einstellungen</h2>
+            <button type="button" class="sb-consent-close" data-consent-close aria-label="Cookie-Einstellungen schlie&szlig;en">&times;</button>
+        </div>
+        <div class="sb-consent-dialog-body">
+            <p class="sb-consent-copy">
+                Hier kannst du festlegen, welche Inhalte geladen werden. Notwendige Funktionen bleiben immer aktiv.
+            </p>
 
-  const observeDynamicContent = () => {
-    const observer = new MutationObserver(() => {
-      addFooterSettingsLink();
-      applyExternalMedia();
-    });
-    observer.observe(document.documentElement, { childList: true, subtree: true });
-  };
+            <section class="sb-consent-category">
+                <div class="sb-consent-category-head">
+                    <div>
+                        <h3>Notwendige Funktionen</h3>
+                        <p>Speichern deine Auswahl und stellen Grundfunktionen der Website bereit.</p>
+                    </div>
+                    <label class="sb-consent-switch">
+                        <input type="checkbox" checked disabled>
+                        Aktiv
+                    </label>
+                </div>
+            </section>
 
-  const init = () => {
-    state.consent = readConsent();
-    removeLegacyBanner();
-    document.addEventListener('click', handleClick);
-    document.addEventListener('keydown', handleKeydown);
-    observeDynamicContent();
-    applyConsent();
-    if (!state.consent) showBanner();
-  };
+            <section class="sb-consent-category">
+                <div class="sb-consent-category-head">
+                    <div>
+                        <h3>Externe Medien</h3>
+                        <p>L&auml;dt eingebettete Inhalte von Drittanbietern, derzeit den Facebook-Feed.</p>
+                    </div>
+                    <label class="sb-consent-switch">
+                        <input type="checkbox" data-consent-input="external-media">
+                        Aktiv
+                    </label>
+                </div>
+            </section>
 
-  window.SBConsent = {
-    openSettings,
-    getConsent: () => ({ ...(state.consent || defaultConsent()) }),
-    hasExternalMediaConsent
-  };
+            <div class="sb-consent-dialog-actions">
+                <button type="button" class="sb-consent-button sb-consent-button-secondary" data-consent-necessary>Nur notwendige</button>
+                <button type="button" class="sb-consent-button sb-consent-button-primary" data-consent-save>Auswahl speichern</button>
+                <button type="button" class="sb-consent-button sb-consent-button-primary" data-consent-accept-all>Alle akzeptieren</button>
+            </div>
+        </div>
+    </div>
+</div>`;
+    }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
-  else init();
+    function syncInputs() {
+        document.querySelectorAll('[data-consent-input="external-media"]').forEach((input) => {
+            input.checked = hasConsent(CATEGORY_EXTERNAL_MEDIA);
+        });
+    }
+
+    function showBannerIfNeeded() {
+        const banner = document.getElementById('sb-consent-banner');
+        if (banner) {
+            banner.hidden = state.decided;
+        }
+    }
+
+    function hideBanner() {
+        const banner = document.getElementById('sb-consent-banner');
+        if (banner) {
+            banner.hidden = true;
+        }
+    }
+
+    function openModal() {
+        ensureUi();
+        syncInputs();
+        previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
+        const modal = document.getElementById('sb-consent-modal');
+        const dialog = modal ? modal.querySelector('.sb-consent-dialog') : null;
+
+        if (modal) {
+            modal.hidden = false;
+        }
+
+        requestAnimationFrame(() => {
+            const firstFocusable = modal ? modal.querySelector(FOCUSABLE_SELECTOR) : null;
+            (firstFocusable || dialog || modal).focus();
+        });
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('sb-consent-modal');
+        if (!modal || modal.hidden) {
+            return;
+        }
+
+        modal.hidden = true;
+
+        if (previousFocus && document.contains(previousFocus)) {
+            previousFocus.focus();
+        }
+
+        previousFocus = null;
+    }
+
+    function trapFocus(event) {
+        if (event.key !== 'Tab') {
+            return;
+        }
+
+        const modal = document.getElementById('sb-consent-modal');
+        if (!modal || modal.hidden) {
+            return;
+        }
+
+        const focusable = Array.from(modal.querySelectorAll(FOCUSABLE_SELECTOR))
+            .filter((element) => element.offsetParent !== null);
+
+        if (!focusable.length) {
+            event.preventDefault();
+            modal.focus();
+            return;
+        }
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+        }
+    }
+
+    function handleDocumentClick(event) {
+        const target = event.target instanceof Element ? event.target : null;
+        if (!target) {
+            return;
+        }
+
+        if (target.closest('[data-consent-open]')) {
+            event.preventDefault();
+            openModal();
+            return;
+        }
+
+        if (target.closest('[data-consent-close]')) {
+            event.preventDefault();
+            closeModal();
+            return;
+        }
+
+        if (target.closest('[data-consent-necessary]')) {
+            event.preventDefault();
+            acceptNecessary();
+            return;
+        }
+
+        if (target.closest('[data-consent-accept-all]')) {
+            event.preventDefault();
+            acceptAll();
+            return;
+        }
+
+        if (target.closest('[data-consent-save]')) {
+            event.preventDefault();
+            saveSettings();
+            return;
+        }
+
+        const categoryButton = target.closest('[data-consent-enable]');
+        if (categoryButton) {
+            event.preventDefault();
+            const category = categoryButton.getAttribute('data-consent-enable');
+            if (category === CATEGORY_EXTERNAL_MEDIA) {
+                setConsent({ externalMedia: true });
+            }
+        }
+    }
+
+    function handleDocumentKeydown(event) {
+        if (event.key === 'Escape') {
+            closeModal();
+            return;
+        }
+
+        trapFocus(event);
+    }
+
+    function observeDynamicContent() {
+        const observer = new MutationObserver(() => {
+            applyConsent();
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    }
+
+    function init() {
+        if (initialized) {
+            return;
+        }
+
+        initialized = true;
+        window.StyrianConsentManager = {
+            loading: false,
+            initialized: true,
+            version: CONSENT_VERSION,
+            hasConsent,
+            openSettings: openModal,
+            acceptAll,
+            acceptNecessary,
+            setExternalMediaConsent: function (allowed) {
+                setConsent({ externalMedia: Boolean(allowed) });
+            }
+        };
+
+        localStorage.removeItem(LEGACY_KEY);
+        ensureUi();
+        syncInputs();
+        applyConsent();
+        showBannerIfNeeded();
+        observeDynamicContent();
+
+        document.addEventListener('click', handleDocumentClick);
+        document.addEventListener('keydown', handleDocumentKeydown);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init, { once: true });
+    } else {
+        init();
+    }
 })();
