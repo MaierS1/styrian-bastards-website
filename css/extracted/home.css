@@ -16,7 +16,7 @@ body {
     min-height: 100vh;
     background-image:
         linear-gradient(to bottom, rgba(0,0,0,0.45), rgba(0,0,0,0.85)),
-        url("assets/images/styrian-bastards-background.png");
+        url("/assets/images/styrian-bastards-background.png");
     background-size: cover;
     background-position: center;
     display: flex;
@@ -1153,7 +1153,7 @@ footer {
 
 /* Extracted from index.html style block 5 */
 section.hero {
-    background-image: url("hero.jpg") !important;
+    background-image: url("/hero.jpg") !important;
     background-size: cover !important;
     background-position: center center !important;
     background-repeat: no-repeat !important;
