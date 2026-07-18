@@ -24,12 +24,12 @@ body > section.hero:has(.membership-download-actions)::before {
     top: 0;
     bottom: 0;
     left: 50%;
-    z-index: -2;
+    z-index: 0;
     width: 100vw;
     transform: translateX(-50%);
     background:
         linear-gradient(to bottom, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.78)),
-        url("/hero.jpg?v=20260718-6") center center / cover no-repeat;
+        url("/hero.jpg?v=20260718-7") center center / cover no-repeat;
     box-shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
     pointer-events: none;
 }
@@ -42,13 +42,16 @@ body > section.hero:has(.membership-download-actions)::after {
     top: 0;
     bottom: 0;
     left: 50%;
-    z-index: -1;
+    z-index: 1;
     width: 100vw;
     transform: translateX(-50%);
     background: linear-gradient(90deg, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0.3) 62%, rgba(0, 0, 0, 0.48) 100%);
     pointer-events: none;
 }
 
+main [class*="-hero"] > *,
+body > section.hero:has(.hero-content) > *,
+body > section.hero:has(.membership-download-actions) > *,
 main [class*="-hero"] h1,
 main [class*="-hero"] p,
 main [class*="-hero"] [class*="-kicker"],
@@ -57,7 +60,7 @@ body > section.hero:has(.hero-content) p,
 body > section.hero:has(.hero-content) .subtitle,
 body > section.hero:has(.membership-download-actions) .buttons {
     position: relative;
-    z-index: 1;
+    z-index: 2;
 }
 
 main [class*="-hero"] p,
