@@ -1,104 +1,74 @@
-/* Shared full-width hero design for all public subpages. */
+/*
+ * PROTECTED PUBLIC SUBPAGE HERO SYSTEM
+ *
+ * Architecture rule:
+ * - Every public subpage hero uses class="sb-page-hero".
+ * - The shared image is always /hero.jpg.
+ * - Page-specific styles must not set hero backgrounds or disable hero layers.
+ * - Changes to the public subpage hero belong only in this file.
+ */
+
+.sb-page-hero,
 main [class*="-hero"],
-body > section.hero:has(.hero-content),
-body > section.hero:has(.membership-download-actions) {
+body > section.hero {
     position: relative;
     isolation: isolate;
-    overflow: visible !important;
-    width: auto !important;
+    overflow: hidden;
+    width: 100%;
     max-width: none !important;
     min-height: clamp(300px, 34vw, 460px);
     margin-bottom: 34px;
     padding: clamp(64px, 9vw, 118px) clamp(22px, 5vw, 64px);
     border: 0 !important;
     border-radius: 0 !important;
-    background: none !important;
-    box-shadow: none !important;
-}
-
-main [class*="-hero"]::before,
-body > section.hero:has(.hero-content)::before,
-body > section.hero:has(.membership-download-actions)::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 50%;
-    z-index: 0;
-    width: 100vw;
-    transform: translateX(-50%);
-    background:
-        linear-gradient(to bottom, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.78)),
-        url("/hero.jpg?v=20260718-9") center center / cover no-repeat;
+    background-image:
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.78)),
+        url("/hero.jpg?v=20260718-12") !important;
+    background-size: cover !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    background-color: #050505 !important;
     box-shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
-    pointer-events: none;
 }
 
+.sb-page-hero::after,
 main [class*="-hero"]::after,
-body > section.hero:has(.hero-content)::after,
-body > section.hero:has(.membership-download-actions)::after {
-    content: "";
+body > section.hero::after {
+    content: "" !important;
+    display: block !important;
     position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 50%;
-    z-index: 1;
-    width: 100vw;
-    transform: translateX(-50%);
-    background: linear-gradient(90deg, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0.3) 62%, rgba(0, 0, 0, 0.48) 100%);
+    inset: 0;
+    z-index: 0;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.62) 0%, rgba(0, 0, 0, 0.18) 62%, rgba(0, 0, 0, 0.4) 100%);
     pointer-events: none;
 }
 
+.sb-page-hero > *,
 main [class*="-hero"] > *,
-body > section.hero:has(.hero-content) > *,
-body > section.hero:has(.membership-download-actions) > *,
-main [class*="-hero"] h1,
-main [class*="-hero"] p,
-main [class*="-hero"] [class*="-kicker"],
-body > section.hero:has(.hero-content) h1,
-body > section.hero:has(.hero-content) p,
-body > section.hero:has(.hero-content) .subtitle,
-body > section.hero:has(.membership-download-actions) .buttons {
+body > section.hero > * {
     position: relative;
-    z-index: 2;
+    z-index: 1;
 }
 
+.sb-page-hero h1,
+main [class*="-hero"] h1,
+body > section.hero h1 {
+    text-shadow: 0 3px 18px rgba(0, 0, 0, 0.78);
+}
+
+.sb-page-hero p,
 main [class*="-hero"] p,
-body > section.hero:has(.hero-content) p {
+body > section.hero p {
     color: rgba(255, 255, 255, 0.9) !important;
     text-shadow: 0 2px 12px rgba(0, 0, 0, 0.72);
 }
 
-main [class*="-hero"] h1,
-body > section.hero:has(.hero-content) h1 {
-    text-shadow: 0 3px 18px rgba(0, 0, 0, 0.78);
-}
-
-/* Legacy pages (Datenschutz and Mitglied werden) disable hero pseudo-elements
-   in their own extracted CSS. Give every direct body hero a real background
-   so those pages cannot lose the image. This rule intentionally comes last. */
-body > section.hero {
-    background:
-        linear-gradient(to bottom, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.78)),
-        url("/hero.jpg?v=20260718-9") center center / cover no-repeat !important;
-    background-color: transparent !important;
-}
-
 @media (max-width: 700px) {
+    .sb-page-hero,
     main [class*="-hero"],
-    body > section.hero:has(.hero-content),
-    body > section.hero:has(.membership-download-actions) {
+    body > section.hero {
         min-height: 280px;
         padding: 58px 20px 52px;
-    }
-
-    main [class*="-hero"]::before,
-    body > section.hero:has(.hero-content)::before,
-    body > section.hero:has(.membership-download-actions)::before {
-        background-position: 58% center;
-    }
-
-    body > section.hero {
         background-position: 58% center !important;
     }
 }
