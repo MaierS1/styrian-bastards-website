@@ -29,7 +29,7 @@ body > section.hero:has(.membership-download-actions)::before {
     transform: translateX(-50%);
     background:
         linear-gradient(to bottom, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.78)),
-        url("/hero.jpg?v=20260718-8") center center / cover no-repeat;
+        url("/hero.jpg?v=20260718-9") center center / cover no-repeat;
     box-shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
     pointer-events: none;
 }
@@ -74,59 +74,22 @@ body > section.hero:has(.hero-content) h1 {
     text-shadow: 0 3px 18px rgba(0, 0, 0, 0.78);
 }
 
-/* Explicit fallback for the two legacy pages.
-   Their markup differs from the newer subpages, so do not rely on :has(). */
-body:has(#datenschutz) > section.hero,
-body:has(#join) > section.hero {
-    position: relative !important;
-    isolation: isolate;
-    overflow: hidden !important;
-    width: 100vw !important;
-    max-width: none !important;
-    min-height: clamp(300px, 34vw, 460px) !important;
-    margin-right: 0 !important;
-    margin-bottom: 34px !important;
-    margin-left: calc(50% - 50vw) !important;
-    padding: clamp(64px, 9vw, 118px) clamp(22px, 5vw, 64px) !important;
-    border: 0 !important;
-    border-radius: 0 !important;
+/* Legacy pages (Datenschutz and Mitglied werden) disable hero pseudo-elements
+   in their own extracted CSS. Give every direct body hero a real background
+   so those pages cannot lose the image. This rule intentionally comes last. */
+body > section.hero {
     background:
-        linear-gradient(to bottom, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.78)),
-        url("/hero.jpg?v=20260718-8") center center / cover no-repeat !important;
-    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.34) !important;
-}
-
-body:has(#datenschutz) > section.hero::before,
-body:has(#join) > section.hero::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    width: auto;
-    transform: none;
-    background: linear-gradient(90deg, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0.3) 62%, rgba(0, 0, 0, 0.48) 100%);
-    pointer-events: none;
-}
-
-body:has(#datenschutz) > section.hero::after,
-body:has(#join) > section.hero::after {
-    content: none;
-}
-
-body:has(#datenschutz) > section.hero > *,
-body:has(#join) > section.hero > * {
-    position: relative;
-    z-index: 1;
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.78)),
+        url("/hero.jpg?v=20260718-9") center center / cover no-repeat !important;
+    background-color: transparent !important;
 }
 
 @media (max-width: 700px) {
     main [class*="-hero"],
     body > section.hero:has(.hero-content),
-    body > section.hero:has(.membership-download-actions),
-    body:has(#datenschutz) > section.hero,
-    body:has(#join) > section.hero {
-        min-height: 280px !important;
-        padding: 58px 20px 52px !important;
+    body > section.hero:has(.membership-download-actions) {
+        min-height: 280px;
+        padding: 58px 20px 52px;
     }
 
     main [class*="-hero"]::before,
@@ -135,8 +98,7 @@ body:has(#join) > section.hero > * {
         background-position: 58% center;
     }
 
-    body:has(#datenschutz) > section.hero,
-    body:has(#join) > section.hero {
+    body > section.hero {
         background-position: 58% center !important;
     }
 }
