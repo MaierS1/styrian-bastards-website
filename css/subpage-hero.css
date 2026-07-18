@@ -1,5 +1,7 @@
 /* Shared hero design for all public subpages. */
-main [class$="-hero"] {
+main [class$="-hero"],
+body > section.hero:has(.hero-content),
+body > section.hero:has(.membership-download-actions) {
     position: relative;
     isolation: isolate;
     overflow: hidden;
@@ -9,11 +11,13 @@ main [class$="-hero"] {
     border-radius: 20px;
     background:
         linear-gradient(to bottom, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.78)),
-        url("/hero.jpg?v=20260718-3") center center / cover no-repeat !important;
+        url("/hero.jpg?v=20260718-4") center center / cover no-repeat !important;
     box-shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
 }
 
-main [class$="-hero"]::before {
+main [class$="-hero"]::before,
+body > section.hero:has(.hero-content)::before,
+body > section.hero:has(.membership-download-actions)::before {
     content: "";
     position: absolute;
     inset: 0;
@@ -24,22 +28,30 @@ main [class$="-hero"]::before {
 
 main [class$="-hero"] h1,
 main [class$="-hero"] p,
-main [class$="-hero"] [class$="-kicker"] {
+main [class$="-hero"] [class$="-kicker"],
+body > section.hero:has(.hero-content) h1,
+body > section.hero:has(.hero-content) p,
+body > section.hero:has(.hero-content) .subtitle,
+body > section.hero:has(.membership-download-actions) .buttons {
     position: relative;
     z-index: 1;
 }
 
-main [class$="-hero"] p {
+main [class$="-hero"] p,
+body > section.hero:has(.hero-content) p {
     color: rgba(255, 255, 255, 0.9) !important;
     text-shadow: 0 2px 12px rgba(0, 0, 0, 0.72);
 }
 
-main [class$="-hero"] h1 {
+main [class$="-hero"] h1,
+body > section.hero:has(.hero-content) h1 {
     text-shadow: 0 3px 18px rgba(0, 0, 0, 0.78);
 }
 
 @media (max-width: 700px) {
-    main [class$="-hero"] {
+    main [class$="-hero"],
+    body > section.hero:has(.hero-content),
+    body > section.hero:has(.membership-download-actions) {
         padding: 58px 20px 52px;
         border-radius: 16px;
         background-position: 58% center !important;
