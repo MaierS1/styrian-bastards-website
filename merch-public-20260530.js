@@ -1,6 +1,9 @@
 (() => {
     const SUPABASE_URL = 'https://ekaxdyysefmypkainhij.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVrYXhkeXlzZWZteXBrYWluaGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNjUyNzEsImV4cCI6MjA5Mjk0MTI3MX0.7o4jUIW5gsxvFWiqFHHjoHg87GVm4H_1UW9ftll6VmU';
+    // Set the V2 publishable browser key in v2-shop-config.js. Never use a secret/service key.
+    const V2_URL = 'https://yktioliukcrrccrfwxad.supabase.co';
+    const V2_KEY = window.STB_V2_SHOP_PUBLISHABLE_KEY || '';
 
     const section = document.getElementById('public-merch');
     const content = document.getElementById('public-merch-content');
@@ -69,6 +72,7 @@
             return path;
         }
 
+        if (path.startsWith('v2:')) return '';
         return `${SUPABASE_URL}/storage/v1/object/public/public-assets/${encodeURI(path)}`;
     };
 
@@ -121,6 +125,7 @@
     };
 
     const isOrderableVariant = (variant) => {
+        if (variant.source === 'v2') return variant.availability !== 'unavailable';
         return variant
             && variant.is_public !== false
             && variant.status === 'active'
@@ -156,6 +161,7 @@
     };
 
     const getAvailabilityState = (merchItem, variants = []) => {
+        if (merchItem.source === 'v2') return merchItem.availability === 'unavailable' ? 'sold_out' : 'available';
         const orderableVariants = variants.filter((variant) => isOrderableVariant(variant));
 
         if (orderableVariants.length > 0) {
@@ -254,7 +260,7 @@
 
     const buildDetailUrl = (merchItem) => {
         if (!merchItem.id) return '';
-        return `merch.html?id=${encodeURIComponent(merchItem.id)}`;
+        return `merch.html?id=${encodeURIComponent(merchItem.id)}&source=${merchItem.source || 'v1'}`;
     };
 
     const renderMerchCard = (rawMerchItem) => {
@@ -380,13 +386,14 @@
     );
 
     const createPublicShopOrderRpc = async (payload) => {
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/create_public_shop_order`, {
+        const v2 = Boolean(payload.p_items);
+        const response = await fetch(`${v2 ? V2_URL : SUPABASE_URL}/rest/v1/rpc/create_public_shop_order`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-                'apikey': SUPABASE_ANON_KEY,
-                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                'apikey': v2 ? V2_KEY : SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${v2 ? V2_KEY : SUPABASE_ANON_KEY}`
             },
             body: JSON.stringify(cleanPayload(payload))
         });
@@ -586,7 +593,14 @@
             submit.textContent = 'Wird gesendet...';
 
             try {
-                await createPublicShopOrderRpc({
+                await createPublicShopOrderRpc(merchItem.source === 'v2' ? {
+                    p_items: [{ variant_id: selectedVariant?.id, quantity }],
+                    p_idempotency_key: crypto.randomUUID(),
+                    p_buyer_name: name,
+                    p_buyer_email: email,
+                    p_buyer_phone: phone || null,
+                    p_delivery_method: delivery
+                } : {
                     p_merch_item_id: merchItem.id,
                     p_merch_variant_id: selectedVariant?.id ?? null,
                     p_customer_name: name,
@@ -624,8 +638,9 @@
 
         const params = new URLSearchParams(window.location.search);
         const requestedId = params.get('id');
+        const requestedSource = params.get('source') || 'v1';
         const items = merchItems.map(normalizeMerchItem);
-        const merchItem = items.find((item) => String(item.id) === requestedId || String(item.item_number) === requestedId);
+        const merchItem = items.find((item) => (item.source || 'v1') === requestedSource && (String(item.id) === requestedId || String(item.item_number) === requestedId));
 
         detailRoot.innerHTML = '';
 
@@ -748,9 +763,53 @@
         return Array.isArray(merchItems) ? merchItems : [];
     };
 
+    const v2Rpc = async (name, payload) => {
+        const response = await fetch(`${V2_URL}/rest/v1/rpc/${name}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'apikey': V2_KEY, 'Authorization': `Bearer ${V2_KEY}` },
+            body: JSON.stringify(payload)
+        });
+        if (!response.ok) throw new Error(`V2 shop RPC failed: ${response.status}`);
+        return response.json();
+    };
+
+    const mapV2Product = (product, detail = product) => ({
+        source: 'v2', id: product.product_id, item_number: product.product_number,
+        title: product.name, description: product.description, category: product.category,
+        display_price_cents: product.display_price_cents, availability: product.availability,
+        image_path: (() => { const path = detail.primary_image?.image_path || product.primary_image_path; return /^https:\/\//i.test(path || '') ? path : path ? `v2:${path}` : ''; })(),
+        image_alt: detail.primary_image?.alt_text || product.primary_image_alt_text || product.name,
+        variants: (detail.variants || []).map((variant) => ({
+            source: 'v2', id: variant.variant_id, name: variant.variant_name,
+            size: variant.size, color: variant.color, display_price_cents: variant.display_price_cents,
+            availability: variant.availability, status: 'active'
+        }))
+    });
+
+    const fetchV2Items = async () => {
+        if (!V2_KEY) return [];
+        const products = await v2Rpc('get_public_shop_products', { p_limit: 100, p_offset: 0, p_category: null });
+        if (!Array.isArray(products)) return [];
+        if (detailRoot) {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('source') === 'v2') {
+                const product = products.find((item) => item.product_id === params.get('id'));
+                if (!product) return [];
+                const detail = await v2Rpc('get_public_shop_product', { p_product_id: product.product_id });
+                return [mapV2Product(product, detail)];
+            }
+        }
+        return products.map((product) => mapV2Product(product));
+    };
+
     const loadMerch = async () => {
         try {
-            const merchItems = await fetchMerchItems();
+            const results = await Promise.allSettled([fetchMerchItems(), fetchV2Items()]);
+            if (results.every((result) => result.status === 'rejected')) throw new Error('Both shop sources failed');
+            results.filter((result) => result.status === 'rejected').forEach((result) => console.warn('Shop source unavailable', result.reason));
+            const items = results.flatMap((result) => result.status === 'fulfilled' ? result.value : []);
+            const v2Numbers = new Set(items.filter((item) => item.source === 'v2' && item.item_number).map((item) => item.item_number));
+            const merchItems = items.filter((item) => item.source === 'v2' || !v2Numbers.has(item.item_number));
 
             if (detailRoot) {
                 renderMerchDetail(merchItems);
