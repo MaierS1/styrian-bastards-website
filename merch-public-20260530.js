@@ -808,8 +808,12 @@
             if (results.every((result) => result.status === 'rejected')) throw new Error('Both shop sources failed');
             results.filter((result) => result.status === 'rejected').forEach((result) => console.warn('Shop source unavailable', result.reason));
             const items = results.flatMap((result) => result.status === 'fulfilled' ? result.value : []);
-            const v2Numbers = new Set(items.filter((item) => item.source === 'v2' && item.item_number).map((item) => item.item_number));
-            const merchItems = items.filter((item) => item.source === 'v2' || !v2Numbers.has(item.item_number));
+            const v2Items = items.filter((item) => item.source === 'v2');
+            const v2Numbers = new Set(v2Items.map((item) => item.item_number).filter(Boolean));
+            const productName = (item) => String(item.title || item.name || '').trim().toLocaleLowerCase('de-AT');
+            const v2Names = new Set(v2Items.map(productName).filter(Boolean));
+            const merchItems = items.filter((item) => item.source === 'v2' ||
+                !(item.item_number && v2Numbers.has(item.item_number)) && !v2Names.has(productName(item)));
 
             if (detailRoot) {
                 renderMerchDetail(merchItems);
