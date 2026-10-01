@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saisonabo 2026/27 | Styrian Bastards</title>
+<meta name="description" content="ATSE Graz Hockey Saisonabo 2026/27 über das Fanclub-Kontingent der Styrian Bastards bestellen.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://www.styrian-bastards.at/abo.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/consent-manager.css">
+<link rel="stylesheet" href="/css/extracted/abo.css">
+</head>
+<body>
+<div id="navbar"></div>
+<main>
+<section class="abo-hero">
+  <div class="abo-hero-inner">
+    <img src="/assets/brand/atse/ATSE_Logo_weiß.svg" alt="ATSE Graz Hockey" class="abo-atse-logo">
+    <div>
+      <p class="abo-kicker">Styrian Bastards · Fanclub-Kontingent</p>
+      <h1>ATSE Graz Hockey<br>Saisonabo 2026/27</h1>
+      <p class="abo-lead">Bestelle dein Saisonabo für den Stehsektor direkt über die Styrian Bastards.</p>
+    </div>
+  </div>
+</section>
+<section class="abo-section">
+  <div id="abo-status" class="abo-status">Abo-Angebot wird geladen …</div>
+  <div id="abo-card" class="abo-card" hidden>
+    <div class="abo-summary">
+      <p class="abo-label">Saisonabo 2026/27</p>
+      <h2>Stehsektor</h2>
+      <div class="abo-price" id="abo-price">–</div>
+      <p id="abo-availability">Verfügbarkeit wird geladen …</p>
+    </div>
+    <form id="abo-form" class="abo-form" novalidate>
+      <div class="abo-grid">
+        <label>Vorname *<input id="abo-first-name" maxlength="100" autocomplete="given-name" required></label>
+        <label>Nachname *<input id="abo-last-name" maxlength="100" autocomplete="family-name" required></label>
+        <label class="full">E-Mail *<input id="abo-email" type="email" maxlength="254" autocomplete="email" required></label>
+        <label class="full">Telefon<input id="abo-phone" type="tel" maxlength="50" autocomplete="tel"></label>
+        <label class="full">Anzahl *<select id="abo-quantity" required></select></label>
+      </div>
+      <div class="abo-total" id="abo-total"></div>
+      <label class="abo-consent"><input id="abo-consent" type="checkbox" required><span>Ich habe die <a href="/datenschutz.html" target="_blank" rel="noopener">Datenschutzerklärung</a> gelesen und stimme der Verarbeitung meiner Angaben zur Abwicklung der Abo-Bestellung zu.</span></label>
+      <p id="abo-error" class="abo-error" role="alert" hidden></p>
+      <button id="abo-submit" class="abo-submit" type="submit">Abo verbindlich bestellen</button>
+      <p class="abo-note">Nach der Bestellung erhältst du eine Bestellnummer. Wir melden uns mit den weiteren Informationen zur Zahlung und Ausgabe der Abo-Karten.</p>
+    </form>
+  </div>
+  <div id="abo-success" class="abo-success" hidden>
+    <p class="abo-label">Bestellung eingegangen</p>
+    <h2>Danke für deine Bestellung!</h2>
+    <p>Deine Bestellnummer:</p>
+    <strong id="abo-order-number"></strong>
+    <p>Wir melden uns mit den weiteren Informationen zur Zahlung und Ausgabe der Abo-Karten.</p>
+    <a class="abo-home-link" href="/index.html">Zurück zur Homepage</a>
+  </div>
+</section>
+</main>
+<div id="footer"></div>
+<script src="/v2-shop-config.js"></script>
+<script src="/js/extracted/abo.js"></script>
+<script src="/js/consent-manager.js" defer></script>
+</body>
+</html>
