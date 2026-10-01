@@ -1,0 +1,66 @@
+(() => {
+  const V2_URL = 'https://yktioliukcrrccrfwxad.supabase.co';
+  const V2_KEY = window.STB_V2_SHOP_PUBLISHABLE_KEY || '';
+  const status = document.getElementById('abo-status');
+  const card = document.getElementById('abo-card');
+  const form = document.getElementById('abo-form');
+  const quantity = document.getElementById('abo-quantity');
+  const price = document.getElementById('abo-price');
+  const availability = document.getElementById('abo-availability');
+  const total = document.getElementById('abo-total');
+  const errorBox = document.getElementById('abo-error');
+  const submit = document.getElementById('abo-submit');
+  let campaign = null;
+  const money = cents => new Intl.NumberFormat('de-AT',{style:'currency',currency:'EUR'}).format(Number(cents || 0)/100);
+  const headers = () => ({'Content-Type':'application/json','Accept':'application/json','apikey':V2_KEY,'Authorization':'Bearer '+V2_KEY});
+  async function rpc(name, body = {}) {
+    if (!V2_KEY) throw new Error('Konfiguration der Bestellseite fehlt.');
+    const response = await fetch(V2_URL + '/rest/v1/rpc/' + name,{method:'POST',headers:headers(),body:JSON.stringify(body)});
+    const payload = await response.json().catch(() => null);
+    if (!response.ok) throw new Error(payload?.message || payload?.error || 'Anfrage fehlgeschlagen.');
+    return payload;
+  }
+  function syncTotal(){ if(campaign) total.innerHTML = '<span>Gesamt</span><strong>'+money(Number(quantity.value||1)*campaign.price_cents)+'</strong>'; }
+  async function load(){
+    try {
+      const rows = await rpc('get_public_abo_campaign');
+      campaign = Array.isArray(rows) ? rows[0] : null;
+      status.hidden = true;
+      if (!campaign || !campaign.homepage_visible) { status.hidden=false; status.textContent='Das Saisonabo ist derzeit nicht verfügbar.'; return; }
+      price.textContent = money(campaign.price_cents) + ' pro Abo';
+      availability.textContent = campaign.available_quantity > 0 ? 'Noch ' + campaign.available_quantity + ' aus dem Fanclub-Kontingent verfügbar.' : 'Kontingent derzeit ausgeschöpft.';
+      if (!campaign.sales_open || campaign.available_quantity < 1) { status.hidden=false; status.textContent=campaign.available_quantity < 1 ? 'Das Fanclub-Kontingent ist derzeit ausgeschöpft.' : 'Der Abo-Verkauf ist derzeit nicht aktiv.'; return; }
+      const max = Math.min(campaign.max_quantity_per_order, campaign.available_quantity);
+      quantity.innerHTML = Array.from({length:max},(_,i)=>'<option value="'+(i+1)+'">'+(i+1)+'</option>').join('');
+      card.hidden=false; syncTotal();
+    } catch(e) { status.textContent='Das Abo-Angebot konnte gerade nicht geladen werden. Bitte versuche es später erneut.'; }
+  }
+  quantity.addEventListener('change',syncTotal);
+  form.addEventListener('submit',async e => {
+    e.preventDefault(); errorBox.hidden=true;
+    if (!form.reportValidity() || !campaign) return;
+    submit.disabled=true; submit.textContent='Bestellung wird gesendet …';
+    try {
+      const rows=await rpc('create_public_abo_ticket_order',{
+        p_campaign_id:campaign.id,
+        p_first_name:document.getElementById('abo-first-name').value.trim(),
+        p_last_name:document.getElementById('abo-last-name').value.trim(),
+        p_email:document.getElementById('abo-email').value.trim(),
+        p_phone:document.getElementById('abo-phone').value.trim() || null,
+        p_quantity:Number(quantity.value),
+        p_privacy_consent:document.getElementById('abo-consent').checked,
+        p_privacy_consent_version:'v1'
+      });
+      const result=Array.isArray(rows)?rows[0]:rows;
+      card.hidden=true; document.getElementById('abo-success').hidden=false;
+      document.getElementById('abo-order-number').textContent=result?.order_number || '–';
+      window.scrollTo({top:0,behavior:'smooth'});
+    } catch(e) {
+      errorBox.textContent=String(e?.message||'Bestellung konnte nicht angelegt werden.').includes('abo_ticket_sales_not_active') ? 'Der Abo-Verkauf ist derzeit nicht aktiv.' : 'Bestellung konnte nicht angelegt werden. Bitte prüfe deine Angaben und versuche es erneut.';
+      errorBox.hidden=false;
+    } finally { submit.disabled=false; submit.textContent='Abo verbindlich bestellen'; }
+  });
+  fetch('/navbar.html').then(r=>r.text()).then(v=>document.getElementById('navbar').innerHTML=v).catch(()=>{});
+  fetch('/footer.html').then(r=>r.text()).then(v=>document.getElementById('footer').innerHTML=v).catch(()=>{});
+  load();
+})();
