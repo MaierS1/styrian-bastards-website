@@ -1418,3 +1418,139 @@ section.hero::after {
         width:100%;
     }
 }
+
+
+/* ATSE Graz / Saisonabo – targeted homepage integration */
+.abo-home-section {
+    padding-top: 72px;
+    padding-bottom: 72px;
+}
+
+.abo-home-card {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(180px, 0.38fr) minmax(0, 1fr);
+    gap: 42px;
+    align-items: center;
+    overflow: hidden;
+    padding: 42px;
+    border: 1px solid #222;
+    border-left: 4px solid #c1121f;
+    border-radius: 14px;
+    background: linear-gradient(145deg, rgba(17,17,17,0.98), rgba(7,7,7,0.98));
+}
+
+.abo-home-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 170px;
+    padding: 20px;
+    border-right: 1px solid rgba(255,255,255,0.10);
+}
+
+.abo-home-brand img {
+    display: block;
+    width: min(100%, 230px);
+    max-height: 150px;
+    object-fit: contain;
+}
+
+.abo-home-kicker,
+.about-kicker {
+    margin-bottom: 10px;
+    color: #c1121f;
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.abo-home-content h2 {
+    margin-bottom: 18px;
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    line-height: 1.05;
+    text-transform: uppercase;
+}
+
+.abo-home-content p {
+    max-width: 720px;
+    color: rgba(255,255,255,0.78);
+    font-size: 1.08rem;
+    line-height: 1.7;
+}
+
+.abo-home-actions {
+    margin-top: 26px;
+}
+
+.about-heading-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    margin-bottom: 25px;
+}
+
+.about-heading-row h2 {
+    margin-bottom: 0;
+}
+
+.about-atse-logo {
+    display: block;
+    width: min(210px, 28vw);
+    max-height: 105px;
+    object-fit: contain;
+    opacity: 0.94;
+}
+
+@media (max-width: 760px) {
+    .abo-home-section {
+        padding-top: 52px;
+        padding-bottom: 52px;
+    }
+
+    .abo-home-card {
+        grid-template-columns: 1fr;
+        gap: 26px;
+        padding: 28px 22px;
+    }
+
+    .abo-home-brand {
+        min-height: 0;
+        padding: 0 0 24px;
+        border-right: 0;
+        border-bottom: 1px solid rgba(255,255,255,0.10);
+        justify-content: flex-start;
+    }
+
+    .abo-home-brand img {
+        width: min(190px, 68vw);
+        max-height: 110px;
+    }
+
+    .abo-home-actions .btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    .about-heading-row {
+        align-items: flex-start;
+        gap: 18px;
+    }
+
+    .about-atse-logo {
+        width: min(150px, 34vw);
+        max-height: 78px;
+    }
+}
+
+@media (max-width: 430px) {
+    .about-heading-row {
+        flex-direction: column-reverse;
+    }
+
+    .about-atse-logo {
+        width: 150px;
+    }
+}
