@@ -64,7 +64,15 @@
 </main>
 <div id="footer"></div>
 <script src="/v2-shop-config.js"></script>
-<script src="/js/extracted/abo.js?v=20261003-2"></script>
+<script>
+(function(){
+  var p=new URLSearchParams(location.search);
+  if(p.get('stb_staging')==='1'){
+    window.STB_ABO_SANDBOX={url:'https://asrkcguvzscgtysnivsq.supabase.co',key:'sb_publishable_26j21pToqdSBbSxpmYj1tg_o7w4Yz_b'};
+  }
+})();
+</script>
+<script src="/js/extracted/abo.js?v=20261003-3"></script>
 <script src="/js/consent-manager.js" defer></script>
 </body>
 </html>
