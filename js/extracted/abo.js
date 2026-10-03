@@ -1,7 +1,7 @@
 (() => {
   const sandboxMode=new URLSearchParams(window.location.search).get('stb_staging')==='1';
-  const V2_URL=sandboxMode?'https://asrkcguvzscgtysnivsq.supabase.co':'https://yktioliukcrrccrfwxad.supabase.co';
-  const V2_KEY=sandboxMode?'sb_publishable_26j21pToqdSBbSxpmYj1tg_o7w4Yz_b':(window.STB_V2_SHOP_PUBLISHABLE_KEY||'');
+  const V2_URL=(sandboxMode&&window.STB_ABO_SANDBOX?.url)||'https://yktioliukcrrccrfwxad.supabase.co';
+  const V2_KEY=(sandboxMode&&window.STB_ABO_SANDBOX?.key)||(window.STB_V2_SHOP_PUBLISHABLE_KEY||'');
   const status=document.getElementById('abo-status'),card=document.getElementById('abo-card'),form=document.getElementById('abo-form'),quantity=document.getElementById('abo-quantity'),price=document.getElementById('abo-price'),availability=document.getElementById('abo-availability'),total=document.getElementById('abo-total'),errorBox=document.getElementById('abo-error'),submit=document.getElementById('abo-submit'),payButton=document.getElementById('abo-pay-sumup'),paymentStatus=document.getElementById('abo-payment-status');
   let campaign=null,currentOrderId=null,currentPaymentToken=null;
   const money=cents=>new Intl.NumberFormat('de-AT',{style:'currency',currency:'EUR'}).format(Number(cents||0)/100);
