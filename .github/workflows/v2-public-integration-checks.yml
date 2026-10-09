@@ -55,6 +55,8 @@ jobs:
           assert(events.includes('registration_enabled: false'), 'V2 event registrations must stay disabled');
           assert(events.includes("event._source === 'v2' ? 'div' : 'a'"), 'V2 events must not link to V1 detail');
           assert(press.includes('renderContent(fullContent, content)'), 'Press must render text safely');
+          assert(media.includes("'&v2preview=1'"), 'Homepage V2 press link must preserve preview');
+          assert(press.includes("'&v2preview=1'"), 'Press list V2 link must preserve preview');
           assert(!press.includes('innerHTML = item.content_html'), 'Never inject untrusted press HTML');
           console.log('Public integration guardrails passed');
           NODE
