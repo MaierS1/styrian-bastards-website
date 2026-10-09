@@ -37,7 +37,7 @@ jobs:
           assert(index.indexOf('src="/v2-public-content-flags.js"') < index.indexOf('src="sponsors.js"'), 'Homepage flags must precede sponsors');
           assert(detail.indexOf('src="/v2-shop-config.js"') < detail.indexOf('src="/presse.js"'), 'Press config must precede detail');
           assert(flags.includes('window.STB_V2_PRESS_ENABLED = true'), 'V2 press rollout must be explicitly enabled');
-          assert(flags.includes('window.STB_V2_EVENTS_ENABLED = stbV2Preview'), 'V2 events must require preview opt-in');
+          assert(flags.includes('window.STB_V2_EVENTS_ENABLED = true'), 'V2 events rollout must be explicitly enabled');
           assert(flags.includes('window.STB_V2_SPONSORS_ENABLED = stbV2Preview'), 'V2 sponsors must require preview opt-in');
           assert(flags.includes("params.get('v2preview') === '1'"), 'Preview must require explicit query opt-in');
           assert(flags.includes("host === 'www.styrian-bastards.at'"), 'Production host must be excluded');
