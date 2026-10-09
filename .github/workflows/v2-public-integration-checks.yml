@@ -13,6 +13,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Check JavaScript syntax
         run: |
+          node --check sponsors.js
           node --check events.js
           node --check media.js
           node --check presse.js
@@ -25,6 +26,7 @@ jobs:
           const assert = require('node:assert/strict');
           const index = fs.readFileSync('index.html', 'utf8');
           const media = fs.readFileSync('media.js', 'utf8');
+          const sponsors = fs.readFileSync('sponsors.js', 'utf8');
           const events = fs.readFileSync('events.js', 'utf8');
           const press = fs.readFileSync('presse.js', 'utf8');
           const detail = fs.readFileSync('presse.html', 'utf8');
@@ -34,6 +36,10 @@ jobs:
           assert(detail.indexOf('src="/v2-shop-config.js"') < detail.indexOf('src="/presse.js"'), 'Press config must precede detail');
           assert(flags.includes('window.STB_V2_PRESS_ENABLED = false'), 'V2 press must default off');
           assert(flags.includes('window.STB_V2_EVENTS_ENABLED = false'), 'V2 events must default off');
+          assert(flags.includes('window.STB_V2_SPONSORS_ENABLED = false'), 'V2 sponsors must default off');
+          assert(sponsors.includes('window.STB_V2_SPONSORS_ENABLED === true'), 'V2 sponsors must be opt-in');
+          assert(sponsors.includes('Promise.allSettled'), 'Sponsors must have independent source fallback');
+          assert(sponsors.includes('get_public_sponsors'), 'Sponsors must use public RPC');
           for (const [page, html, script] of [['index', index, 'media.js'], ['presse', detail, '/presse.js'], ['event', eventDetail, 'events.js']]) {
             assert(html.includes('src="/v2-public-content-flags.js"'), page + ' must load flags');
             assert(html.indexOf('src="/v2-public-content-flags.js"') < html.indexOf('src="' + script + '"'), page + ' must load flags first');
@@ -66,7 +72,8 @@ jobs:
           headers = {'apikey': os.environ['V2_PUBLIC_KEY'], 'Content-Type': 'application/json', 'Accept': 'application/json'}
           checks = [
               ('get_public_events', {'p_limit': 1, 'p_after': None, 'p_after_id': None}),
-              ('get_public_press', {'p_limit': 1, 'p_after': None})
+              ('get_public_press', {'p_limit': 1, 'p_after': None}),
+              ('get_public_sponsors', {})
           ]
           for name, body in checks:
               req = urllib.request.Request(base + name, data=json.dumps(body).encode(), headers=headers, method='POST')
