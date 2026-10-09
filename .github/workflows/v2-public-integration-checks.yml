@@ -33,6 +33,8 @@ jobs:
           const eventDetail = fs.readFileSync('event.html', 'utf8');
           const flags = fs.readFileSync('v2-public-content-flags.js', 'utf8');
           assert(index.indexOf('src="/v2-shop-config.js"') < index.indexOf('src="media.js"'), 'Homepage config must precede media');
+          assert(index.indexOf('src="/v2-shop-config.js"') < index.indexOf('src="sponsors.js"'), 'Homepage config must precede sponsors');
+          assert(index.indexOf('src="/v2-public-content-flags.js"') < index.indexOf('src="sponsors.js"'), 'Homepage flags must precede sponsors');
           assert(detail.indexOf('src="/v2-shop-config.js"') < detail.indexOf('src="/presse.js"'), 'Press config must precede detail');
           assert(flags.includes('window.STB_V2_PRESS_ENABLED = false'), 'V2 press must default off');
           assert(flags.includes('window.STB_V2_EVENTS_ENABLED = false'), 'V2 events must default off');
