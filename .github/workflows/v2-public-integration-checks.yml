@@ -17,6 +17,7 @@ jobs:
           node --check media.js
           node --check presse.js
           node --check v2-shop-config.js
+          node --check v2-public-content-flags.js
       - name: Verify public integration guardrails
         run: |
           node <<'NODE'
@@ -27,8 +28,16 @@ jobs:
           const events = fs.readFileSync('events.js', 'utf8');
           const press = fs.readFileSync('presse.js', 'utf8');
           const detail = fs.readFileSync('presse.html', 'utf8');
+          const eventDetail = fs.readFileSync('event.html', 'utf8');
+          const flags = fs.readFileSync('v2-public-content-flags.js', 'utf8');
           assert(index.indexOf('src="/v2-shop-config.js"') < index.indexOf('src="media.js"'), 'Homepage config must precede media');
           assert(detail.indexOf('src="/v2-shop-config.js"') < detail.indexOf('src="/presse.js"'), 'Press config must precede detail');
+          assert(flags.includes('window.STB_V2_PRESS_ENABLED = false'), 'V2 press must default off');
+          assert(flags.includes('window.STB_V2_EVENTS_ENABLED = false'), 'V2 events must default off');
+          for (const [page, html, script] of [['index', index, 'media.js'], ['presse', detail, '/presse.js'], ['event', eventDetail, 'events.js']]) {
+            assert(html.includes('src="/v2-public-content-flags.js"'), page + ' must load flags');
+            assert(html.indexOf('src="/v2-public-content-flags.js"') < html.indexOf('src="' + script + '"'), page + ' must load flags first');
+          }
           assert(media.includes('window.STB_V2_PRESS_ENABLED === true'), 'V2 press must be opt-in');
           assert(press.includes('window.STB_V2_PRESS_ENABLED === true'), 'V2 detail must be opt-in');
           assert(events.includes('window.STB_V2_EVENTS_ENABLED === true'), 'V2 events must be opt-in');
