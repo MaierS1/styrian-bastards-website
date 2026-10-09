@@ -273,37 +273,40 @@
                 else renderNotFound();
                 return;
             }
-            const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_public_media_items`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'apikey': SUPABASE_ANON_KEY,
-                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                },
-                body: JSON.stringify({
-                    p_category: null,
-                    p_limit: 50,
-                    p_featured_only: false
-                })
-            });
+            const fetchV1 = async () => {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_public_media_items`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    },
+                    body: JSON.stringify({ p_category: null, p_limit: 50, p_featured_only: false })
+                });
+                if (!response.ok) throw new Error(`V1 press RPC failed: ${response.status}`);
+                const records = await response.json();
+                if (!Array.isArray(records)) throw new Error('Invalid V1 press response');
+                return records.filter((item) => item && item.title);
+            };
 
-            if (!response.ok) throw new Error(`Supabase RPC failed with status ${response.status}`);
-
-            const items = (await response.json()).filter((item) => item && item.title);
             if (!params.slug && !params.id) {
-                if (V2_PRESS_ENABLED) {
-                    try {
-                        const v2Items = await fetchV2Press();
-                        const titles = new Set(v2Items.map((item) => item.title.trim().toLocaleLowerCase('de-AT')));
-                        renderOverview([...v2Items, ...items.filter((item) => !titles.has(item.title.trim().toLocaleLowerCase('de-AT')))]);
-                    } catch (error) {
-                        console.warn('V2 press overview unavailable; keeping V1', error);
-                        renderOverview(items);
-                    }
-                } else renderOverview(items);
+                const results = await Promise.allSettled(V2_PRESS_ENABLED
+                    ? [fetchV1(), fetchV2Press()]
+                    : [fetchV1()]);
+                const v1Items = results[0].status === 'fulfilled' ? results[0].value : [];
+                const v2Items = V2_PRESS_ENABLED && results[1].status === 'fulfilled' ? results[1].value : [];
+                for (const result of results) {
+                    if (result.status === 'rejected') console.warn('Press source unavailable', result.reason);
+                }
+                const titles = new Set(v2Items.map((item) => item.title.trim().toLocaleLowerCase('de-AT')));
+                renderOverview([...v2Items, ...v1Items.filter((item) =>
+                    !titles.has(item.title.trim().toLocaleLowerCase('de-AT'))
+                )]);
                 return;
             }
+
+            const items = await fetchV1();
 
             const selected = items.find((item) => {
                 const slug = item.slug ? String(item.slug).toLowerCase() : '';
