@@ -58,14 +58,26 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - name: Check public V2 RPCs without modifying data
         env:
           V2_PUBLIC_KEY: ${{ secrets.STB_V2_PUBLISHABLE_KEY }}
         run: |
           if [ -z "$V2_PUBLIC_KEY" ]; then
-            echo "::error::Configure repository secret STB_V2_PUBLISHABLE_KEY to run live smoke tests"
-            exit 1
+            # This key is already shipped to public browsers. Read it without printing it.
+            V2_PUBLIC_KEY="$(node - <<'NODE'
+          const fs = require('node:fs');
+          const vm = require('node:vm');
+          const sandbox = { window: {} };
+          vm.runInNewContext(fs.readFileSync('v2-shop-config.js', 'utf8'), sandbox, { timeout: 1000 });
+          const key = sandbox.window.STB_V2_SHOP_PUBLISHABLE_KEY;
+          if (typeof key !== 'string' || !key.startsWith('sb_publishable_')) process.exit(1);
+          process.stdout.write(key);
+          NODE
+            )" || exit 1
           fi
+          echo "::add-mask::$V2_PUBLIC_KEY"
+          export V2_PUBLIC_KEY
           python3 - <<'PY'
           import json, os, urllib.request, urllib.error
           base = 'https://yktioliukcrrccrfwxad.supabase.co/rest/v1/rpc/'
