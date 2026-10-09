@@ -1,0 +1,55 @@
+name: V2 public RPC manual smoke test
+on:
+  workflow_dispatch:
+    inputs:
+      target_branch:
+        description: 'Branch containing V2 public integration'
+        required: true
+        default: 'feature/v2-public-content-audit-20261009'
+        type: choice
+        options:
+          - feature/v2-public-content-audit-20261009
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_branch }}
+          persist-credentials: false
+      - name: Read-only V2 public RPC checks
+        env:
+          V2_PUBLIC_KEY_SECRET: ${{ secrets.STB_V2_PUBLISHABLE_KEY }}
+        run: |
+          python3 - <<'PY'
+          import json, os, re, urllib.request, urllib.error
+          key = os.environ.get('V2_PUBLIC_KEY_SECRET', '')
+          if not key:
+              with open('v2-shop-config.js', encoding='utf-8') as f:
+                  match = re.search(r"STB_V2_SHOP_PUBLISHABLE_KEY\s*=\s*['\"](sb_publishable_[^'\"]+)['\"]", f.read())
+              if not match:
+                  raise SystemExit('No publishable browser key available')
+              key = match.group(1)
+          print('::add-mask::' + key)
+          base = 'https://yktioliukcrrccrfwxad.supabase.co/rest/v1/rpc/'
+          checks = [
+              ('get_public_events', {'p_limit': 1, 'p_after': None, 'p_after_id': None}),
+              ('get_public_press', {'p_limit': 1, 'p_after': None}),
+              ('get_public_sponsors', {})
+          ]
+          for name, body in checks:
+              req = urllib.request.Request(base + name,
+                  data=json.dumps(body).encode('utf-8'),
+                  headers={'apikey': key, 'Content-Type': 'application/json', 'Accept': 'application/json'},
+                  method='POST')
+              try:
+                  with urllib.request.urlopen(req, timeout=20) as response:
+                      result = json.load(response)
+                      if not isinstance(result, list):
+                          raise ValueError(name + ': expected list')
+                      print(name + ': PASS (items=' + str(len(result)) + ')')
+              except (urllib.error.HTTPError, urllib.error.URLError, ValueError) as error:
+                  raise SystemExit(name + ': FAIL (' + str(error) + ')')
+          PY
