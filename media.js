@@ -328,55 +328,53 @@
         }));
     };
 
-    const loadMedia = async () => {
-        try {
-            const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_public_media_items`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'apikey': SUPABASE_ANON_KEY,
-                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                },
-                body: JSON.stringify({
-                    p_category: null,
-                    p_limit: 5,
-                    p_featured_only: false
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error(`Supabase RPC failed with status ${response.status}`);
-            }
-
-            const mediaItems = await response.json();
-            if (!Array.isArray(mediaItems) || mediaItems.length === 0) {
-                removeSection();
-                return;
-            }
-
-            const renderableItems = mediaItems.filter((item) => item.title);
-            if (!renderableItems.length) {
-                removeSection();
-                return;
-            }
-
-            let visibleItems = renderableItems;
-            if (V2_PRESS_ENABLED) {
-                try {
-                    const v2Items = await fetchV2Press();
-                    const existing = new Set(v2Items.map((item) => item.title.trim().toLocaleLowerCase('de-AT')));
-                    visibleItems = [...v2Items, ...renderableItems.filter((item) => !existing.has(item.title.trim().toLocaleLowerCase('de-AT')))];
-                } catch (error) {
-                    console.warn('V2 press preview unavailable; keeping V1 items', error);
-                }
-            }
-            renderMediaItems(visibleItems);
-            showSection();
-        } catch (error) {
-            console.warn('Could not load public media', error);
-            removeSection();
+    const fetchV1Media = async () => {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_public_media_items`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+            },
+            body: JSON.stringify({ p_category: null, p_limit: 5, p_featured_only: false })
+        });
+        if (!response.ok) {
+            throw new Error(`V1 media RPC failed with status ${response.status}`);
         }
+        const records = await response.json();
+        if (!Array.isArray(records)) {
+            throw new Error('V1 media RPC returned invalid data');
+        }
+        return records.filter((item) => item && typeof item.title === 'string' && item.title.trim());
+    };
+
+    const loadMedia = async () => {
+        const sources = V2_PRESS_ENABLED
+            ? [fetchV1Media(), fetchV2Press()]
+            : [fetchV1Media()];
+        const results = await Promise.allSettled(sources);
+        const v1Items = results[0].status === 'fulfilled' ? results[0].value : [];
+        const v2Items = V2_PRESS_ENABLED && results[1].status === 'fulfilled' ? results[1].value : [];
+
+        for (const result of results) {
+            if (result.status === 'rejected') {
+                console.warn('Could not load public media source', result.reason);
+            }
+        }
+
+        // Only explicitly matching titles are deduplicated. No cross-database IDs are shared.
+        const v2Titles = new Set(v2Items.map((item) => item.title.trim().toLocaleLowerCase('de-AT')));
+        const visibleItems = [...v2Items, ...v1Items.filter(
+            (item) => !v2Titles.has(item.title.trim().toLocaleLowerCase('de-AT'))
+        )];
+
+        if (!visibleItems.length) {
+            removeSection();
+            return;
+        }
+        renderMediaItems(visibleItems);
+        showSection();
     };
 
     loadMedia();
