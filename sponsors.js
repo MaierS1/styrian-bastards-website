@@ -209,7 +209,7 @@
         const unique = new Map();
         for (const item of [...v1Items, ...v2Items]) {
             const name = String(item.name || '').trim().toLocaleLowerCase('de');
-            const website = String(item.website || '').trim().toLocaleLowerCase('de').replace(/^https?:\\/\\//, '').replace(/\\/$/, '');
+            const website = String(item.website || '').trim().toLocaleLowerCase('de').replace(/^https?:\/\//, '').replace(/\/$/, '');
             const key = website ? `website:${website}` : name ? `name:${name}` : `${item._source}:${item.id}`;
             unique.set(key, item);
         }
