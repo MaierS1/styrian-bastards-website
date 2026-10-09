@@ -63,6 +63,9 @@
     };
 
     const pressDetailHref = (item) => {
+        if (item._source === 'v2' && item.slug) {
+            return `/presse.html?source=v2&slug=${encodeURIComponent(item.slug)}`;
+        }
         if (item.slug) {
             return `/presse.html?slug=${encodeURIComponent(item.slug)}`;
         }
@@ -315,6 +318,8 @@
         }
         return records.filter((item) => item && item.title).map((item) => ({
             title: item.title,
+            slug: item.slug || '',
+            _source: 'v2',
             summary: item.teaser || '',
             category: item.category || 'presseartikel',
             publication_date: typeof item.published_at === 'string' ? item.published_at.slice(0, 10) : '',
