@@ -291,6 +291,43 @@
         }
     };
 
+    // Opt-in V2 press preview. Disabled by default until live RPC and detail-page verification.
+    // V2 cards are intentionally read-only: V1 press detail links must not receive V2 IDs.
+    const V2_PRESS_ENABLED = window.STB_V2_PRESS_ENABLED === true;
+    const V2_URL = 'https://yktioliukcrrccrfwxad.supabase.co';
+
+    const fetchV2Press = async () => {
+        const key = window.STB_V2_SHOP_PUBLISHABLE_KEY;
+        if (!V2_PRESS_ENABLED || typeof key !== 'string' || !key.trim()) {
+            return [];
+        }
+        const response = await fetch(`${V2_URL}/rest/v1/rpc/get_public_press`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'apikey': key },
+            body: JSON.stringify({ p_limit: 5, p_after: null })
+        });
+        if (!response.ok) {
+            throw new Error(`V2 press RPC failed with status ${response.status}`);
+        }
+        const records = await response.json();
+        if (!Array.isArray(records)) {
+            throw new Error('V2 press RPC returned invalid data');
+        }
+        return records.filter((item) => item && item.title).map((item) => ({
+            title: item.title,
+            summary: item.teaser || '',
+            category: item.category || 'presseartikel',
+            publication_date: typeof item.published_at === 'string' ? item.published_at.slice(0, 10) : '',
+            image_path: typeof item.image_path === 'string' && item.image_path
+                ? (/^https:\/\//i.test(item.image_path)
+                    ? item.image_path
+                    : `${V2_URL}/storage/v1/object/public/public-assets/${encodeURI(item.image_path)}`)
+                : '',
+            // No id/slug: the existing press detail page is V1-only.
+            is_featured: false
+        }));
+    };
+
     const loadMedia = async () => {
         try {
             const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_public_media_items`, {
@@ -324,7 +361,17 @@
                 return;
             }
 
-            renderMediaItems(renderableItems);
+            let visibleItems = renderableItems;
+            if (V2_PRESS_ENABLED) {
+                try {
+                    const v2Items = await fetchV2Press();
+                    const existing = new Set(v2Items.map((item) => item.title.trim().toLocaleLowerCase('de-AT')));
+                    visibleItems = [...v2Items, ...renderableItems.filter((item) => !existing.has(item.title.trim().toLocaleLowerCase('de-AT')))];
+                } catch (error) {
+                    console.warn('V2 press preview unavailable; keeping V1 items', error);
+                }
+            }
+            renderMediaItems(visibleItems);
             showSection();
         } catch (error) {
             console.warn('Could not load public media', error);
