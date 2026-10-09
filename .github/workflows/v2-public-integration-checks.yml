@@ -36,9 +36,12 @@ jobs:
           assert(index.indexOf('src="/v2-shop-config.js"') < index.indexOf('src="sponsors.js"'), 'Homepage config must precede sponsors');
           assert(index.indexOf('src="/v2-public-content-flags.js"') < index.indexOf('src="sponsors.js"'), 'Homepage flags must precede sponsors');
           assert(detail.indexOf('src="/v2-shop-config.js"') < detail.indexOf('src="/presse.js"'), 'Press config must precede detail');
-          assert(flags.includes('window.STB_V2_PRESS_ENABLED = false'), 'V2 press must default off');
-          assert(flags.includes('window.STB_V2_EVENTS_ENABLED = false'), 'V2 events must default off');
-          assert(flags.includes('window.STB_V2_SPONSORS_ENABLED = false'), 'V2 sponsors must default off');
+          assert(flags.includes('window.STB_V2_PRESS_ENABLED = stbV2Preview'), 'V2 press must require preview opt-in');
+          assert(flags.includes('window.STB_V2_EVENTS_ENABLED = stbV2Preview'), 'V2 events must require preview opt-in');
+          assert(flags.includes('window.STB_V2_SPONSORS_ENABLED = stbV2Preview'), 'V2 sponsors must require preview opt-in');
+          assert(flags.includes("params.get('v2preview') === '1'"), 'Preview must require explicit query opt-in');
+          assert(flags.includes("host === 'www.styrian-bastards.at'"), 'Production host must be excluded');
+          assert(flags.includes("host === 'styrian-bastards.at'"), 'Apex production host must be excluded');
           assert(sponsors.includes('window.STB_V2_SPONSORS_ENABLED === true'), 'V2 sponsors must be opt-in');
           assert(sponsors.includes('Promise.allSettled'), 'Sponsors must have independent source fallback');
           assert(sponsors.includes('get_public_sponsors'), 'Sponsors must use public RPC');
