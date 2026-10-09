@@ -1,0 +1,108 @@
+name: V2 public integration checks
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check JavaScript syntax
+        run: |
+          node --check sponsors.js
+          node --check events.js
+          node --check media.js
+          node --check presse.js
+          node --check v2-shop-config.js
+          node --check v2-public-content-flags.js
+      - name: Verify public integration guardrails
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const assert = require('node:assert/strict');
+          const index = fs.readFileSync('index.html', 'utf8');
+          const media = fs.readFileSync('media.js', 'utf8');
+          const sponsors = fs.readFileSync('sponsors.js', 'utf8');
+          const events = fs.readFileSync('events.js', 'utf8');
+          const press = fs.readFileSync('presse.js', 'utf8');
+          const detail = fs.readFileSync('presse.html', 'utf8');
+          const eventDetail = fs.readFileSync('event.html', 'utf8');
+          const flags = fs.readFileSync('v2-public-content-flags.js', 'utf8');
+          assert(index.indexOf('src="/v2-shop-config.js"') < index.indexOf('src="media.js"'), 'Homepage config must precede media');
+          assert(index.indexOf('src="/v2-shop-config.js"') < index.indexOf('src="sponsors.js"'), 'Homepage config must precede sponsors');
+          assert(index.indexOf('src="/v2-public-content-flags.js"') < index.indexOf('src="sponsors.js"'), 'Homepage flags must precede sponsors');
+          assert(detail.indexOf('src="/v2-shop-config.js"') < detail.indexOf('src="/presse.js"'), 'Press config must precede detail');
+          assert(flags.includes('window.STB_V2_PRESS_ENABLED = stbV2Preview'), 'V2 press must require preview opt-in');
+          assert(flags.includes('window.STB_V2_EVENTS_ENABLED = stbV2Preview'), 'V2 events must require preview opt-in');
+          assert(flags.includes('window.STB_V2_SPONSORS_ENABLED = stbV2Preview'), 'V2 sponsors must require preview opt-in');
+          assert(flags.includes("params.get('v2preview') === '1'"), 'Preview must require explicit query opt-in');
+          assert(flags.includes("host === 'www.styrian-bastards.at'"), 'Production host must be excluded');
+          assert(flags.includes("host === 'styrian-bastards.at'"), 'Apex production host must be excluded');
+          assert(sponsors.includes('window.STB_V2_SPONSORS_ENABLED === true'), 'V2 sponsors must be opt-in');
+          assert(sponsors.includes('Promise.allSettled'), 'Sponsors must have independent source fallback');
+          assert(sponsors.includes('get_public_sponsors'), 'Sponsors must use public RPC');
+          for (const [page, html, script] of [['index', index, 'media.js'], ['presse', detail, '/presse.js'], ['event', eventDetail, 'events.js']]) {
+            assert(html.includes('src="/v2-public-content-flags.js"'), page + ' must load flags');
+            assert(html.indexOf('src="/v2-public-content-flags.js"') < html.indexOf('src="' + script + '"'), page + ' must load flags first');
+          }
+          assert(media.includes('window.STB_V2_PRESS_ENABLED === true'), 'V2 press must be opt-in');
+          assert(press.includes('window.STB_V2_PRESS_ENABLED === true'), 'V2 detail must be opt-in');
+          assert(events.includes('window.STB_V2_EVENTS_ENABLED === true'), 'V2 events must be opt-in');
+          assert(events.includes('registration_enabled: false'), 'V2 event registrations must stay disabled');
+          assert(events.includes("event._source === 'v2' ? 'div' : 'a'"), 'V2 events must not link to V1 detail');
+          assert(press.includes('renderContent(fullContent, content)'), 'Press must render text safely');
+          assert(media.includes("'&v2preview=1'"), 'Homepage V2 press link must preserve preview');
+          assert(press.includes("'&v2preview=1'"), 'Press list V2 link must preserve preview');
+          assert(!press.includes('innerHTML = item.content_html'), 'Never inject untrusted press HTML');
+          console.log('Public integration guardrails passed');
+          NODE
+
+  live-public-rpc:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check public V2 RPCs without modifying data
+        env:
+          V2_PUBLIC_KEY: ${{ secrets.STB_V2_PUBLISHABLE_KEY }}
+        run: |
+          if [ -z "$V2_PUBLIC_KEY" ]; then
+            # This key is already shipped to public browsers. Read it without printing it.
+            V2_PUBLIC_KEY="$(node - <<'NODE'
+          const fs = require('node:fs');
+          const vm = require('node:vm');
+          const sandbox = { window: {} };
+          vm.runInNewContext(fs.readFileSync('v2-shop-config.js', 'utf8'), sandbox, { timeout: 1000 });
+          const key = sandbox.window.STB_V2_SHOP_PUBLISHABLE_KEY;
+          if (typeof key !== 'string' || !key.startsWith('sb_publishable_')) process.exit(1);
+          process.stdout.write(key);
+          NODE
+            )" || exit 1
+          fi
+          echo "::add-mask::$V2_PUBLIC_KEY"
+          export V2_PUBLIC_KEY
+          python3 - <<'PY'
+          import json, os, urllib.request, urllib.error
+          base = 'https://yktioliukcrrccrfwxad.supabase.co/rest/v1/rpc/'
+          headers = {'apikey': os.environ['V2_PUBLIC_KEY'], 'Content-Type': 'application/json', 'Accept': 'application/json'}
+          checks = [
+              ('get_public_events', {'p_limit': 1, 'p_after': None, 'p_after_id': None}),
+              ('get_public_press', {'p_limit': 1, 'p_after': None}),
+              ('get_public_sponsors', {})
+          ]
+          for name, body in checks:
+              req = urllib.request.Request(base + name, data=json.dumps(body).encode(), headers=headers, method='POST')
+              try:
+                  with urllib.request.urlopen(req, timeout=15) as response:
+                      data = json.load(response)
+                      if not isinstance(data, list):
+                          raise ValueError(f'{name}: expected list response')
+                      print(f'{name}: HTTP {response.status}; list response; count={len(data)}')
+              except urllib.error.HTTPError as error:
+                  print(f'::error::{name}: HTTP {error.code}')
+                  raise
+          PY

@@ -2,6 +2,8 @@
     const SUPABASE_URL = 'https://ekaxdyysefmypkainhij.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVrYXhkeXlzZWZteXBrYWluaGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNjUyNzEsImV4cCI6MjA5Mjk0MTI3MX0.7o4jUIW5gsxvFWiqFHHjoHg87GVm4H_1UW9ftll6VmU';
 
+    const V2_PRESS_ENABLED = window.STB_V2_PRESS_ENABLED === true;
+    const V2_URL = 'https://yktioliukcrrccrfwxad.supabase.co';
     const root = document.getElementById('press-root');
     if (!root) return;
 
@@ -42,6 +44,9 @@
     };
 
     const detailHref = (item) => {
+        if (item._source === 'v2' && item.slug) {
+            return `/presse.html?source=v2&slug=${encodeURIComponent(item.slug)}${new URLSearchParams(window.location.search).get('v2preview') === '1' ? '&v2preview=1' : ''}`;
+        }
         if (item.slug) {
             return `/presse.html?slug=${encodeURIComponent(item.slug)}`;
         }
@@ -226,32 +231,82 @@
         root.appendChild(back);
     };
 
+    // V2 content is fetched only from a public published-only RPC.
+    // Content HTML is displayed as text paragraphs, never inserted as raw HTML.
+    const fetchV2Press = async (slug = '') => {
+        const key = window.STB_V2_SHOP_PUBLISHABLE_KEY;
+        if (!V2_PRESS_ENABLED || typeof key !== 'string' || !key.trim()) return [];
+        const endpoint = slug ? 'get_public_press_item' : 'get_public_press';
+        const body = slug ? { p_slug: slug } : { p_limit: 50, p_after: null };
+        const response = await fetch(`${V2_URL}/rest/v1/rpc/${endpoint}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'apikey': key },
+            body: JSON.stringify(body)
+        });
+        if (!response.ok) throw new Error(`V2 press RPC failed: ${response.status}`);
+        const records = await response.json();
+        if (!Array.isArray(records)) throw new Error('Invalid V2 press response');
+        return records.filter((item) => item && item.title && item.slug).map((item) => ({
+            id: item.id,
+            slug: item.slug,
+            title: item.title,
+            summary: item.teaser || '',
+            publication_date: typeof item.published_at === 'string' ? item.published_at.slice(0, 10) : '',
+            image_path: item.image_path
+                ? (/^https:\/\//i.test(item.image_path) ? item.image_path
+                    : `${V2_URL}/storage/v1/object/public/public-assets/${encodeURI(item.image_path)}`)
+                : '',
+            content: item.content_html || '',
+            _source: 'v2'
+        }));
+    };
+
     const loadPress = async () => {
         try {
-            const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_public_media_items`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'apikey': SUPABASE_ANON_KEY,
-                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                },
-                body: JSON.stringify({
-                    p_category: null,
-                    p_limit: 50,
-                    p_featured_only: false
-                })
-            });
-
-            if (!response.ok) throw new Error(`Supabase RPC failed with status ${response.status}`);
-
-            const items = (await response.json()).filter((item) => item && item.title);
             const params = detailParams();
-
-            if (!params.slug && !params.id) {
-                renderOverview(items);
+            const v2Detail = new URLSearchParams(window.location.search).get('source') === 'v2';
+            if (v2Detail) {
+                if (!params.slug || !V2_PRESS_ENABLED) { renderNotFound(); return; }
+                const records = await fetchV2Press(params.slug);
+                const selected = records.find((item) => item.slug.toLowerCase() === params.slug);
+                if (selected) renderDetail(selected);
+                else renderNotFound();
                 return;
             }
+            const fetchV1 = async () => {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_public_media_items`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    },
+                    body: JSON.stringify({ p_category: null, p_limit: 50, p_featured_only: false })
+                });
+                if (!response.ok) throw new Error(`V1 press RPC failed: ${response.status}`);
+                const records = await response.json();
+                if (!Array.isArray(records)) throw new Error('Invalid V1 press response');
+                return records.filter((item) => item && item.title);
+            };
+
+            if (!params.slug && !params.id) {
+                const results = await Promise.allSettled(V2_PRESS_ENABLED
+                    ? [fetchV1(), fetchV2Press()]
+                    : [fetchV1()]);
+                const v1Items = results[0].status === 'fulfilled' ? results[0].value : [];
+                const v2Items = V2_PRESS_ENABLED && results[1].status === 'fulfilled' ? results[1].value : [];
+                for (const result of results) {
+                    if (result.status === 'rejected') console.warn('Press source unavailable', result.reason);
+                }
+                const titles = new Set(v2Items.map((item) => item.title.trim().toLocaleLowerCase('de-AT')));
+                renderOverview([...v2Items, ...v1Items.filter((item) =>
+                    !titles.has(item.title.trim().toLocaleLowerCase('de-AT'))
+                )]);
+                return;
+            }
+
+            const items = await fetchV1();
 
             const selected = items.find((item) => {
                 const slug = item.slug ? String(item.slug).toLowerCase() : '';
