@@ -64,7 +64,7 @@
 
     const pressDetailHref = (item) => {
         if (item._source === 'v2' && item.slug) {
-            return `/presse.html?source=v2&slug=${encodeURIComponent(item.slug)}`;
+            return `/presse.html?source=v2&slug=${encodeURIComponent(item.slug)}${new URLSearchParams(window.location.search).get('v2preview') === '1' ? '&v2preview=1' : ''}`;
         }
         if (item.slug) {
             return `/presse.html?slug=${encodeURIComponent(item.slug)}`;
