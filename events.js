@@ -456,9 +456,12 @@
     };
 
     const renderEventCard = (event) => {
-        const link = document.createElement('a');
+        // V2 events are preview-only until a source-aware detail/registration flow exists.
+        const link = document.createElement(event._source === 'v2' ? 'div' : 'a');
         link.className = 'public-event-link';
-        link.href = `event.html?id=${encodeURIComponent(event.id)}`;
+        if (event._source !== 'v2') {
+            link.href = `event.html?id=${encodeURIComponent(event.id)}`;
+        }
 
         const card = document.createElement('article');
         card.className = 'card public-event-card';
@@ -708,36 +711,62 @@
         eventDetailContent.appendChild(renderEventDetail(event));
     };
 
+    // V2 event preview is opt-in and read-only; never submit V2 IDs to V1 registration.
+    const V2_EVENTS_ENABLED = window.STB_V2_EVENTS_ENABLED === true;
+    const V2_EVENTS_URL = 'https://yktioliukcrrccrfwxad.supabase.co';
+    const fetchV2Events = async () => {
+        const key = window.STB_V2_SHOP_PUBLISHABLE_KEY;
+        if (!V2_EVENTS_ENABLED || typeof key !== 'string' || !key.trim()) return [];
+        const response = await fetch(`${V2_EVENTS_URL}/rest/v1/rpc/get_public_events`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'apikey': key },
+            body: JSON.stringify({ p_limit: 50, p_after: null, p_after_id: null })
+        });
+        if (!response.ok) throw new Error(`V2 events RPC failed: ${response.status}`);
+        const records = await response.json();
+        if (!Array.isArray(records)) throw new Error('Invalid V2 events response');
+        return records.filter((item) => item && item.id && item.title).map((item) => ({
+            id: item.id,
+            title: item.title,
+            starts_at: item.starts_at,
+            ends_at: item.ends_at,
+            location: item.location_name || '',
+            short_description: item.summary || '',
+            registration_enabled: false,
+            _source: 'v2'
+        }));
+    };
+
     const loadEvents = async () => {
-        try {
+        const fetchV1Events = async () => {
             const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_public_events`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
+                    'Content-Type': 'application/json', 'Accept': 'application/json',
                     'apikey': SUPABASE_ANON_KEY,
                     'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
                 },
                 body: '{}'
             });
+            if (!response.ok) throw new Error(`V1 events RPC failed: ${response.status}`);
+            const records = await response.json();
+            if (!Array.isArray(records)) throw new Error('Invalid V1 events response');
+            return records;
+        };
 
-            if (!response.ok) {
-                throw new Error(`Supabase RPC failed with status ${response.status}`);
-            }
-
-            const events = await response.json();
-            if (!Array.isArray(events)) {
-                throw new Error('Supabase RPC returned invalid data');
-            }
-
-            renderEventsSection(events);
-            renderDetailPage(events);
-        } catch (error) {
-            console.warn('Could not load public events', error);
-
-            renderEventsSection([]);
-            renderDetailPage([]);
+        const results = await Promise.allSettled(V2_EVENTS_ENABLED
+            ? [fetchV1Events(), fetchV2Events()]
+            : [fetchV1Events()]);
+        const v1Events = results[0].status === 'fulfilled' ? results[0].value : [];
+        const v2Events = V2_EVENTS_ENABLED && results[1].status === 'fulfilled' ? results[1].value : [];
+        for (const result of results) {
+            if (result.status === 'rejected') console.warn('Could not load events source', result.reason);
         }
+        // Avoid deduplication by name: separate events may legitimately share a title.
+        const events = [...v2Events, ...v1Events];
+        renderEventsSection(events);
+        // Detail pages remain V1-only until source-aware V2 registration is implemented.
+        renderDetailPage(v1Events);
     };
 
     loadEvents();
