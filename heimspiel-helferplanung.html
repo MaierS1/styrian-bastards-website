@@ -4,6 +4,54 @@
 <style>body{margin:0;background:#10131b;color:white;font:16px system-ui,sans-serif}main{max-width:900px;margin:auto;padding:32px 20px}h1{color:#f4f4f4}.card{background:#1d2432;border:1px solid #414b60;border-radius:14px;padding:24px;margin:20px 0}.note{color:#c5cedd}.btn{display:inline-block;padding:12px 18px;background:#c52d3d;color:white;border-radius:8px;text-decoration:none}a{color:#b9d7ff}</style></head>
 <body><main><a href="/">← Zur Startseite</a><h1>Heimspiel-Helferplanung</h1>
 <p>Bei jedem ATSE-Heimspiel helfen wir zwei Stunden vor Spielbeginn beim Aufbau. Plane deine Einsätze schon im Voraus.</p>
-<div class="card"><h2>ATSE-Heimspiele 2026/27</h2><p id="state" class="note">Der gemeinsame V2-Spielplan wird angebunden. Bis dahin werden keine unbestätigten Spieltermine angezeigt.</p><div id="games" aria-live="polite"></div></div>
+<div class="card"><h2>ATSE-Heimspiele 2026/27</h2><p id="state" class="note">Veröffentlichte Heimspiele werden aus der Staging-Datenbank geladen.</p><div id="games" aria-live="polite"></div></div>
 <div class="card"><h2>Zu- oder Absagen</h2><p>Die Rückmeldung ist nur für angemeldete, aktiv verknüpfte Vereinsmitglieder im Vereinsmanager 2.0 möglich.</p><p><a class="btn" href="https://styrian-bastards-manager-v2.vercel.app/heimspiel-helfer" rel="noopener noreferrer">Im Vereinsmanager anmelden und rückmelden →</a></p><p class="note">Diese Website-Vorschau speichert selbst keine Daten. Rückmeldungen im Vereinsmanager werden dort verarbeitet und können In-App-Benachrichtigungen auslösen.</p></div>
-</main></body></html>
+</main>
+<script>
+(() => {
+  // Preview only: never connect this draft page to the production database.
+  const API_URL = 'https://asrkcguvzscgtysnivsq.supabase.co';
+  const state = document.getElementById('state');
+  const games = document.getElementById('games');
+  const format = new Intl.DateTimeFormat('de-AT', {dateStyle:'full',timeStyle:'short',timeZone:'Europe/Vienna'});
+  async function load() {
+    try {
+      const key = window.STB_HELPER_STAGING_PUBLISHABLE_KEY;
+      if (!key) {
+        state.textContent = 'Staging-Zugangsschlüssel für die Vorschau fehlt. Es werden keine Termine angezeigt.';
+        return;
+      }
+      const now = new Date().toISOString();
+      const url = API_URL + '/rest/v1/home_game_helper_events?select=id,opponent_name,puck_drop_at,arrival_minutes_before&publication_state=eq.published&puck_drop_at=gte.' + encodeURIComponent(now) + '&order=puck_drop_at.asc';
+      const response = await fetch(url, {headers:{apikey:key,Authorization:'Bearer '+key}});
+      if (!response.ok) throw new Error('HTTP '+response.status);
+      const data = await response.json();
+      if (!Array.isArray(data)) throw new Error('Ungültige Antwort');
+      games.replaceChildren();
+      if (!data.length) {state.textContent = 'Derzeit sind keine Heimspiele veröffentlicht.'; return;}
+      state.textContent = data.length + ' veröffentlichte Heimspiele';
+      for (const game of data) {
+        const puck = new Date(game.puck_drop_at);
+        if (!Number.isFinite(puck.getTime())) continue;
+        const mins = Number(game.arrival_minutes_before);
+        const arrival = new Date(puck.getTime() - (Number.isFinite(mins) ? mins : 120) * 60000);
+        const article = document.createElement('article');
+        article.className = 'card';
+        const heading = document.createElement('h3');
+        heading.textContent = 'ATSE Graz – ' + String(game.opponent_name || 'Heimspiel');
+        const time = document.createElement('p');
+        time.textContent = 'Spielbeginn: ' + format.format(puck);
+        const meet = document.createElement('p');
+        meet.textContent = 'Treffpunkt zum Aufbau: ' + format.format(arrival);
+        article.append(heading,time,meet);
+        games.append(article);
+      }
+    } catch (error) {
+      state.textContent = 'Heimspiele konnten nicht geladen werden. Bitte später erneut versuchen.';
+      console.error('Staging Heimspiel-Vorschau:',error);
+    }
+  }
+  void load();
+})();
+</script>
+</body></html>
