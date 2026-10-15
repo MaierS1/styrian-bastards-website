@@ -18,13 +18,17 @@
 .helper-panel h2{font:700 clamp(1.5rem,3vw,2rem) Oswald,Arial,sans-serif;text-transform:uppercase;letter-spacing:1px;margin:0 0 18px}
 .helper-panel p{line-height:1.65;color:#d0d0d0;margin:0 0 18px}
 .helper-panel .note{color:#adb2bb;font-size:.95rem}
-.helper-panel .btn{display:inline-flex;justify-content:center;text-align:center;max-width:100%;white-space:normal}
+.helper-panel .btn{display:inline-flex;align-items:center;justify-content:center;text-align:center;max-width:100%;white-space:normal;overflow-wrap:anywhere;line-height:1.35}
+.helper-panel .btn:focus-visible,.helper-back:focus-visible{outline:3px solid #fff;outline-offset:4px}
+.helper-panel .btn:hover{filter:brightness(1.1)}
+.helper-panel #state{min-height:1.5em}
+.helper-panel #games:empty{min-height:20px}
 .helper-game{padding:20px;margin:14px 0;background:#1b1b1b;border:1px solid rgba(255,255,255,.12);border-left:4px solid #b30018;border-radius:12px}
 .helper-game h3{font:600 1.3rem Oswald,Arial,sans-serif;margin:0 0 12px}
 .helper-game p{margin:5px 0}
 .helper-back{display:inline-block;color:#e5e5e5;text-decoration:none;margin-bottom:10px}
 .helper-back:hover{color:#fff;text-decoration:underline}
-@media(max-width:760px){.helper-page{padding:115px 16px 48px}.helper-grid{grid-template-columns:1fr;gap:16px}.helper-panel{padding:22px}.helper-hero{padding:20px 0 28px}.helper-panel .btn{width:100%;padding:15px}}
+@media(max-width:760px){.helper-page{padding:115px 16px 48px}.helper-grid{grid-template-columns:minmax(0,1fr);gap:16px}.helper-panel{padding:22px}.helper-hero{padding:20px 0 28px}.helper-panel .btn{width:100%;padding:15px}}
 </style></head>
 <body><div id="navbar"></div><main class="helper-page"><div class="helper-shell"><div class="helper-hero"><a class="helper-back" href="/">← Zur Startseite</a><div><span class="helper-kicker">Styrian Bastards · ATSE Graz</span></div><h1>Heimspiel-Helferplanung</h1>
 <p>Bei jedem ATSE-Heimspiel helfen wir zwei Stunden vor Spielbeginn beim Aufbau. Plane deine Einsätze schon im Voraus.</p></div><div class="helper-grid"><section class="helper-panel">
@@ -54,8 +58,8 @@
       for (const game of data) {
         const puck = new Date(game.puck_drop_at);
         if (!Number.isFinite(puck.getTime())) continue;
-        const mins = Number(game.arrival_minutes_before);
-        const arrival = new Date(puck.getTime() - (Number.isFinite(mins) ? mins : 120) * 60000);
+        const mins = game.arrival_minutes_before == null ? 120 : Number(game.arrival_minutes_before);
+        const arrival = new Date(puck.getTime() - (Number.isFinite(mins) && mins >= 0 ? mins : 120) * 60000);
         const article = document.createElement('article');
         article.className = 'helper-game';
         const heading = document.createElement('h3');
