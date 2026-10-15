@@ -16,14 +16,10 @@
   const format = new Intl.DateTimeFormat('de-AT', {dateStyle:'full',timeStyle:'short',timeZone:'Europe/Vienna'});
   async function load() {
     try {
-      const key = window.STB_HELPER_STAGING_PUBLISHABLE_KEY;
-      if (!key) {
-        state.textContent = 'Staging-Zugangsschlüssel für die Vorschau fehlt. Es werden keine Termine angezeigt.';
-        return;
-      }
+      const key = 'sb_publishable_26j21pToqdSBbSxpmYj1tg_o7w4Yz_b';
       const now = new Date().toISOString();
       const url = API_URL + '/rest/v1/home_game_helper_events?select=id,opponent_name,puck_drop_at,arrival_minutes_before&publication_state=eq.published&puck_drop_at=gte.' + encodeURIComponent(now) + '&order=puck_drop_at.asc';
-      const response = await fetch(url, {headers:{apikey:key,Authorization:'Bearer '+key}});
+      const response = await fetch(url, {headers:{apikey:key}});
       if (!response.ok) throw new Error('HTTP '+response.status);
       const data = await response.json();
       if (!Array.isArray(data)) throw new Error('Ungültige Antwort');
