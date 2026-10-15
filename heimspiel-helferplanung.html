@@ -32,19 +32,20 @@
 </style></head>
 <body><div id="navbar"></div><main class="helper-page"><div class="helper-shell"><div class="helper-hero"><a class="helper-back" href="/">← Zur Startseite</a><div><span class="helper-kicker">Styrian Bastards · ATSE Graz</span></div><h1>Heimspiel-Helferplanung</h1>
 <p>Bei jedem ATSE-Heimspiel helfen wir zwei Stunden vor Spielbeginn beim Aufbau. Plane deine Einsätze schon im Voraus.</p></div><div class="helper-grid"><section class="helper-panel">
-<div><h2>ATSE-Heimspiele 2026/27</h2><p id="state" class="note">Veröffentlichte Heimspiele werden aus der Staging-Datenbank geladen.</p><div id="games" aria-live="polite"></div></div></section><section class="helper-panel">
-<div><h2>Zu- oder Absagen</h2><p>In dieser Staging-Vorschau sind Rückmeldungen nur mit einem aktiven, in Staging verknüpften Test-Mitgliedskonto möglich.</p><p><a class="btn" href="https://styrian-bastards-manager-v2-qm5g21455-maiers1s-projects.vercel.app/heimspiel-helfer" rel="noopener noreferrer">In der Vereinsmanager-Testversion rückmelden →</a></p><p class="note">Diese Website-Vorschau speichert selbst keine Daten. Rückmeldungen im Vereinsmanager werden dort verarbeitet und können In-App-Benachrichtigungen auslösen.</p></div></section></div></div>
+<div><h2>ATSE-Heimspiele 2026/27</h2><p id="state" class="note">Veröffentlichte Heimspiele werden geladen.</p><div id="games" aria-live="polite"></div></div></section><section class="helper-panel">
+<div><h2>Zu- oder Absagen</h2><p>Rückmeldungen sind nur mit einem aktiven, verknüpften Mitgliedskonto möglich.</p><p><a class="btn" href="https://styrian-bastards-manager-v2.vercel.app/heimspiel-helfer" rel="noopener noreferrer">In der Vereinsmanager-Testversion rückmelden →</a></p><p class="note">Die Website speichert selbst keine Rückmeldungen. Rückmeldungen im Vereinsmanager werden dort verarbeitet und können In-App-Benachrichtigungen auslösen.</p></div></section></div></div>
 </main><div id="footer"></div><script src="/js/extracted/sponsoren.js"></script><script src="/js/consent-manager.js" defer></script>
 <script>
 (() => {
-  // Preview only: never connect this draft page to the production database.
-  const API_URL = 'https://asrkcguvzscgtysnivsq.supabase.co';
+  // Production uses the production project; Cloudflare previews stay isolated in staging.
+  const isProduction = ['styrian-bastards.at','www.styrian-bastards.at'].includes(window.location.hostname.toLowerCase());
+  const API_URL = isProduction ? 'https://yktioliukcrrccrfwxad.supabase.co' : 'https://asrkcguvzscgtysnivsq.supabase.co';
   const state = document.getElementById('state');
   const games = document.getElementById('games');
   const format = new Intl.DateTimeFormat('de-AT', {dateStyle:'full',timeStyle:'short',timeZone:'Europe/Vienna'});
   async function load() {
     try {
-      const key = 'sb_publishable_26j21pToqdSBbSxpmYj1tg_o7w4Yz_b';
+      const key = isProduction ? 'sb_publishable__F_cerudLxOwAnlF0GobcA_qWi36mPu' : 'sb_publishable_26j21pToqdSBbSxpmYj1tg_o7w4Yz_b';
       const now = new Date().toISOString();
       const url = API_URL + '/rest/v1/home_game_helper_events?select=id,opponent_name,puck_drop_at,arrival_minutes_before&publication_state=eq.published&puck_drop_at=gte.' + encodeURIComponent(now) + '&order=puck_drop_at.asc';
       const response = await fetch(url, {headers:{apikey:key}});
@@ -76,7 +77,7 @@
       else state.textContent = rendered + ' veröffentlichte Heimspiele';
     } catch (error) {
       state.textContent = 'Heimspiele konnten nicht geladen werden. Bitte später erneut versuchen.';
-      console.error('Staging Heimspiel-Vorschau:',error);
+      console.error('Heimspiel-Helferplanung:',error);
     }
   }
   void load();
