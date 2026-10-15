@@ -26,6 +26,7 @@
       games.replaceChildren();
       if (!data.length) {state.textContent = 'Derzeit sind keine Heimspiele veröffentlicht.'; return;}
       state.textContent = data.length + ' veröffentlichte Heimspiele';
+      let rendered = 0;
       for (const game of data) {
         const puck = new Date(game.puck_drop_at);
         if (!Number.isFinite(puck.getTime())) continue;
@@ -41,7 +42,10 @@
         meet.textContent = 'Treffpunkt zum Aufbau: ' + format.format(arrival);
         article.append(heading,time,meet);
         games.append(article);
+        rendered += 1;
       }
+      if (!rendered) state.textContent = 'Keine gültigen Heimspieltermine vorhanden.';
+      else state.textContent = rendered + ' veröffentlichte Heimspiele';
     } catch (error) {
       state.textContent = 'Heimspiele konnten nicht geladen werden. Bitte später erneut versuchen.';
       console.error('Staging Heimspiel-Vorschau:',error);
