@@ -38,7 +38,7 @@
 .sb-navbar-menu{
     display:flex;
     align-items:center;
-    gap:30px;
+    gap:clamp(10px,1.45vw,22px);
 }
 
 .sb-navbar-menu a{
@@ -46,7 +46,7 @@
     text-decoration:none;
 
     font-family:'Oswald', sans-serif;
-    font-size:1rem;
+    font-size:clamp(.82rem,.93vw,1rem);
     font-weight:500;
 
     text-transform:uppercase;
@@ -96,3 +96,11 @@
 .sb-nav-submenu a{display:block!important;white-space:normal;padding:12px 10px;font-size:.92rem!important;line-height:1.4}
 .sb-nav-dropdown:hover .sb-nav-submenu,.sb-nav-dropdown:focus-within .sb-nav-submenu,.sb-nav-dropdown.is-open .sb-nav-submenu{display:block}
 @media(max-width:950px){.sb-nav-dropdown{flex-wrap:wrap;justify-content:center}.sb-nav-submenu{position:static;width:100%;min-width:0;flex-basis:100%;box-sizing:border-box;text-align:center}.sb-nav-dropdown-toggle{padding:8px}}
+
+/* Keep dropdown labels and top-level links aligned */
+.sb-navbar-menu .sb-nav-dropdown>a{font:inherit;font-family:'Oswald',sans-serif;font-size:clamp(.82rem,.93vw,1rem);font-weight:500;letter-spacing:1px;text-transform:uppercase}
+.sb-nav-dropdown-toggle{font-size:.85rem;line-height:1;min-width:28px;min-height:32px;border-radius:5px}
+.sb-nav-dropdown-toggle:focus-visible,.sb-navbar-menu a:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.sb-nav-submenu{border-top:2px solid #b30018;border-radius:0 0 8px 8px}
+.sb-nav-submenu a:hover,.sb-nav-submenu a:focus-visible{background:rgba(179,0,24,.16)}
+@media(max-width:950px){.sb-navbar-menu .sb-nav-dropdown>a{font-size:.92rem}.sb-nav-submenu{margin-top:6px}.sb-nav-dropdown{gap:3px}}
