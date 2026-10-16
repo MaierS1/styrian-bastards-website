@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/css/subpage-hero.css?v=20260718-13">
 <link rel="stylesheet" href="/css/consent-manager.css">
 <style>
-.helper-page{min-height:100vh;padding:150px 25px 80px;background:transparent}
+.helper-page{min-height:100vh;padding:100px 25px 80px;background:transparent}
 .helper-shell{max-width:1250px;margin:0 auto}
 .helper-kicker{display:inline-block;padding:7px 13px;border:1px solid rgba(210,33,55,.5);border-radius:100px;background:rgba(179,0,24,.17);font:700 13px Oswald,Arial,sans-serif;letter-spacing:2px;text-transform:uppercase}
 .helper-hero{margin-bottom:34px}
@@ -28,7 +28,7 @@
 .helper-game p{margin:5px 0}
 .helper-back{display:inline-block;color:#e5e5e5;text-decoration:none;margin-bottom:10px}
 .helper-back:hover{color:#fff;text-decoration:underline}
-@media(max-width:950px){.helper-page{padding-top:185px}}@media(max-width:760px){.helper-page{padding:185px 18px 48px}.helper-grid{grid-template-columns:minmax(0,1fr);gap:16px}.helper-panel{padding:22px}.helper-hero{padding:20px 0 28px}.helper-panel .btn{width:100%;padding:15px}}
+@media(max-width:950px){.helper-page{padding-top:110px}}@media(max-width:760px){.helper-page{padding:100px 18px 48px}.helper-grid{grid-template-columns:minmax(0,1fr);gap:16px}.helper-panel{padding:22px}.helper-hero{padding:20px 0 28px}.helper-panel .btn{width:100%;padding:15px}}
 </style></head>
 <body><div id="navbar"></div><main class="helper-page"><div class="helper-shell"><div class="helper-hero sb-page-hero"><a class="helper-back" href="/">← Zur Startseite</a><div><span class="helper-kicker">Styrian Bastards · ATSE Graz</span></div><h1>Heimspiel-Helferplanung</h1>
 <p>Bei jedem ATSE-Heimspiel helfen wir zwei Stunden vor Spielbeginn beim Aufbau. Plane deine Einsätze schon im Voraus.</p></div><div class="helper-grid"><section class="helper-panel">
@@ -37,15 +37,14 @@
 </main><div id="footer"></div><script src="/js/extracted/sponsoren.js"></script><script src="/js/consent-manager.js" defer></script>
 <script>
 (() => {
-  // Production uses the production project; Cloudflare previews stay isolated in staging.
-  const isProduction = true;
-  const API_URL = isProduction ? 'https://yktioliukcrrccrfwxad.supabase.co' : 'https://asrkcguvzscgtysnivsq.supabase.co';
+  // Public schedule only: production-published events are readable on every public host.
+  const API_URL = 'https://yktioliukcrrccrfwxad.supabase.co';
   const state = document.getElementById('state');
   const games = document.getElementById('games');
   const format = new Intl.DateTimeFormat('de-AT', {dateStyle:'full',timeStyle:'short',timeZone:'Europe/Vienna'});
   async function load() {
     try {
-      const key = isProduction ? 'sb_publishable__F_cerudLxOwAnlF0GobcA_qWi36mPu' : 'sb_publishable_26j21pToqdSBbSxpmYj1tg_o7w4Yz_b';
+      const key = 'sb_publishable__F_cerudLxOwAnlF0GobcA_qWi36mPu';
       const now = new Date().toISOString();
       const url = API_URL + '/rest/v1/home_game_helper_events?select=id,opponent_name,puck_drop_at,arrival_minutes_before&publication_state=eq.published&puck_drop_at=gte.' + encodeURIComponent(now) + '&order=puck_drop_at.asc';
       const response = await fetch(url, {headers:{apikey:key, Accept: 'application/json'},cache:'no-store'});
