@@ -7,14 +7,14 @@
 <link rel="stylesheet" href="/style.css">
 <link rel="stylesheet" href="/css/consent-manager.css">
 <style>
-.helper-page{min-height:100vh;padding:155px 24px 80px;background:radial-gradient(ellipse at 90% 0%,rgba(179,0,24,.2),transparent 55%)}
+.helper-page{min-height:100vh;padding:105px 24px 80px;background:transparent}
 .helper-shell{max-width:1160px;margin:auto}
 .helper-kicker{display:inline-block;padding:7px 13px;border:1px solid rgba(210,33,55,.5);border-radius:100px;background:rgba(179,0,24,.17);font:700 13px Oswald,Arial,sans-serif;letter-spacing:2px;text-transform:uppercase}
-.helper-hero{padding:30px 0 42px;border-bottom:1px solid rgba(255,255,255,.12)}
+.helper-hero{padding:30px 0 42px;border-bottom:0}
 .helper-hero h1{font:700 clamp(2.6rem,6vw,5rem)/1.08 Oswald,Arial,sans-serif;text-transform:uppercase;letter-spacing:2px;margin:20px 0}
 .helper-hero p{max-width:760px;color:#d0d0d0;line-height:1.7;font-size:1.13rem}
 .helper-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,1fr);gap:24px;margin-top:32px}
-.helper-panel{background:linear-gradient(150deg,#151515,#090909);border:1px solid rgba(255,255,255,.13);border-radius:18px;padding:30px;min-width:0}
+.helper-panel{background:#141414;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:30px;min-width:0}
 .helper-panel h2{font:700 clamp(1.5rem,3vw,2rem) Oswald,Arial,sans-serif;text-transform:uppercase;letter-spacing:1px;margin:0 0 18px}
 .helper-panel p{line-height:1.65;color:#d0d0d0;margin:0 0 18px}
 .helper-panel .note{color:#adb2bb;font-size:.95rem}
@@ -33,12 +33,12 @@
 <body><div id="navbar"></div><main class="helper-page"><div class="helper-shell"><div class="helper-hero"><a class="helper-back" href="/">← Zur Startseite</a><div><span class="helper-kicker">Styrian Bastards · ATSE Graz</span></div><h1>Heimspiel-Helferplanung</h1>
 <p>Bei jedem ATSE-Heimspiel helfen wir zwei Stunden vor Spielbeginn beim Aufbau. Plane deine Einsätze schon im Voraus.</p></div><div class="helper-grid"><section class="helper-panel">
 <div><h2>ATSE-Heimspiele 2026/27</h2><p id="state" class="note">Veröffentlichte Heimspiele werden geladen.</p><div id="games" aria-live="polite"></div></div></section><section class="helper-panel">
-<div><h2>Zu- oder Absagen</h2><p>Rückmeldungen sind nur mit einem aktiven, verknüpften Mitgliedskonto möglich.</p><p><a class="btn" href="https://styrian-bastards-manager-v2.vercel.app/heimspiel-helfer" rel="noopener noreferrer">In der Vereinsmanager-Testversion rückmelden →</a></p><p class="note">Die Website speichert selbst keine Rückmeldungen. Rückmeldungen im Vereinsmanager werden dort verarbeitet und können In-App-Benachrichtigungen auslösen.</p></div></section></div></div>
+<div><h2>Zu- oder Absagen</h2><p>Rückmeldungen sind nur mit einem aktiven, verknüpften Mitgliedskonto möglich.</p><p><a class="btn" href="https://styrian-bastards-manager-v2.vercel.app/heimspiel-helfer" rel="noopener noreferrer">Im Vereinsmanager V2 rückmelden →</a></p><p class="note">Die Website speichert selbst keine Rückmeldungen. Rückmeldungen im Vereinsmanager werden dort verarbeitet und können In-App-Benachrichtigungen auslösen.</p></div></section></div></div>
 </main><div id="footer"></div><script src="/js/extracted/sponsoren.js"></script><script src="/js/consent-manager.js" defer></script>
 <script>
 (() => {
   // Production uses the production project; Cloudflare previews stay isolated in staging.
-  const isProduction = ['styrian-bastards.at','www.styrian-bastards.at'].includes(window.location.hostname.toLowerCase());
+  const isProduction = !['localhost','127.0.0.1'].includes(window.location.hostname.toLowerCase()) && !window.location.hostname.endsWith('.pages.dev');
   const API_URL = isProduction ? 'https://yktioliukcrrccrfwxad.supabase.co' : 'https://asrkcguvzscgtysnivsq.supabase.co';
   const state = document.getElementById('state');
   const games = document.getElementById('games');
@@ -48,8 +48,8 @@
       const key = isProduction ? 'sb_publishable__F_cerudLxOwAnlF0GobcA_qWi36mPu' : 'sb_publishable_26j21pToqdSBbSxpmYj1tg_o7w4Yz_b';
       const now = new Date().toISOString();
       const url = API_URL + '/rest/v1/home_game_helper_events?select=id,opponent_name,puck_drop_at,arrival_minutes_before&publication_state=eq.published&puck_drop_at=gte.' + encodeURIComponent(now) + '&order=puck_drop_at.asc';
-      const response = await fetch(url, {headers:{apikey:key}});
-      if (!response.ok) throw new Error('HTTP '+response.status);
+      const response = await fetch(url, {headers:{apikey:key, Authorization: 'Bearer ' + key, Accept: 'application/json'},cache:'no-store'});
+      if (!response.ok) throw new Error('HTTP '+response.status+' '+(await response.text()).slice(0,250));
       const data = await response.json();
       if (!Array.isArray(data)) throw new Error('Ungültige Antwort');
       games.replaceChildren();
@@ -76,7 +76,7 @@
       if (!rendered) state.textContent = 'Keine gültigen Heimspieltermine vorhanden.';
       else state.textContent = rendered + ' veröffentlichte Heimspiele';
     } catch (error) {
-      state.textContent = 'Heimspiele konnten nicht geladen werden. Bitte später erneut versuchen.';
+      state.textContent = 'Heimspiele konnten nicht geladen werden. Bitte Seite aktualisieren oder den Vorstand kontaktieren.';
       console.error('Heimspiel-Helferplanung:',error);
     }
   }
