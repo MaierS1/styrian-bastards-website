@@ -7,12 +7,12 @@
 <link rel="stylesheet" href="/style.css">
 <link rel="stylesheet" href="/css/consent-manager.css">
 <style>
-.helper-page{min-height:100vh;padding:105px 24px 80px;background:transparent}
-.helper-shell{max-width:1160px;margin:auto}
+.helper-page{min-height:100vh;padding:150px 25px 80px;background:transparent}
+.helper-shell{max-width:1250px;margin:0 auto}
 .helper-kicker{display:inline-block;padding:7px 13px;border:1px solid rgba(210,33,55,.5);border-radius:100px;background:rgba(179,0,24,.17);font:700 13px Oswald,Arial,sans-serif;letter-spacing:2px;text-transform:uppercase}
-.helper-hero{padding:30px 0 42px;border-bottom:0}
-.helper-hero h1{font:700 clamp(2.6rem,6vw,5rem)/1.08 Oswald,Arial,sans-serif;text-transform:uppercase;letter-spacing:2px;margin:20px 0}
-.helper-hero p{max-width:760px;color:#d0d0d0;line-height:1.7;font-size:1.13rem}
+.helper-hero{margin-bottom:34px}
+.helper-hero h1{font:700 clamp(2.8rem,7vw,5.8rem)/.95 Oswald,Arial,sans-serif;text-transform:uppercase;letter-spacing:3px;margin:18px 0 14px}
+.helper-hero p{max-width:760px;color:rgba(255,255,255,.9);line-height:1.8;font-size:1.1rem}
 .helper-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,1fr);gap:24px;margin-top:32px}
 .helper-panel{background:#141414;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:30px;min-width:0}
 .helper-panel h2{font:700 clamp(1.5rem,3vw,2rem) Oswald,Arial,sans-serif;text-transform:uppercase;letter-spacing:1px;margin:0 0 18px}
@@ -28,7 +28,7 @@
 .helper-game p{margin:5px 0}
 .helper-back{display:inline-block;color:#e5e5e5;text-decoration:none;margin-bottom:10px}
 .helper-back:hover{color:#fff;text-decoration:underline}
-@media(max-width:760px){.helper-page{padding:115px 16px 48px}.helper-grid{grid-template-columns:minmax(0,1fr);gap:16px}.helper-panel{padding:22px}.helper-hero{padding:20px 0 28px}.helper-panel .btn{width:100%;padding:15px}}
+@media(max-width:950px){.helper-page{padding-top:185px}}@media(max-width:760px){.helper-page{padding:185px 18px 48px}.helper-grid{grid-template-columns:minmax(0,1fr);gap:16px}.helper-panel{padding:22px}.helper-hero{padding:20px 0 28px}.helper-panel .btn{width:100%;padding:15px}}
 </style></head>
 <body><div id="navbar"></div><main class="helper-page"><div class="helper-shell"><div class="helper-hero"><a class="helper-back" href="/">← Zur Startseite</a><div><span class="helper-kicker">Styrian Bastards · ATSE Graz</span></div><h1>Heimspiel-Helferplanung</h1>
 <p>Bei jedem ATSE-Heimspiel helfen wir zwei Stunden vor Spielbeginn beim Aufbau. Plane deine Einsätze schon im Voraus.</p></div><div class="helper-grid"><section class="helper-panel">
@@ -48,7 +48,7 @@
       const key = isProduction ? 'sb_publishable__F_cerudLxOwAnlF0GobcA_qWi36mPu' : 'sb_publishable_26j21pToqdSBbSxpmYj1tg_o7w4Yz_b';
       const now = new Date().toISOString();
       const url = API_URL + '/rest/v1/home_game_helper_events?select=id,opponent_name,puck_drop_at,arrival_minutes_before&publication_state=eq.published&puck_drop_at=gte.' + encodeURIComponent(now) + '&order=puck_drop_at.asc';
-      const response = await fetch(url, {headers:{apikey:key, Authorization: 'Bearer ' + key, Accept: 'application/json'},cache:'no-store'});
+      const response = await fetch(url, {headers:{apikey:key, Accept: 'application/json'},cache:'no-store'});
       if (!response.ok) throw new Error('HTTP '+response.status+' '+(await response.text()).slice(0,250));
       const data = await response.json();
       if (!Array.isArray(data)) throw new Error('Ungültige Antwort');
