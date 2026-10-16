@@ -1,6 +1,6 @@
 <!-- Favicon -->
 <meta name="robots" content="noindex,nofollow">
-<link rel="stylesheet" href="/css/extracted/navbar.css">
+<link rel="stylesheet" href="/css/extracted/navbar.css?v=20261016-1">
 <link rel="stylesheet" href="/css/subpage-hero.css?v=20260718-13">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -14,14 +14,15 @@
             <img src="/logo.png" alt="Styrian Bastards Logo">
         </a>
 
-        <div class="sb-navbar-menu">
+        <button type="button" class="sb-nav-menu-toggle" aria-controls="sb-main-menu" aria-expanded="false" aria-label="Navigation öffnen">☰ Menü</button>
+        <div class="sb-navbar-menu" id="sb-main-menu">
             <a href="/index.html">Home</a>
             <a href="/index.html#about">Über Uns</a>
             <a href="/#events">Events</a>
             <a href="/sponsoren.html">Sponsoren</a>
             <a href="/index.html#facebook-feed">Social Media</a>
             <a href="/mitglied-werden.html">Mitglied Werden</a>
-            <div class="sb-nav-dropdown"><a href="/mitgliederbereich.html">Mitgliederbereich</a><button type="button" class="sb-nav-dropdown-toggle" aria-label="Mitgliederbereich-Untermenü öffnen" aria-expanded="false" onclick="const p=this.parentElement;const opened=p.classList.toggle('is-open');this.setAttribute('aria-expanded',String(opened))">▾</button><div class="sb-nav-submenu"><a href="/heimspiel-helferplanung.html">Heimspiele &amp; Helferplanung</a></div></div>
+            <div class="sb-nav-dropdown"><a href="/mitgliederbereich.html">Mitgliederbereich</a><button type="button" class="sb-nav-dropdown-toggle" aria-label="Mitgliederbereich-Untermenü öffnen" aria-expanded="false">▾</button><div class="sb-nav-submenu"><a href="/heimspiel-helferplanung.html">Heimspiele &amp; Helferplanung</a></div></div>
             <a href="/faq.html">FAQ</a>
             <a href="/datenschutz.html">Datenschutz</a>
             <a href="/impressum.html">Impressum</a>

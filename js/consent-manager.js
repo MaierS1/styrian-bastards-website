@@ -410,3 +410,43 @@
         init();
     }
 })();
+
+// Delegation also handles navigation fragments loaded after this script.
+document.addEventListener('click', function (event) {
+  const toggle = event.target.closest('.sb-nav-dropdown-toggle');
+  document.querySelectorAll('.sb-nav-dropdown').forEach(function (menu) {
+    const button = menu.querySelector('.sb-nav-dropdown-toggle');
+    const open = toggle && menu.contains(toggle) && button.getAttribute('aria-expanded') !== 'true';
+    menu.classList.toggle('is-open', Boolean(open));
+    if (button) button.setAttribute('aria-expanded', String(Boolean(open)));
+  });
+});
+document.addEventListener('keydown', function (event) {
+  if (event.key !== 'Escape') return;
+  document.querySelectorAll('.sb-nav-dropdown.is-open').forEach(function (menu) {
+    menu.classList.remove('is-open');
+    const button = menu.querySelector('.sb-nav-dropdown-toggle');
+    button.setAttribute('aria-expanded', 'false');
+    button.focus();
+  });
+});
+
+document.addEventListener('click', function(event) {
+ const button = event.target.closest('.sb-nav-menu-toggle');
+ const menu = document.getElementById('sb-main-menu');
+ if (!menu) return;
+ if (button) {
+   const open = menu.classList.toggle('is-open');
+   button.setAttribute('aria-expanded', String(open));
+   button.setAttribute('aria-label', open ? 'Navigation schließen' : 'Navigation öffnen');
+ }
+});
+const markActiveNavigation = function() {
+ const current = location.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/index';
+ document.querySelectorAll('.sb-navbar-menu a').forEach(function(link) {
+   const target = new URL(link.href);
+   if (!target.hash && target.pathname.replace(/\.html$/, '').replace(/\/$/, '') === current) link.setAttribute('aria-current', 'page');
+ });
+};
+new MutationObserver(markActiveNavigation).observe(document.getElementById('navbar') || document.body, { childList: true, subtree: true });
+markActiveNavigation();
