@@ -4,7 +4,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&family=Cinzel:wght@700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/css/subpage-hero.css?v=20260718-13">
 <link rel="stylesheet" href="/css/consent-manager.css">
 <style>
 .helper-page{min-height:100vh;padding:150px 25px 80px;background:transparent}
@@ -30,7 +30,7 @@
 .helper-back:hover{color:#fff;text-decoration:underline}
 @media(max-width:950px){.helper-page{padding-top:185px}}@media(max-width:760px){.helper-page{padding:185px 18px 48px}.helper-grid{grid-template-columns:minmax(0,1fr);gap:16px}.helper-panel{padding:22px}.helper-hero{padding:20px 0 28px}.helper-panel .btn{width:100%;padding:15px}}
 </style></head>
-<body><div id="navbar"></div><main class="helper-page"><div class="helper-shell"><div class="helper-hero"><a class="helper-back" href="/">← Zur Startseite</a><div><span class="helper-kicker">Styrian Bastards · ATSE Graz</span></div><h1>Heimspiel-Helferplanung</h1>
+<body><div id="navbar"></div><main class="helper-page"><div class="helper-shell"><div class="helper-hero sb-page-hero"><a class="helper-back" href="/">← Zur Startseite</a><div><span class="helper-kicker">Styrian Bastards · ATSE Graz</span></div><h1>Heimspiel-Helferplanung</h1>
 <p>Bei jedem ATSE-Heimspiel helfen wir zwei Stunden vor Spielbeginn beim Aufbau. Plane deine Einsätze schon im Voraus.</p></div><div class="helper-grid"><section class="helper-panel">
 <div><h2>ATSE-Heimspiele 2026/27</h2><p id="state" class="note">Veröffentlichte Heimspiele werden geladen.</p><div id="games" aria-live="polite"></div></div></section><section class="helper-panel">
 <div><h2>Zu- oder Absagen</h2><p>Rückmeldungen sind nur mit einem aktiven, verknüpften Mitgliedskonto möglich.</p><p><a class="btn" href="https://styrian-bastards-manager-v2.vercel.app/heimspiel-helfer" rel="noopener noreferrer">Im Vereinsmanager V2 rückmelden →</a></p><p class="note">Die Website speichert selbst keine Rückmeldungen. Rückmeldungen im Vereinsmanager werden dort verarbeitet und können In-App-Benachrichtigungen auslösen.</p></div></section></div></div>
@@ -38,7 +38,7 @@
 <script>
 (() => {
   // Production uses the production project; Cloudflare previews stay isolated in staging.
-  const isProduction = !['localhost','127.0.0.1'].includes(window.location.hostname.toLowerCase()) && !window.location.hostname.endsWith('.pages.dev');
+  const isProduction = true;
   const API_URL = isProduction ? 'https://yktioliukcrrccrfwxad.supabase.co' : 'https://asrkcguvzscgtysnivsq.supabase.co';
   const state = document.getElementById('state');
   const games = document.getElementById('games');
