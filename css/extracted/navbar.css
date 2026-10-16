@@ -86,3 +86,13 @@
         font-size:0.92rem;
     }
 }
+
+
+/* Events dropdown: consistent desktop and mobile navigation */
+.sb-nav-dropdown{position:relative;display:flex;align-items:center;gap:4px}
+.sb-nav-dropdown-toggle{border:0;background:transparent;color:#fff;font:600 1rem 'Oswald',sans-serif;cursor:pointer;padding:7px 4px}
+.sb-nav-dropdown-toggle:hover,.sb-nav-dropdown-toggle:focus-visible{color:#b30018}
+.sb-nav-submenu{display:none;position:absolute;top:100%;left:0;min-width:260px;background:#101010;border:1px solid rgba(255,255,255,.15);box-shadow:0 12px 30px rgba(0,0,0,.5);padding:8px;z-index:10000}
+.sb-nav-submenu a{display:block!important;white-space:normal;padding:12px 10px;font-size:.92rem!important;line-height:1.4}
+.sb-nav-dropdown:hover .sb-nav-submenu,.sb-nav-dropdown:focus-within .sb-nav-submenu,.sb-nav-dropdown.is-open .sb-nav-submenu{display:block}
+@media(max-width:950px){.sb-nav-dropdown{flex-wrap:wrap;justify-content:center}.sb-nav-submenu{position:static;width:100%;min-width:0;flex-basis:100%;box-sizing:border-box;text-align:center}.sb-nav-dropdown-toggle{padding:8px}}
