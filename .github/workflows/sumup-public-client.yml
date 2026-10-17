@@ -1,0 +1,19 @@
+name: SumUp public client checks
+on:
+  pull_request:
+    paths:
+      - 'js/extracted/abo.js'
+      - 'abo.html'
+      - 'tests/abo-sumup.test.cjs'
+      - '.github/workflows/sumup-public-client.yml'
+permissions:
+  contents: read
+jobs:
+  public-client:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - run: node --check js/extracted/abo.js
+      - run: node --test tests/abo-sumup.test.cjs
