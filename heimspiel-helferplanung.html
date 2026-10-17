@@ -6,80 +6,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&family=Cinzel:wght@700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/css/subpage-hero.css?v=20260718-13">
 <link rel="stylesheet" href="/css/consent-manager.css">
-<style>
-.helper-page{min-height:100vh;padding:100px 25px 80px;background:transparent}
-.helper-shell{max-width:1250px;margin:0 auto}
-.helper-kicker{display:inline-block;padding:7px 13px;border:1px solid rgba(210,33,55,.5);border-radius:100px;background:rgba(179,0,24,.17);font:700 13px Oswald,Arial,sans-serif;letter-spacing:2px;text-transform:uppercase}
-.helper-hero{margin-bottom:34px}
-.helper-hero h1{font:700 clamp(2.8rem,7vw,5.8rem)/.95 Oswald,Arial,sans-serif;text-transform:uppercase;letter-spacing:3px;margin:18px 0 14px}
-.helper-hero p{max-width:760px;color:rgba(255,255,255,.9);line-height:1.8;font-size:1.1rem}
-.helper-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,1fr);gap:24px;margin-top:32px}
-.helper-panel{background:#141414;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:30px;min-width:0}
-.helper-panel h2{font:700 clamp(1.5rem,3vw,2rem) Oswald,Arial,sans-serif;text-transform:uppercase;letter-spacing:1px;margin:0 0 18px}
-.helper-panel p{line-height:1.65;color:#d0d0d0;margin:0 0 18px}
-.helper-panel .note{color:#adb2bb;font-size:.95rem}
-.helper-panel .btn{display:inline-flex;align-items:center;justify-content:center;text-align:center;max-width:100%;white-space:normal;overflow-wrap:anywhere;line-height:1.35}
-.helper-panel .btn:focus-visible,.helper-back:focus-visible{outline:3px solid #fff;outline-offset:4px}
-.helper-panel .btn:hover{filter:brightness(1.1)}
-.helper-panel #state{min-height:1.5em}
-.helper-panel #games:empty{min-height:20px}
-.helper-game{padding:20px;margin:14px 0;background:#1b1b1b;border:1px solid rgba(255,255,255,.12);border-left:4px solid #b30018;border-radius:12px}
-.helper-game h3{font:600 1.3rem Oswald,Arial,sans-serif;margin:0 0 12px}
-.helper-game p{margin:5px 0}
-.helper-back{display:inline-block;color:#e5e5e5;text-decoration:none;margin-bottom:10px}
-.helper-back:hover{color:#fff;text-decoration:underline}
-@media(max-width:950px){.helper-page{padding-top:110px}}@media(max-width:760px){.helper-page{padding:100px 18px 48px}.helper-grid{grid-template-columns:minmax(0,1fr);gap:16px}.helper-panel{padding:22px}.helper-hero{padding:20px 0 28px}.helper-panel .btn{width:100%;padding:15px}}
-</style></head>
+<link rel="stylesheet" href="/css/heimspiel-helferplanung.css"></head>
 <body><div id="navbar"></div><main class="helper-page"><div class="helper-shell"><div class="helper-hero sb-page-hero"><a class="helper-back" href="/">← Zur Startseite</a><div><span class="helper-kicker">Styrian Bastards · ATSE Graz</span></div><h1>Heimspiel-Helferplanung</h1>
 <p>Bei jedem ATSE-Heimspiel helfen wir zwei Stunden vor Spielbeginn beim Aufbau. Plane deine Einsätze schon im Voraus.</p></div><div class="helper-grid"><section class="helper-panel">
 <div><h2>ATSE-Heimspiele 2026/27</h2><p id="state" class="note">Veröffentlichte Heimspiele werden geladen.</p><div id="games" aria-live="polite"></div></div></section><section class="helper-panel">
 <div><h2>Zu- oder Absagen</h2><p>Rückmeldungen sind nur mit einem aktiven, verknüpften Mitgliedskonto möglich.</p><p><a class="btn" href="https://styrian-bastards-manager-v2.vercel.app/heimspiel-helfer" rel="noopener noreferrer">Im Vereinsmanager V2 rückmelden →</a></p><p class="note">Die Website speichert selbst keine Rückmeldungen. Rückmeldungen im Vereinsmanager werden dort verarbeitet und können In-App-Benachrichtigungen auslösen.</p></div></section></div></div>
 </main><div id="footer"></div><script src="/js/extracted/sponsoren.js"></script><script src="/js/consent-manager.js" defer></script>
-<script>
-(() => {
-  // Public schedule only: production-published events are readable on every public host.
-  const API_URL = 'https://yktioliukcrrccrfwxad.supabase.co';
-  const state = document.getElementById('state');
-  const games = document.getElementById('games');
-  const format = new Intl.DateTimeFormat('de-AT', {dateStyle:'full',timeStyle:'short',timeZone:'Europe/Vienna'});
-  async function load() {
-    try {
-      const key = 'sb_publishable__F_cerudLxOwAnlF0GobcA_qWi36mPu';
-      const now = new Date().toISOString();
-      const url = API_URL + '/rest/v1/home_game_helper_events?select=id,opponent_name,puck_drop_at,arrival_minutes_before&publication_state=eq.published&puck_drop_at=gte.' + encodeURIComponent(now) + '&order=puck_drop_at.asc';
-      const response = await fetch(url, {headers:{apikey:key, Accept: 'application/json'},cache:'no-store'});
-      if (!response.ok) throw new Error('HTTP '+response.status+' '+(await response.text()).slice(0,250));
-      const data = await response.json();
-      if (!Array.isArray(data)) throw new Error('Ungültige Antwort');
-      games.replaceChildren();
-      if (!data.length) {state.textContent = 'Derzeit sind keine Heimspiele veröffentlicht.'; return;}
-      state.textContent = data.length + ' veröffentlichte Heimspiele';
-      let rendered = 0;
-      for (const game of data) {
-        const puck = new Date(game.puck_drop_at);
-        if (!Number.isFinite(puck.getTime())) continue;
-        const mins = game.arrival_minutes_before == null ? 120 : Number(game.arrival_minutes_before);
-        const arrival = new Date(puck.getTime() - (Number.isFinite(mins) && mins >= 0 ? mins : 120) * 60000);
-        const article = document.createElement('article');
-        article.className = 'helper-game';
-        const heading = document.createElement('h3');
-        heading.textContent = 'ATSE Graz – ' + String(game.opponent_name || 'Heimspiel');
-        const time = document.createElement('p');
-        time.textContent = 'Spielbeginn: ' + format.format(puck);
-        const meet = document.createElement('p');
-        meet.textContent = 'Treffpunkt zum Aufbau: ' + format.format(arrival);
-        article.append(heading,time,meet);
-        games.append(article);
-        rendered += 1;
-      }
-      if (!rendered) state.textContent = 'Keine gültigen Heimspieltermine vorhanden.';
-      else state.textContent = rendered + ' veröffentlichte Heimspiele';
-    } catch (error) {
-      state.textContent = 'Heimspiele konnten nicht geladen werden. Bitte Seite aktualisieren oder den Vorstand kontaktieren.';
-      console.error('Heimspiel-Helferplanung:',error);
-    }
-  }
-  void load();
-})();
-</script>
+<script src="/js/heimspiel-helferplanung.js" defer></script>
 </body></html>
