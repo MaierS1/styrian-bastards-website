@@ -17,12 +17,29 @@
     status.hidden=true;card.hidden=true;document.getElementById('abo-success').hidden=false;document.getElementById('abo-order-number').textContent=currentOrderNumber||'–';
     payButton.hidden=false;payButton.disabled=checkoutStarted&&!checkoutUrl;
     if(checkoutStarted){payButton.textContent=checkoutUrl?'Zahlung fortsetzen':'Zahlungsprüfung erforderlich';paymentStatus.hidden=false;paymentStatus.textContent=checkoutUrl?'Die bestehende SumUp-Zahlung kann fortgesetzt werden.':'Der Zahlungsaufruf wurde bereits begonnen. Bitte starte keine neue Zahlung und kontaktiere uns mit deiner Bestellnummer.'}
+    if(checkoutStarted&&!checkoutUrl)recoverCheckout();
     return true;
+  }
+  async function recoverCheckout(){
+    try{
+      const returnUrl=new URL('/abo.html',window.location.origin);
+      const result=await edge('sumup-abo-checkout-create',{orderId:currentOrderId,paymentToken:currentPaymentToken,returnUrl:returnUrl.toString(),resumeOnly:true});
+      if(result?.checkoutId&&validCheckoutUrl(result.checkoutUrl)){
+        checkoutUrl=result.checkoutUrl;
+        sessionStorage.setItem(storageKey,JSON.stringify({checkoutId:result.checkoutId,paymentToken:currentPaymentToken,orderId:currentOrderId,orderNumber:currentOrderNumber,sandboxMode,checkoutStarted:true,checkoutUrl}));
+        payButton.disabled=false;payButton.textContent='Zahlung fortsetzen';paymentStatus.textContent='Die bestehende SumUp-Zahlung kann fortgesetzt werden.';
+      }
+    }catch(error){
+      if(error?.checkoutNotStarted===true){
+        checkoutStarted=false;saveOrder();payButton.disabled=false;payButton.textContent='Jetzt mit SumUp bezahlen';
+        paymentStatus.textContent='Es wurde noch keine Zahlung begonnen. Du kannst die Zahlung jetzt sicher vorbereiten.';
+      }
+    }
   }
   const money=cents=>new Intl.NumberFormat('de-AT',{style:'currency',currency:'EUR'}).format(Number(cents||0)/100);
   const headers=()=>({'Content-Type':'application/json','Accept':'application/json','apikey':V2_KEY,'Authorization':'Bearer '+V2_KEY});
   async function rpc(name,body={}){if(!V2_KEY)throw new Error('Konfiguration der Bestellseite fehlt.');const response=await fetch(V2_URL+'/rest/v1/rpc/'+name,{method:'POST',headers:headers(),body:JSON.stringify(body)});const payload=await response.json().catch(()=>null);if(!response.ok){const error=new Error(payload?.message||payload?.error||'Anfrage fehlgeschlagen.');error.requestRejected=response.status>=400&&response.status<500;throw error}return payload}
-  async function edge(name,body){if(!V2_KEY)throw new Error('Konfiguration der Zahlungsseite fehlt.');const response=await fetch(V2_URL+'/functions/v1/'+name,{method:'POST',headers:headers(),body:JSON.stringify(body)});const payload=await response.json().catch(()=>null);if(!response.ok)throw new Error(payload?.error||'Zahlungsdienst nicht verfügbar.');return payload}
+  async function edge(name,body){if(!V2_KEY)throw new Error('Konfiguration der Zahlungsseite fehlt.');const response=await fetch(V2_URL+'/functions/v1/'+name,{method:'POST',headers:headers(),body:JSON.stringify(body)});const payload=await response.json().catch(()=>null);if(!response.ok){const error=new Error(payload?.error||'Zahlungsdienst nicht verfügbar.');error.checkoutNotStarted=[400,409].includes(response.status)&&payload?.checkout_not_started===true;throw error}return payload}
   function syncTotal(){if(campaign)total.innerHTML='<span>Gesamt</span><strong>'+money(Number(quantity.value||1)*campaign.price_cents)+'</strong>'}
   async function load(){try{const rows=await rpc('get_public_abo_campaign');campaign=Array.isArray(rows)?rows[0]:null;if(campaign){campaign.price_cents=Number(campaign.price_cents);campaign.available_quantity=Number(campaign.available_quantity);campaign.max_quantity_per_order=Number(campaign.max_quantity_per_order);campaign.sales_open=campaign.sales_open===true||campaign.sales_open==='true';campaign.homepage_visible=campaign.homepage_visible===true||campaign.homepage_visible==='true'}status.hidden=true;if(!campaign||!campaign.homepage_visible){status.hidden=false;status.textContent='Das Saisonabo ist derzeit nicht verfügbar.';return}price.textContent=money(campaign.price_cents)+' pro Abo';availability.textContent=campaign.available_quantity>0?'Noch '+campaign.available_quantity+' aus dem Fanclub-Kontingent verfügbar.':'Kontingent derzeit ausgeschöpft.';if(!campaign.sales_open||campaign.available_quantity<1){status.hidden=false;status.textContent=campaign.available_quantity<1?'Das Fanclub-Kontingent ist derzeit ausgeschöpft.':'Der Abo-Verkauf ist derzeit nicht aktiv.';return}const max=Math.min(campaign.max_quantity_per_order,campaign.available_quantity);quantity.innerHTML='';for(let i=1;i<=max;i++){const option=document.createElement('option');option.value=String(i);option.textContent=String(i);quantity.appendChild(option)}quantity.value='1';card.hidden=false;syncTotal()}catch(e){status.textContent='Das Abo-Angebot konnte gerade nicht geladen werden. Bitte versuche es später erneut.'}}
   quantity.addEventListener('change',syncTotal);
@@ -40,7 +57,8 @@
       checkoutUrl=result.checkoutUrl;
       sessionStorage.setItem(storageKey,JSON.stringify({checkoutId:result.checkoutId,paymentToken:currentPaymentToken,orderId:currentOrderId,orderNumber:currentOrderNumber,sandboxMode,checkoutStarted:true,checkoutUrl}));
       window.location.assign(checkoutUrl);
-    }catch{
+    }catch(error){
+      if(error?.checkoutNotStarted===true){checkoutStarted=false;saveOrder();payButton.disabled=false;payButton.textContent='Jetzt mit SumUp bezahlen';paymentStatus.textContent='Es wurde noch keine Zahlung begonnen. Bitte versuche es erneut.';return}
       paymentStatus.textContent='Das Zahlungsergebnis ist noch unklar. Bitte starte keine neue Zahlung und kontaktiere uns mit deiner Bestellnummer. Deine Bestellung bleibt gespeichert.';
       payButton.textContent='Zahlungsprüfung erforderlich';
     }
