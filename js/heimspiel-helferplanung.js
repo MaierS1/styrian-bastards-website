@@ -4,7 +4,7 @@
   const state = document.getElementById('state');
   const games = document.getElementById('games');
   const format = new Intl.DateTimeFormat('de-AT', {dateStyle:'full',timeStyle:'short',timeZone:'Europe/Vienna'});
-  const dateFormat = new Intl.DateTimeFormat('de-AT', {dateStyle:'full',timeZone:'Europe/Vienna'});
+  const dateFormat = new Intl.DateTimeFormat('de-AT', {dateStyle:'full',timeZone:'UTC'});
   async function load() {
     try {
       const key = 'sb_publishable__F_cerudLxOwAnlF0GobcA_qWi36mPu';
@@ -23,6 +23,8 @@
         const puck = game.puck_drop_at ? new Date(game.puck_drop_at) : null;
         const hasKickoff = puck && Number.isFinite(puck.getTime());
         if (!hasKickoff && !/^\d{4}-\d{2}-\d{2}$/.test(game.game_date || '')) continue;
+        // Exclude elapsed fixtures on the local game date when an official time exists.
+        if (hasKickoff && puck.getTime() < Date.now()) continue;
         const mins = game.arrival_minutes_before == null ? 120 : Number(game.arrival_minutes_before);
         const arrival = hasKickoff ? new Date(puck.getTime() - (Number.isFinite(mins) && mins >= 0 ? mins : 120) * 60000) : null;
         const article = document.createElement('article');
