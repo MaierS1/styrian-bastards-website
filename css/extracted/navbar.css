@@ -97,6 +97,14 @@
 .sb-nav-dropdown:hover .sb-nav-submenu,.sb-nav-dropdown:focus-within .sb-nav-submenu,.sb-nav-dropdown.is-open .sb-nav-submenu{display:block}
 @media(max-width:950px){.sb-nav-dropdown{flex-wrap:wrap;justify-content:center}.sb-nav-submenu{position:static;width:100%;min-width:0;flex-basis:100%;box-sizing:border-box;text-align:center}.sb-nav-dropdown-toggle{padding:8px}}
 
+@media(max-width:430px){
+    .sb-navbar{overflow-x:clip}
+    .sb-navbar-logo img{max-width:calc(100vw - 36px);height:auto;max-height:52px;object-fit:contain}
+    .sb-navbar-menu{width:100%;max-width:100%;gap:8px;overflow-wrap:anywhere}
+    .sb-navbar-menu a{font-size:.74rem;letter-spacing:.6px}
+    .sb-nav-dropdown{max-width:100%;overflow-wrap:anywhere}
+}
+
 /* Keep dropdown labels and top-level links aligned */
 .sb-navbar-menu .sb-nav-dropdown>a{font:inherit;font-family:'Oswald',sans-serif;font-size:clamp(.82rem,.93vw,1rem);font-weight:500;letter-spacing:1px;text-transform:uppercase}
 .sb-nav-dropdown-toggle{font-size:.85rem;line-height:1;min-width:28px;min-height:32px;border-radius:5px}
