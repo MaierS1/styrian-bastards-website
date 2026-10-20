@@ -257,9 +257,11 @@
 
 @media (max-width: 760px) {
     .sb-consent-banner {
+        box-sizing: border-box;
         right: 14px;
         bottom: 14px;
         left: 14px;
+        max-width: calc(100vw - 28px);
         padding: 18px;
     }
 
@@ -277,6 +279,7 @@
     .sb-consent-button,
     .facebook-feed-consent-button {
         width: 100%;
+        box-sizing: border-box;
     }
 
     .sb-consent-dialog {
