@@ -8,9 +8,8 @@
   async function load() {
     try {
       const key = 'sb_publishable__F_cerudLxOwAnlF0GobcA_qWi36mPu';
-      const now = new Date().toISOString();
       const today = new Intl.DateTimeFormat('en-CA', {timeZone:'Europe/Vienna',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
-      const url = API_URL + '/rest/v1/home_game_helper_events?select=id,opponent_name,puck_drop_at,game_date,arrival_minutes_before&publication_state=eq.published&or=(game_date.gte.' + today + ',puck_drop_at.gte.' + encodeURIComponent(now) + ')&order=game_date.asc';
+      const url = API_URL + '/rest/v1/home_game_helper_events?select=id,opponent_name,puck_drop_at,game_date,arrival_minutes_before&publication_state=eq.published&game_date=gte.' + today + '&order=game_date.asc';
       const response = await fetch(url, {headers:{apikey:key, Accept: 'application/json'},cache:'no-store'});
       if (!response.ok) throw new Error('HTTP '+response.status+' '+(await response.text()).slice(0,250));
       const data = await response.json();
