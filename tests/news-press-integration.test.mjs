@@ -15,14 +15,14 @@ const linksOf=n=>[...(n.href?[n.href]:[]),...n.children.flatMap(linksOf)]
 const news={id:'123',slug:'test-neu',title:'STAGING-TEST News',teaser:'Kurz',body:'<script>unsafe</script>',published_at:'2026-10-27T12:00:00Z',cover_media_id:'11111111-1111-4111-8111-111111111111'}
 const press={id:'321',slug:'presse-alt',title:'V2 Presse',teaser:'Alt',content_html:'Inhalt',published_at:'2026-10-26T12:00:00Z'}
 const legacy={id:'abc',slug:'v1-alt',title:'V1 Beitrag',summary:'V1',publication_date:'2026-10-25'}
-async function render({url='https://preview.example/presse.html?v2preview=1',fail=[],emptyDetail=false}={}) {
+async function render({url='https://preview.example/presse.html?v2preview=1',fail=[],emptyDetail=false,noStaging=false}={}) {
  const loc=new URL(url), root=new Node('root'), calls=[]
  const mockFetch=async (url,options)=>{calls.push(String(url)); const name=String(url).split('/').at(-1)
   if(fail.includes(name)) throw Error('simulated outage')
   let data=name==='get_public_media_items'?[legacy]:name==='get_public_press'?[press]:name==='news_public_feed_v2'?[news]:name==='news_public_item'?(emptyDetail?[]:[news]):[]
   return {ok:true,json:async()=>data}
  }
- const context={window:{location:loc,STB_V2_PRESS_ENABLED:true,STB_V2_SHOP_PUBLISHABLE_KEY:'public-test-key',STB_V2_PRESS_STAGING_CONFIG:{url:'https://asrkcguvzscgtysnivsq.supabase.co',key:'staging-test-key'}},document:{getElementById:()=>root,createElement:t=>new Node(t),createTextNode:t=>{const n=new Node('#text');n.textContent=t;return n}},fetch:mockFetch,URLSearchParams,Intl,Date,console:{warn(){}}}
+ const context={window:{location:loc,STB_V2_PRESS_ENABLED:true,STB_V2_SHOP_PUBLISHABLE_KEY:'public-test-key',STB_V2_PRESS_STAGING_CONFIG:noStaging?undefined:{url:'https://asrkcguvzscgtysnivsq.supabase.co',key:'staging-test-key'}},document:{getElementById:()=>root,createElement:t=>new Node(t),createTextNode:t=>{const n=new Node('#text');n.textContent=t;return n}},fetch:mockFetch,URLSearchParams,Intl,Date,console:{warn(){}}}
  vm.runInNewContext(source,context)
  for(let i=0;i<12;i++)await new Promise(resolve=>setImmediate(resolve))
  return {root,calls}
@@ -55,4 +55,10 @@ test('production host ignores staging override',async()=>{
  const {calls}=await render({url:'https://www.styrian-bastards.at/presse.html?v2preview=1'})
  assert.ok(calls.some(c=>c.includes('yktioliukcrrccrfwxad.supabase.co/rest/v1/rpc/news_public_feed_v2')))
  assert.ok(!calls.some(c=>c.includes('asrkcguvzscgtysnivsq.supabase.co')))
+})
+
+test('staging preview without staging configuration never queries production',async()=>{
+ const {root,calls}=await render({noStaging:true})
+ assert.match(textOf(root),/V1 Beitrag/)
+ assert.ok(!calls.some(c=>c.includes('yktioliukcrrccrfwxad.supabase.co')))
 })
