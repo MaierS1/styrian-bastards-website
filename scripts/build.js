@@ -41,7 +41,12 @@ const stagingUrl = 'https://asrkcguvzscgtysnivsq.supabase.co'
 const stagingPublicKey = process.env.STB_NEWS_STAGING_PUBLISHABLE_KEY?.trim()
 if (isNewsStaging && stagingPublicKey) {
   // This is a browser-safe publishable key. No service-role or secret keys may be used.
-  if (!/^sb_publishable_[A-Za-z0-9_-]+$/.test(stagingPublicKey) && !/^eyJ[A-Za-z0-9_.-]+$/.test(stagingPublicKey)) throw new Error('Invalid staging publishable key format')
+  if (!/^sb_publishable_[A-Za-z0-9_-]+$/.test(stagingPublicKey)) {
+    const parts = stagingPublicKey.split('.')
+    let payload = {}
+    try { payload = JSON.parse(Buffer.from(parts[1] || '', 'base64url').toString('utf8')) } catch { /* invalid key */ }
+    if (parts.length !== 3 || payload.role !== 'anon' || payload.ref !== 'asrkcguvzscgtysnivsq') throw new Error('Invalid staging publishable key')
+  }
   const config = JSON.stringify({url: stagingUrl, key: stagingPublicKey}).replace(/</g, '\\u003c')
   fs.writeFileSync(path.join(dist, 'news-staging-config.js'), 'window.STB_V2_PRESS_STAGING_CONFIG = ' + config + ';\n')
 }
