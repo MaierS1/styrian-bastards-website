@@ -7,11 +7,12 @@
     const host = window.location.hostname.toLowerCase();
     const previewParams = new URLSearchParams(window.location.search);
     const isProductionHost = host === 'styrian-bastards.at' || host === 'www.styrian-bastards.at';
-    const staging = !isProductionHost && previewParams.get('v2preview') === '1'
+    const isStagingPreview = !isProductionHost && previewParams.get('v2preview') === '1';
+    const staging = isStagingPreview
         && window.STB_V2_PRESS_STAGING_CONFIG?.url === 'https://asrkcguvzscgtysnivsq.supabase.co'
         ? window.STB_V2_PRESS_STAGING_CONFIG : null;
-    const V2_URL = staging?.url || productionV2Url;
-    const publicV2Key = () => staging?.key || window.STB_V2_SHOP_PUBLISHABLE_KEY;
+    const V2_URL = isStagingPreview ? (staging?.url || '') : productionV2Url;
+    const publicV2Key = () => isStagingPreview ? (staging?.key || '') : window.STB_V2_SHOP_PUBLISHABLE_KEY;
     const root = document.getElementById('press-root');
     if (!root) return;
 
