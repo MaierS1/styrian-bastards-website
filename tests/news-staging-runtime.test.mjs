@@ -37,10 +37,29 @@ test('HEAD has no body and writes are rejected', async () => {
 
 test('returned JavaScript exposes a safe DOM status and only configures a ready preview', async () => {
   const { runInNewContext } = await import('node:vm')
-  for (const [key, expected] of [['sb_publishable_fixture', 'ready'], ['', 'missing-or-invalid-preview-key']]) {
+  for (const [key, expected] of [['sb_publishable_fixture', 'ready'], ['', 'binding-is-empty']]) {
     const sandbox = { document: { documentElement: { dataset: {} } }, window: {} }
     runInNewContext(await call(preview, key).text(), sandbox)
     assert.equal(sandbox.document.documentElement.dataset.newsStagingConfigStatus, expected)
     assert.equal(Boolean(sandbox.window.STB_V2_PRESS_STAGING_CONFIG), expected === 'ready')
+  }
+})
+
+test('diagnostics distinguish unavailable bindings from rejected values without returning values', async () => {
+  const cases = [
+    [undefined, 'binding-not-available'],
+    [123, 'binding-is-not-text'],
+    ['', 'binding-is-empty'],
+    ['sb_secret_fixture', 'secret-key-rejected'],
+    ['invalid', 'invalid-key-format'],
+    [jwt({role:'service_role',ref:'asrkcguvzscgtysnivsq'}), 'non-public-role-rejected'],
+    [jwt({role:'anon',ref:'other'}), 'wrong-staging-project'],
+  ]
+  for (const [value, expected] of cases) {
+    const response = onRequest({request:new Request(preview),env:{STB_NEWS_STAGING_PUBLISHABLE_KEY:value}})
+    const body = await response.text()
+    assert.ok(body.includes(expected))
+    assert.doesNotMatch(body, /window\\.STB_V2_PRESS_STAGING_CONFIG/)
+    if (typeof value === 'string' && value) assert.ok(!body.includes(value))
   }
 })
