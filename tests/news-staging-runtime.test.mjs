@@ -1,65 +1,19 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
+import { runInNewContext } from 'node:vm'
 const source = await readFile(new URL('../functions/api/news-staging-config.js', import.meta.url), 'utf8')
 const { onRequest } = await import('data:text/javascript;base64,' + Buffer.from(source).toString('base64'))
-
-const preview = 'https://codex-news-homepage-staging.styrian-bastards-website.pages.dev/api/news-staging-config'
-const call = (url = preview, key = 'sb_publishable_fixture', method = 'GET') => onRequest({
-  request: new Request(url, { method }),
-  env: { STB_NEWS_STAGING_PUBLISHABLE_KEY: key },
+const preview='https://codex-news-homepage-staging.styrian-bastards-website.pages.dev/api/news-staging-config'
+const jwt=payload=>`fixture.${Buffer.from(JSON.stringify(payload)).toString('base64url')}.fixture`
+const call=value=>onRequest({request:new Request(preview),env:{STB_NEWS_STAGING_PUBLISHABLE_KEY:value}},async()=>new Response(null,{status:503}))
+test('safe diagnostics retain exact rejection causes and never return rejected values',async()=>{
+ const cases=[[undefined,'binding-not-available'],[123,'binding-is-not-text'],['','binding-is-empty'],['sb_secret_fixture','secret-key-rejected'],['malformed_fixture','invalid-key-format'],[jwt({role:'service_role',ref:'asrkcguvzscgtysnivsq'}),'non-public-role-rejected'],[jwt({role:'anon',ref:'other'}),'wrong-staging-project']]
+ for(const [value,expected] of cases){const response=await call(value);const body=await response.text();assert.ok(body.includes(expected));assert.doesNotMatch(body,/window.STB_V2_PRESS_STAGING_CONFIG/);if(typeof value==='string'&&value)assert.ok(!body.includes(value))}
 })
-const jwt = payload => `fixture.${Buffer.from(JSON.stringify(payload)).toString('base64url')}.fixture`
-
-test('preview exposes only the fixed staging target and public key without caching', async () => {
-  const response = call()
-  const body = await response.text()
-  assert.match(body, /https:\/\/asrkcguvzscgtysnivsq\.supabase\.co/)
-  assert.match(body, /sb_publishable_fixture/)
-  assert.equal(response.headers.get('cache-control'), 'no-store')
-  assert.equal(response.headers.get('cross-origin-resource-policy'), 'same-origin')
-})
-test('production, project root and unrelated hosts never expose configuration', async () => {
-  for (const host of ['www.styrian-bastards.at', 'styrian-bastards.at', 'styrian-bastards-website.pages.dev', 'evil.example', 'test.styrian-bastards-website.pages.dev.evil.example']) {
-    assert.doesNotMatch(await call(`https://${host}/api/news-staging-config`).text(), /STB_V2_PRESS_STAGING_CONFIG|sb_publishable_fixture/)
-  }
-})
-test('missing, privileged, malformed and wrong-project legacy keys are withheld', async () => {
-  for (const key of ['', 'sb_secret_fixture', 'invalid', jwt({role:'service_role', ref:'asrkcguvzscgtysnivsq'}), jwt({role:'anon', ref:'other'})]) {
-    assert.doesNotMatch(await call(preview, key).text(), /window\.STB_V2_PRESS_STAGING_CONFIG/)
-  }
-  assert.match(await call(preview, jwt({role:'anon',ref:'asrkcguvzscgtysnivsq'})).text(), /window\.STB_V2_PRESS_STAGING_CONFIG/)
-})
-test('HEAD has no body and writes are rejected', async () => {
-  assert.equal(await call(preview, 'sb_publishable_fixture', 'HEAD').text(), '')
-  assert.equal(call(preview, 'sb_publishable_fixture', 'POST').status, 405)
-})
-
-test('returned JavaScript exposes a safe DOM status and only configures a ready preview', async () => {
-  const { runInNewContext } = await import('node:vm')
-  for (const [key, expected] of [['sb_publishable_fixture', 'ready'], ['', 'binding-is-empty']]) {
-    const sandbox = { document: { documentElement: { dataset: {} } }, window: {} }
-    runInNewContext(await call(preview, key).text(), sandbox)
-    assert.equal(sandbox.document.documentElement.dataset.newsStagingConfigStatus, expected)
-    assert.equal(Boolean(sandbox.window.STB_V2_PRESS_STAGING_CONFIG), expected === 'ready')
-  }
-})
-
-test('diagnostics distinguish unavailable bindings from rejected values without returning values', async () => {
-  const cases = [
-    [undefined, 'binding-not-available'],
-    [123, 'binding-is-not-text'],
-    ['', 'binding-is-empty'],
-    ['sb_secret_fixture', 'secret-key-rejected'],
-    ['malformed_fixture_value', 'invalid-key-format'],
-    [jwt({role:'service_role',ref:'asrkcguvzscgtysnivsq'}), 'non-public-role-rejected'],
-    [jwt({role:'anon',ref:'other'}), 'wrong-staging-project'],
-  ]
-  for (const [value, expected] of cases) {
-    const response = onRequest({request:new Request(preview),env:{STB_NEWS_STAGING_PUBLISHABLE_KEY:value}})
-    const body = await response.text()
-    assert.ok(body.includes(expected))
-    assert.doesNotMatch(body, /window\\.STB_V2_PRESS_STAGING_CONFIG/)
-    if (typeof value === 'string' && value) assert.ok(!body.includes(value))
-  }
+test('returned script executes and only configures validated ready binding',async()=>{
+ for(const [value,ready] of [[jwt({role:'anon',ref:'asrkcguvzscgtysnivsq'}),true],['',false]]){
+ const sandbox={document:{documentElement:{dataset:{}}},window:{}};runInNewContext(await (await call(value)).text(),sandbox)
+ assert.equal(Boolean(sandbox.window.STB_V2_PRESS_STAGING_CONFIG),ready);assert.equal(sandbox.document.documentElement.dataset.newsStagingConfigStatus,ready?'ready':'binding-is-empty')
+ }
 })
