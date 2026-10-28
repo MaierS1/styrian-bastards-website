@@ -34,3 +34,13 @@ test('HEAD has no body and writes are rejected', async () => {
   assert.equal(await call(preview, 'sb_publishable_fixture', 'HEAD').text(), '')
   assert.equal(call(preview, 'sb_publishable_fixture', 'POST').status, 405)
 })
+
+test('returned JavaScript exposes a safe DOM status and only configures a ready preview', async () => {
+  const { runInNewContext } = await import('node:vm')
+  for (const [key, expected] of [['sb_publishable_fixture', 'ready'], ['', 'missing-or-invalid-preview-key']]) {
+    const sandbox = { document: { documentElement: { dataset: {} } }, window: {} }
+    runInNewContext(await call(preview, key).text(), sandbox)
+    assert.equal(sandbox.document.documentElement.dataset.newsStagingConfigStatus, expected)
+    assert.equal(Boolean(sandbox.window.STB_V2_PRESS_STAGING_CONFIG), expected === 'ready')
+  }
+})
