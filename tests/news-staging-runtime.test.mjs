@@ -51,7 +51,7 @@ test('diagnostics distinguish unavailable bindings from rejected values without 
     [123, 'binding-is-not-text'],
     ['', 'binding-is-empty'],
     ['sb_secret_fixture', 'secret-key-rejected'],
-    ['invalid', 'invalid-key-format'],
+    ['malformed_fixture_value', 'invalid-key-format'],
     [jwt({role:'service_role',ref:'asrkcguvzscgtysnivsq'}), 'non-public-role-rejected'],
     [jwt({role:'anon',ref:'other'}), 'wrong-staging-project'],
   ]
