@@ -21,7 +21,7 @@ function publicKeyStatus(value) {
   }
 }
 
-export function onRequest({ request, env }) {
+export async function onRequest({ request, env }, fetcher = fetch) {
   const headers = {
     'Content-Type': 'application/javascript; charset=utf-8',
     'Cache-Control': 'no-store',
@@ -34,12 +34,22 @@ export function onRequest({ request, env }) {
   let body = "document.documentElement.dataset.newsStagingConfigStatus = 'unavailable-host';\n"
   const host = new URL(request.url).hostname.toLowerCase()
   if (previewHost.test(host)) {
-    const value = env.STB_NEWS_STAGING_PUBLISHABLE_KEY
+    let value = env.STB_NEWS_STAGING_PUBLISHABLE_KEY
+    let source = 'preview-binding'
+    if (value === undefined || value === null) {
+      try {
+        const response = await fetcher(`${stagingUrl}/functions/v1/news-preview-config`, { signal: AbortSignal.timeout(8000), cache: 'no-store' })
+        if (response.ok) {
+          const config = await response.json()
+          if (config.url === stagingUrl && publicKeyStatus(config.key) === 'ready') { value = config.key; source = 'staging-endpoint' }
+        }
+      } catch { /* Missing staging endpoint must not suppress V1 or fall back to production. */ }
+    }
     const status = publicKeyStatus(value)
     if (status === 'ready') {
       const key = value.trim()
       const config = JSON.stringify({ url: stagingUrl, key }).replace(/</g, '\\u003c')
-      body = `document.documentElement.dataset.newsStagingConfigStatus = 'ready';\nwindow.STB_V2_PRESS_STAGING_CONFIG = ${config};\n`
+      body = `document.documentElement.dataset.newsStagingConfigStatus = 'ready';\ndocument.documentElement.dataset.newsStagingConfigSource = ${JSON.stringify(source)};\nwindow.STB_V2_PRESS_STAGING_CONFIG = ${config};\n`
     } else {
       body = `document.documentElement.dataset.newsStagingConfigStatus = ${JSON.stringify(status)};\n`
     }
