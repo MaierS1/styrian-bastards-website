@@ -24,15 +24,15 @@ export function onRequest({ request, env }) {
   if (!['GET', 'HEAD'].includes(request.method)) {
     return new Response(null, { status: 405, headers: { ...headers, Allow: 'GET, HEAD' } })
   }
-  let body = '// Staging configuration is unavailable on this host.\n'
+  let body = "window.STB_NEWS_STAGING_CONFIG_STATUS = 'unavailable-host';\n"
   const host = new URL(request.url).hostname.toLowerCase()
   if (previewHost.test(host)) {
     const key = String(env.STB_NEWS_STAGING_PUBLISHABLE_KEY || '').trim()
     if (key && isPublicStagingKey(key)) {
       const config = JSON.stringify({ url: stagingUrl, key }).replace(/</g, '\\u003c')
-      body = `window.STB_V2_PRESS_STAGING_CONFIG = ${config};\n`
+      body = `window.STB_NEWS_STAGING_CONFIG_STATUS = 'ready';\nwindow.STB_V2_PRESS_STAGING_CONFIG = ${config};\n`
     } else {
-      body = '// Configure a public staging publishable key in the Pages Preview environment.\n'
+      body = "window.STB_NEWS_STAGING_CONFIG_STATUS = 'missing-or-invalid-preview-key';\n"
     }
   }
   return new Response(request.method === 'HEAD' ? null : body, { headers })
