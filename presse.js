@@ -238,7 +238,7 @@
         root.appendChild(createHero('Nicht gefunden', 'Der angefragte Presseartikel ist nicht verfügbar.'));
         const back = document.createElement('a');
         back.className = 'btn btn-primary';
-        back.href = '/presse.html';
+        back.href = `/presse.html${isStagingPreview ? '?v2preview=1' : ''}`;
         back.textContent = 'Zurück zu Presse';
         root.appendChild(back);
     };
