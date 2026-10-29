@@ -7,7 +7,7 @@
     const host = window.location.hostname.toLowerCase();
     const previewParams = new URLSearchParams(window.location.search);
     const isProductionHost = host === 'styrian-bastards.at' || host === 'www.styrian-bastards.at';
-    const isStagingPreview = !isProductionHost && previewParams.get('v2preview') === '1';
+    const isStagingPreview = !isProductionHost && (host.endsWith('.styrian-bastards-website.pages.dev') || previewParams.get('v2preview') === '1');
     const staging = isStagingPreview
         && window.STB_V2_PRESS_STAGING_CONFIG?.url === 'https://asrkcguvzscgtysnivsq.supabase.co'
         ? window.STB_V2_PRESS_STAGING_CONFIG : null;
@@ -54,10 +54,10 @@
 
     const detailHref = (item) => {
         if (item._source === 'v2-news' && item.slug) {
-            return `/presse.html?source=v2-news&slug=${encodeURIComponent(item.slug)}${new URLSearchParams(window.location.search).get('v2preview') === '1' ? '&v2preview=1' : ''}`;
+            return `/presse.html?source=v2-news&slug=${encodeURIComponent(item.slug)}${isStagingPreview ? '&v2preview=1' : ''}`;
         }
         if (item._source === 'v2' && item.slug) {
-            return `/presse.html?source=v2&slug=${encodeURIComponent(item.slug)}${new URLSearchParams(window.location.search).get('v2preview') === '1' ? '&v2preview=1' : ''}`;
+            return `/presse.html?source=v2&slug=${encodeURIComponent(item.slug)}${isStagingPreview ? '&v2preview=1' : ''}`;
         }
         if (item.slug) {
             return `/presse.html?slug=${encodeURIComponent(item.slug)}`;
@@ -192,7 +192,7 @@
 
         const back = document.createElement('a');
         back.className = 'btn btn-primary press-back';
-        back.href = '/presse.html';
+        back.href = `/presse.html${isStagingPreview ? '?v2preview=1' : ''}`;
         back.textContent = 'Zurück zu Presse';
         detail.appendChild(back);
 
