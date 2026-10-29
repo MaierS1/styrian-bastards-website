@@ -62,3 +62,16 @@ test('staging preview without staging configuration never queries production',as
  assert.match(textOf(root),/V1 Beitrag/)
  assert.ok(!calls.some(c=>c.includes('yktioliukcrrccrfwxad.supabase.co')))
 })
+
+test('Pages preview stays on staging without query parameter',async()=>{
+ const {root,calls}=await render({url:'https://test.styrian-bastards-website.pages.dev/presse'})
+ assert.ok(calls.some(c=>c.includes('asrkcguvzscgtysnivsq.supabase.co')))
+ assert.ok(!calls.some(c=>c.includes('yktioliukcrrccrfwxad.supabase.co')))
+ assert.ok(linksOf(root).some(h=>h.includes('source=v2-news')&&h.includes('v2preview=1')))
+})
+test('detail and not-found back links preserve preview configuration',async()=>{
+ for (const emptyDetail of [false,true]) {
+  const {root}=await render({url:'https://test.styrian-bastards-website.pages.dev/presse?source=v2-news&slug=test-neu',emptyDetail})
+  assert.ok(linksOf(root).includes('/presse.html?v2preview=1'))
+ }
+})
