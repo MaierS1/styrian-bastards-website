@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="de"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>News Responsive Staging QA</title>
+<style>body{margin:0;background:#ddd;font:14px system-ui}header{position:sticky;top:0;background:white;padding:8px;z-index:2}iframe{display:block;border:0;background:white;height:1000px;max-width:none}button{margin:3px;padding:8px}output{margin-left:12px}</style>
+<header><strong>Staging-Responsive-Abnahme</strong> <span id="choices"></span><output id="size"></output></header>
+<script>
+const allowed=/^(?:[a-z0-9-]+\.)?styrian-bastards-website\.pages\.dev$/.test(location.hostname);
+if(!allowed){document.body.textContent='Nur im autorisierten Staging-Preview verfügbar.';}else{
+const frame=document.createElement('iframe');frame.title='Vereinsmanager Responsive-Prüfung';frame.src='https://styrian-bastards-manager-v2-nk3rlptz1-maiers1s-projects.vercel.app/communications';frame.width='375';
+const widths=[375,390,768,1024,1440];for(const width of widths){const button=document.createElement('button');button.textContent=width+' px';button.onclick=()=>{frame.width=String(width);document.querySelector('output').textContent='Anwendungsbreite: '+width+' CSS-Pixel';};document.getElementById('choices').append(button);}
+document.body.append(frame);document.querySelector('output').textContent='Anwendungsbreite: 375 CSS-Pixel';
+}
+</script></html>
