@@ -1,0 +1,5 @@
+# Production News feed adapter
+
+User-authorized production completion, 31 October 2026. Based on website main c8a19203866e8f8f96ced1df27dc68640d1b12ac. Existing V1/V2 press adapter retained; only independent V2 News source and source-qualified detail links added to presse.js. Existing public configuration reused. Production News RPCs only run on the exact production hostnames; preview overrides cannot redirect this adapter to Staging. All sources use Promise.allSettled. Text nodes retain safe content rendering; published image gateway used for News covers. No test publication or legacy data mutation.
+
+Validation: 7 executable DOM integration tests passed, JavaScript syntax check passed. Includes partial-source outages, missing/archived detail, text safety and production origin separation. Run node --test tests/news-production-feed.test.mjs. GitHub Actions skipped with [skip actions]; existing host Git integration can deploy normally. Rollback: restore only presse.js from c8a19203866e8f8f96ced1df27dc68640d1b12ac; retain authored database data. Final host rollout must be checked separately from commit success.

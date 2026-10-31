@@ -44,6 +44,9 @@
     };
 
     const detailHref = (item) => {
+        if (item._source === 'v2-news' && item.slug) {
+            return `/presse.html?source=v2-news&slug=${encodeURIComponent(item.slug)}`;
+        }
         if (item._source === 'v2' && item.slug) {
             return `/presse.html?source=v2&slug=${encodeURIComponent(item.slug)}${new URLSearchParams(window.location.search).get('v2preview') === '1' ? '&v2preview=1' : ''}`;
         }
@@ -261,10 +264,43 @@
         }));
     };
 
+    // News is a separate source: its failure must not hide V1 or V2 press.
+    const fetchV2News = async (slug = '') => {
+        if (!['styrian-bastards.at', 'www.styrian-bastards.at'].includes(window.location.hostname.toLowerCase())) return [];
+        const key = window.STB_V2_SHOP_PUBLISHABLE_KEY;
+        if (!V2_PRESS_ENABLED || typeof key !== 'string' || !key.trim()) return [];
+        const endpoint = slug ? 'news_public_item' : 'news_public_feed_v2';
+        const body = slug ? { p_slug: slug } : { p_limit: 50, p_after: null };
+        const response = await fetch(`${V2_URL}/rest/v1/rpc/${endpoint}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'apikey': key },
+            body: JSON.stringify(body)
+        });
+        if (!response.ok) throw new Error(`V2 news RPC failed: ${response.status}`);
+        const records = await response.json();
+        if (!Array.isArray(records)) throw new Error('Invalid V2 news response');
+        return records.filter((item) => item && item.title && item.slug).map((item) => ({
+            id: item.id, slug: item.slug, title: item.title, summary: item.teaser || '',
+            publication_date: typeof item.published_at === 'string' ? item.published_at.slice(0, 10) : '',
+            image_path: /^[0-9a-f-]{36}$/i.test(item.cover_media_id || '')
+                ? `${V2_URL}/functions/v1/news-public-image?id=${encodeURIComponent(item.cover_media_id)}` : '',
+            content: item.body || '', _source: 'v2-news'
+        }));
+    };
+
     const loadPress = async () => {
         try {
             const params = detailParams();
             const v2Detail = new URLSearchParams(window.location.search).get('source') === 'v2';
+            const newsDetail = new URLSearchParams(window.location.search).get('source') === 'v2-news';
+            if (newsDetail) {
+                if (!params.slug || !V2_PRESS_ENABLED) { renderNotFound(); return; }
+                const records = await fetchV2News(params.slug);
+                const selected = records.find((item) => item.slug.toLowerCase() === params.slug);
+                if (selected) renderDetail(selected);
+                else renderNotFound();
+                return;
+            }
             if (v2Detail) {
                 if (!params.slug || !V2_PRESS_ENABLED) { renderNotFound(); return; }
                 const records = await fetchV2Press(params.slug);
@@ -292,15 +328,16 @@
 
             if (!params.slug && !params.id) {
                 const results = await Promise.allSettled(V2_PRESS_ENABLED
-                    ? [fetchV1(), fetchV2Press()]
+                    ? [fetchV1(), fetchV2Press(), fetchV2News()]
                     : [fetchV1()]);
                 const v1Items = results[0].status === 'fulfilled' ? results[0].value : [];
                 const v2Items = V2_PRESS_ENABLED && results[1].status === 'fulfilled' ? results[1].value : [];
+                const newsItems = V2_PRESS_ENABLED && results[2].status === 'fulfilled' ? results[2].value : [];
                 for (const result of results) {
                     if (result.status === 'rejected') console.warn('Press source unavailable', result.reason);
                 }
-                const titles = new Set(v2Items.map((item) => item.title.trim().toLocaleLowerCase('de-AT')));
-                renderOverview([...v2Items, ...v1Items.filter((item) =>
+                const titles = new Set([...v2Items, ...newsItems].map((item) => item.title.trim().toLocaleLowerCase('de-AT')));
+                renderOverview([...v2Items, ...newsItems, ...v1Items.filter((item) =>
                     !titles.has(item.title.trim().toLocaleLowerCase('de-AT'))
                 )]);
                 return;
