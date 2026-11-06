@@ -63,6 +63,9 @@
     };
 
     const pressDetailHref = (item) => {
+        if (item._source === 'v2-news' && item.slug) {
+            return `/presse.html?source=v2-news&slug=${encodeURIComponent(item.slug)}`;
+        }
         if (item._source === 'v2' && item.slug) {
             return `/presse.html?source=v2&slug=${encodeURIComponent(item.slug)}${new URLSearchParams(window.location.search).get('v2preview') === '1' ? '&v2preview=1' : ''}`;
         }
@@ -276,7 +279,7 @@
     };
 
     const renderMediaItems = (items) => {
-        const featured = items.find((item) => item.is_featured) || items[0];
+        const featured = items.find((item) => item._source === 'v2-news') || items.find((item) => item.is_featured) || items[0];
         const moreItems = items.filter((item) => item !== featured);
 
         content.innerHTML = '';
@@ -333,6 +336,30 @@
         }));
     };
 
+    // Independent, published-only News source on the public production host.
+    const fetchV2News = async () => {
+        if (!['styrian-bastards.at', 'www.styrian-bastards.at'].includes(window.location.hostname.toLowerCase())) return [];
+        const key = window.STB_V2_SHOP_PUBLISHABLE_KEY;
+        if (!V2_PRESS_ENABLED || typeof key !== 'string' || !key.trim()) return [];
+        const response = await fetch(`${V2_URL}/rest/v1/rpc/news_public_feed_v2`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'apikey': key },
+            body: JSON.stringify({ p_limit: 5, p_after: null })
+        });
+        if (!response.ok) throw new Error(`V2 news RPC failed: ${response.status}`);
+        const records = await response.json();
+        if (!Array.isArray(records)) throw new Error('Invalid V2 news response');
+        return records.filter(item => item && item.title && item.slug).map(item => ({
+            id: item.id, slug: item.slug, title: item.title, _source: 'v2-news',
+            summary: item.teaser || '', category: item.category || 'vereinsnews',
+            source_name: 'Styrian Bastards',
+            publication_date: typeof item.published_at === 'string' ? item.published_at.slice(0, 10) : '',
+            image_path: /^[0-9a-f-]{36}$/i.test(item.cover_media_id || '')
+                ? `${V2_URL}/functions/v1/news-public-image?id=${encodeURIComponent(item.cover_media_id)}` : '',
+            is_featured: false
+        }));
+    };
+
     const fetchV1Media = async () => {
         const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_public_media_items`, {
             method: 'POST',
@@ -356,11 +383,13 @@
 
     const loadMedia = async () => {
         const sources = V2_PRESS_ENABLED
-            ? [fetchV1Media(), fetchV2Press()]
+            ? [fetchV1Media(), fetchV2Press(), fetchV2News()]
             : [fetchV1Media()];
         const results = await Promise.allSettled(sources);
         const v1Items = results[0].status === 'fulfilled' ? results[0].value : [];
         const v2Items = V2_PRESS_ENABLED && results[1].status === 'fulfilled' ? results[1].value : [];
+
+        const newsItems = V2_PRESS_ENABLED && results[2].status === 'fulfilled' ? results[2].value : [];
 
         for (const result of results) {
             if (result.status === 'rejected') {
@@ -369,8 +398,8 @@
         }
 
         // Only explicitly matching titles are deduplicated. No cross-database IDs are shared.
-        const v2Titles = new Set(v2Items.map((item) => item.title.trim().toLocaleLowerCase('de-AT')));
-        const visibleItems = [...v2Items, ...v1Items.filter(
+        const v2Titles = new Set([...v2Items, ...newsItems].map((item) => item.title.trim().toLocaleLowerCase('de-AT')));
+        const visibleItems = [...newsItems, ...v2Items, ...v1Items.filter(
             (item) => !v2Titles.has(item.title.trim().toLocaleLowerCase('de-AT'))
         )];
 
