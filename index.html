@@ -60,260 +60,29 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <link rel="stylesheet" href="/css/extracted/home.css">
 <link rel="stylesheet" href="/css/hero-restore.css?v=20260718-2">
-<link rel="stylesheet" href="/css/atse-calendar.css?v=20261107-1">
-<script src="/js/atse-calendar.js?v=20261107-1" defer></script>
+
+<link rel="stylesheet" href="/css/homepage-fonts-v1.css">
+<link rel="stylesheet" href="/css/homepage-redesign-v1.css">
 </head>
 
 <body>
-
-<section class="hero">
 <div id="navbar"></div>
+<main class="hp-home" id="home-redesign">
+<section class="hp-banner"><div class="hp-banner-photo"></div><div class="hp-shell hp-banner-inner"><div class="hp-banner-copy"><p class="hp-eyebrow"><span></span> OFFIZIELLER FANCLUB · ATSE GRAZ HOCKEY</p><h1>UNSER VEREIN.<br>UNSERE STADT.<br><em>UNSERE LEIDENSCHAFT.</em></h1><p class="hp-banner-description">Wir sind die Styrian Bastards. Gemeinsam für den ATSE – auf den Rängen, unterwegs und mitten im Vereinsleben.</p><div class="hp-banner-actions"><a class="hp-button hp-red" href="/mitglied-werden.html">Teil der Bastards werden <span>↗</span></a><a class="hp-text-link" href="#spiele">Nächstes Spiel <span>↓</span></a></div></div></div><div class="hp-banner-bottom hp-shell"><span>GRAZ. HOCKEY. GEMEINSCHAFT.</span><span>LAUT AUF DEN RÄNGEN. STARK ZUSAMMEN.</span></div></section>
+<section class="hp-fixtures hp-shell" id="spiele"><div class="hp-section-head"><div><p class="hp-eyebrow">GEMEINSAM AM EIS</p><h2>Die nächsten ATSE-Spiele<span class="hp-red-text">.</span></h2></div><div class="hp-section-actions"><a href="/atse-kalender.html">Alle Spiele <span>↗</span></a><a class="hp-subscribe" href="webcal://yktioliukcrrccrfwxad.supabase.co/functions/v1/atse-calendar"><span>＋</span> Kalender abonnieren</a></div></div><div class="hp-games-grid" id="games"><p>Spiele werden geladen …</p></div><div class="hp-fixtures-bottom"><span><i></i> <span id="sync-state">Spielplan aus dem Gamecenter</span></span><a href="https://v2.app.styrian-bastards.at/heimspiel-helfer" target="_blank" rel="noopener">Beim nächsten Heimspiel helfen <span>→</span></a></div></section>
+<section class="hp-partners-feature hp-shell" id="partner"><div class="hp-partner-intro"><p class="hp-eyebrow">DIE UNS DEN RÜCKEN STÄRKEN</p><h2>Unsere Partner<span class="hp-red-text">.</span></h2><p>Gemeinsam für Hockey und Fankultur in Graz.</p></div><div class="hp-partner-logos" id="home-partners"><p>Partner werden geladen …</p></div><a class="hp-text-link hp-partners-all" href="/sponsoren.html">Alle Partner kennenlernen ↗</a></section>
+<section class="hp-commerce-section" id="shop-abo"><div class="hp-shell"><div class="hp-section-head"><div><p class="hp-eyebrow">FARBE BEKENNEN. DABEI SEIN.</p><h2>Alles für deinen nächsten Spieltag<span class="hp-red-text">.</span></h2></div></div><div class="hp-commerce-grid"><section class="hp-shop-feature" aria-labelledby="shop-feature-title"><div class="hp-commerce-topline"><span>STYRIAN BASTARDS SHOP</span><span>01 / FANARTIKEL</span></div><h3 id="shop-feature-title">Bastards sein.<br><em>Bastards zeigen.</em></h3><p>Fanartikel und praktische Begleiter für deine nächste Auswärtsfahrt. Direkt aus unserem Verein.</p><div class="hp-product-peeks" id="product-peeks"></div><a class="hp-button hp-shop-button" href="/merch.html">Zum Shop &amp; allen Fanartikeln <span>↗</span></a><small id="shop-source">Veröffentlichte Shopartikel · Preis und Verfügbarkeit im Shop prüfen.</small></section><section id="saisonabo" hidden class="hp-abo-feature" aria-labelledby="abo-feature-title"><div class="hp-commerce-topline"><span>ATSE GRAZ HOCKEY</span><span>02 / SAISONABO</span></div><div class="hp-abo-feature-title"><h3 id="abo-feature-title">Dein Verein.<br>Dein Stehplatz.<br><em>Deine Saison.</em></h3><img src="/assets/brand/atse/ATSE_Logo_weiß.svg" alt="ATSE Graz Hockey"></div><div class="hp-season-ticket"><div><span>SAISONABO</span><strong><span id="home-abo-season">Saisonabo</span></strong><span>STEHSEKTOR · FANCLUB-KONTINGENT</span></div><div class="hp-ticket-edge" aria-hidden="true">ATSE / GRAZ</div></div><p id="home-abo-copy">Bestelle dein Saisonabo für den Stehsektor über die Styrian Bastards. Alle Angaben zu Preis und Verfügbarkeit findest du auf der Bestellseite.</p><a class="hp-button hp-red" href="/abo.html">Jetzt Saisonabo bestellen <span>↗</span></a><small>Die Bestellung erfolgt auf unserer bestehenden Abo-Seite.</small></section></div></div></section>
+<span id="aktuelles"></span><section class="hp-news-section" id="facebook-feed"><div class="hp-shell"><div class="hp-section-head"><div><p class="hp-eyebrow">RUND UM DIE BASTARDS</p><h2>Was uns bewegt<span class="hp-red-text">.</span></h2></div><a class="hp-text-link" href="/presse.html">Alle Neuigkeiten <span>↗</span></a></div><p id="home-news-state" class="hp-example-note" role="status">Neuigkeiten werden geladen …</p><div class="hp-news-grid" id="home-news"></div></div></section>
+<section class="hp-join-section hp-shell" id="mitmachen"><div class="hp-section-head"><div><p class="hp-eyebrow">DEIN PLATZ BEI UNS</p><h2>Nicht nur zuschauen. Dabeisein<span class="hp-red-text">.</span></h2></div></div><div class="hp-join-grid"><a class="hp-join-card" href="/mitglied-werden.html"><span class="hp-join-number">01 / GEMEINSCHAFT</span><h3>Mitglied werden</h3><p>Deine Leidenschaft. Unsere Gemeinschaft. Werde Teil der Styrian Bastards.</p><span class="hp-join-arrow">↗</span></a><a class="hp-join-card" href="/heimspiel-helferplanung.html"><span class="hp-join-number">02 / ANPACKEN</span><h3>Am Spieltag helfen</h3><p>Gemeinsam machen wir Heimspiele möglich. Plane deinen nächsten Einsatz.</p><span class="hp-join-arrow">↗</span></a><a class="hp-join-card" href="/merch.html"><span class="hp-join-number">03 / FARBE BEKENNEN</span><h3>Fanartikel entdecken</h3><p>Zeig, für wen dein Herz schlägt. Entdecke die Fanartikel unseres Vereins.</p><span class="hp-join-arrow">↗</span></a></div></section>
+<section class="hp-club-strip hp-shell" id="events"><div class="hp-event-preview"><span class="hp-small-icon">↗</span><div><p class="hp-eyebrow">AUCH ABSEITS DES EISES</p><h3>Zusammen mehr erleben.</h3><div id="home-events"><p>Fanclub-Veranstaltungen und gemeinsame Aktionen im Überblick.</p></div><a class="hp-text-link" href="/kontakt.html">Fragen zu Veranstaltungen? →</a></div></div></section>
+<section class="hp-about hp-shell" id="about"><div class="hp-about-title"><p class="hp-eyebrow">STYRIAN BASTARDS</p><h2>In Graz daheim.<br>Für den ATSE<br><em>überall dabei.</em></h2></div><div class="hp-about-text"><p>Wir sind der offizielle Fanclub des ATSE Graz Hockey. Uns verbindet die Liebe zum Eishockey – und die Überzeugung, dass die besten Erlebnisse gemeinsam entstehen.</p><p>Ob Heimspiel, Auswärtsfahrt oder Vereinsaktion: Wir unterstützen unseren Verein mit Herz, Stimme und Zusammenhalt.</p><a class="hp-text-link" href="/kontakt.html">Lerne uns kennen <span>↗</span></a></div></section>
 
-<div class="content">
-<div class="textbox">
-<div class="subtitle">Mehr als ein Fanclub</div>
-<h1>Styrian Bastards</h1>
-
-<p>
-Wir stehen hinter unserem Verein — bei jedem Spiel, bei jedem Wetter.
-Aus Leidenschaft. Aus Überzeugung. Für Graz und den Hockeysport.
-</p>
-
-<div class="buttons">
-<a class="btn btn-primary" href="/mitglied-werden.html">Mitglied werden</a>
-</div>
-</div>
-</div>
-
-</section>
-
-<section class="home-info-section" id="home-info" aria-label="Fanclub Informationen">
-<div class="home-info-grid">
-<div class="home-info-card">
-<div class="home-info-value" data-home-stat="active_members">13</div>
-<div class="home-info-label">Mitglieder</div>
-</div>
-
-<div class="home-info-card">
-<div class="home-info-value">2023</div>
-<div class="home-info-label">Gegründet</div>
-</div>
-
-<div class="home-info-card">
-<div class="home-info-value" data-home-stat="upcoming_events">Events</div>
-<div class="home-info-label">geplant</div>
-</div>
-
-<div class="home-info-card">
-<div class="home-info-value">Graz</div>
-<div class="home-info-label">Österreich</div>
-</div>
-</div>
-</section>
-
-<section class="section abo-home-section" id="saisonabo" aria-labelledby="saisonabo-title" hidden>
-<div class="abo-home-card">
-<div class="abo-home-brand" aria-hidden="true">
-<img src="/assets/brand/atse/ATSE_Logo_weiß.svg" alt="">
-</div>
-<div class="abo-home-content">
-<div class="abo-home-kicker">ATSE Graz Hockey · Saison 2026/27</div>
-<h2 id="saisonabo-title">Saisonabo für den Stehsektor</h2>
-<p>
-Über die Styrian Bastards kannst du dein Saisonabo aus unserem begrenzten Fanclub-Kontingent bestellen.
-Preis, aktuelle Verfügbarkeit und Bestellstatus werden direkt im Bestellsystem angezeigt.
-</p>
-<div class="abo-home-actions">
-<a class="btn btn-primary" href="/abo.html">Abo bestellen</a>
-</div>
-</div>
-</div>
-</section>
-
-<section class="section atse-calendar" id="atse-kalender" aria-labelledby="calendar-title">
-<div class="calendar-heading"><div><span class="calendar-kicker">Mit den Bastards am Eis</span><h2 id="calendar-title">ATSE-Spielkalender</h2><p>Heim- und Auswärtsspiele · direkt aus dem Gamecenter · Uhrzeiten in Österreich</p></div><a class="btn btn-primary" href="webcal://yktioliukcrrccrfwxad.supabase.co/functions/v1/atse-calendar">Kalender abonnieren</a></div>
-<div class="calendar-toolbar"><button type="button" id="calendar-prev" aria-label="Vorheriger Monat">←</button><h3 id="calendar-month"></h3><button type="button" id="calendar-next" aria-label="Nächster Monat">→</button><button type="button" id="calendar-today">Heute</button><label>Spiele <select id="calendar-filter"><option value="all">Alle</option><option value="home">Heimspiele</option><option value="away">Auswärtsspiele</option></select></label></div>
-<p id="calendar-state" role="status">Spielplan wird geladen …</p><div class="calendar-grid" id="calendar-grid" aria-label="Monatskalender"></div>
-<div class="calendar-list-heading"><h3 id="calendar-list-title">Spiele im gewählten Monat</h3><button type="button" id="calendar-show-all" aria-pressed="false">Alle Spiele anzeigen</button></div><div id="calendar-games"></div>
-<details class="calendar-subscribe"><summary>Kalender auf dem Handy oder Computer abonnieren</summary><p>Mit einem Abo werden neue Spiele, Terminänderungen und Absagen automatisch aus dem Gamecenter übernommen. Wann die Änderungen erscheinen, bestimmt deine Kalender-App. Ein einmaliger Import wird nicht aktualisiert.</p><p><a class="btn" href="webcal://yktioliukcrrccrfwxad.supabase.co/functions/v1/atse-calendar">Apple Kalender / Outlook</a> <a class="btn" href="https://calendar.google.com/calendar/u/0/r?cid=webcal%3A%2F%2Fyktioliukcrrccrfwxad.supabase.co%2Ffunctions%2Fv1%2Fatse-calendar" target="_blank" rel="noopener noreferrer">Google Kalender</a></p><label for="calendar-url">Abo-Adresse für „Kalender per URL hinzufügen“</label><input id="calendar-url" readonly value="https://yktioliukcrrccrfwxad.supabase.co/functions/v1/atse-calendar"><button type="button" id="calendar-copy">Link kopieren</button><p>Spiele ohne bestätigte Uhrzeit erscheinen vorläufig ganztägig. Fehlt auch das Datum, stehen sie bis zur Bekanntgabe nur in der Spielliste.</p></details>
-<noscript><p>Bitte JavaScript aktivieren, um den Spielkalender anzuzeigen. Den Kalender kannst du auch direkt über den Abo-Link abonnieren.</p></noscript>
-</section>
-
-<section id="events" class="section-anchor" aria-label="Events"></section>
-<section class="section" aria-label="ATSE Heimspiele und Helferplanung" style="text-align:center;padding-top:28px;padding-bottom:28px">
-<h2>ATSE-Heimspiele &amp; Helferplanung</h2>
-<p>Alle kommenden Heimspiele im Überblick. Mitglieder können ihre Mithilfe im Vereinsmanager anmelden.</p>
-<a class="btn btn-primary" href="/heimspiel-helferplanung.html">Heimspiele &amp; Helferplanung ansehen</a>
-</section>
-
-<section class="section public-dynamic-section" id="public-dynamic" hidden>
-<h2>Aktuelles</h2>
-<p class="public-dynamic-intro">
-Kommende Termine, Medienberichte und öffentlich verfügbare Produkte aus Shop &amp; Fanartikel.
-</p>
-<div class="public-dynamic-grid">
-
-<div class="public-dynamic-panel public-media-section" id="public-media" hidden>
-<h3>Medien / Presse</h3>
-<p class="public-media-intro">
-Presseberichte, Podcasts, Radiosendungen und Interviews rund um die Styrian Bastards.
-</p>
-<div id="public-media-content" class="public-media-grid"></div>
-</div>
-<div class="public-dynamic-panel public-events-section" id="public-events" hidden>
-<h3>Events</h3>
-<p class="public-events-intro">
-Kommende öffentliche Termine und Veranstaltungen der Styrian Bastards.
-</p>
-<div id="public-events-content" class="public-events-grid"></div>
-</div>
-
-<div class="public-dynamic-panel public-merch-section" id="public-merch" hidden>
-<h3>Shop &amp; Fanartikel</h3>
-<p class="public-merch-intro">
-Öffentlich verfügbare Fanartikel und Vereinsprodukte der Styrian Bastards.
-</p>
-<div id="public-merch-content" class="public-merch-grid"></div>
-</div>
-</div>
-</section>
-
-<section class="section about-section" id="about">
-<div class="about-heading-row">
-<div>
-<div class="about-kicker">Offizieller Fanclub</div>
-<h2>Über Uns</h2>
-</div>
-<img class="about-atse-logo" src="/assets/brand/atse/ATSE_Logo_weiß.svg" alt="ATSE Graz Hockey">
-</div>
-
-<p>
-Die Styrian Bastards sind der offizielle Fanclub des ATSE Graz – Hockey.<br>
-Was als kleine Gemeinschaft hockeybegeisterter Fans begann, ist heute eine leidenschaftliche Gruppe, die den Verein mit Herz, Stimme und Zusammenhalt unterstützt.
-</p>
-
-<p>
-Gemeinschaft, Leidenschaft und die Förderung des Hockeysports stehen bei uns im Mittelpunkt. Ob Heimspiel, Auswärtsfahrt, Fantreffen oder gemeinsame Veranstaltungen – wir stehen hinter unserem Verein und leben den Hockeysport mit voller Emotion.
-</p>
-
-<p>
-Die Styrian Bastards stehen für Loyalität, Zusammenhalt und echte Fan-Kultur in Graz.<br>
-Wir unterstützen den ATSE Graz lautstark auf den Rängen, organisieren gemeinsame Aktivitäten und möchten Menschen zusammenbringen, die dieselbe Leidenschaft teilen.
-</p>
-
-<p>
-Egal ob langjähriger Hockeyfan oder Neuling – bei uns ist jeder willkommen, der Teil einer starken Gemeinschaft werden möchte. Gemeinsam tragen wir die Farben des Vereins mit Stolz und zeigen: Hockey lebt durch seine Fans.
-</p>
-
-<div class="grid">
-<div class="card">
-<h3>Gemeinschaft</h3>
-<p>Gemeinsam zu Heimspielen, Events und Fanaktionen.</p>
-</div>
-
-<div class="card">
-<h3>Leidenschaft</h3>
-<p>Volle Unterstützung für den Verein und die Fanszene.</p>
-</div>
-
-<div class="card">
-<h3>Events</h3>
-<p>Cornhole Turniere, Stammtische und gemeinsame Aktivitäten.</p>
-</div>
-</div>
-</section>
-
-<section class="section sponsors-section" id="sponsors" hidden>
-<h2>Sponsoren</h2>
-<p class="sponsors-intro">
-Unsere Partner unterstützen den Fanclub und den Hockeysport in Graz. Hier zeigen wir die öffentlich freigegebenen Sponsoren in einer ruhigen, kompakten Darstellung.
-</p>
-<div id="sponsors-content"></div>
-<div class="sponsors-actions">
-<a class="btn btn-primary" href="/sponsoren.html">Alle Sponsoren anzeigen</a>
-</div>
-</section>
-
-<section class="facebook-feed-section" id="facebook-feed">
-    <div class="facebook-feed-wrap">
-        <div class="facebook-feed-text">
-            <h2>Aktuelles<br>von Facebook</h2>
-            <p>
-                Fotos, Beiträge und Veranstaltungen posten wir direkt auf Facebook.
-                So bleibt die Homepage automatisch aktuell, ohne Bilder doppelt hochladen zu müssen.
-            </p>
-            <a class="facebook-feed-button" href="https://facebook.com/styrian.bastards" target="_blank" rel="noopener noreferrer">
-                Facebook Seite öffnen
-            </a>
-        </div>
-
-        <div class="facebook-feed-box">
-            <div class="facebook-feed-placeholder" data-external-media-placeholder="facebook">
-                <div class="facebook-feed-placeholder-content">
-                    <h3>Facebook-Inhalte blockiert</h3>
-                    <p>
-                        Aus Datenschutzgr&uuml;nden wird der Facebook-Feed erst geladen, wenn du externe Medien aktivierst.
-                    </p>
-                    <button type="button" class="facebook-feed-consent-button" data-consent-enable="external-media">
-                        Facebook-Inhalte aktivieren
-                    </button>
-                </div>
-            </div>
-            <div class="facebook-feed-inner" hidden>
-                <iframe
-                    data-src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fstyrian.bastards&tabs=timeline&width=500&height=700&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=false"
-                    data-consent-category="external-media"
-                    width="500"
-                    height="700"
-                    title="Facebook-Feed der Styrian Bastards"
-                    scrolling="no"
-                    frameborder="0"
-                    allowfullscreen="true"
-                    allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
-                </iframe>
-            </div>
-            <p class="facebook-feed-note">
-                Falls der Feed nicht angezeigt wird, blockiert Facebook oder der Browser eventuell externe Inhalte.
-            </p>
-        </div>
-    </div>
-</section>
-
-<section class="membership-cta-section" id="mitglied-werden-cta">
-    <div class="membership-cta-wrap">
-        <div class="membership-cta-text">
-            <h2>Werde Teil der Styrian Bastards</h2>
-            <p>
-                Gemeinsam unterstützen wir den ATSE Graz Hockey auf und neben dem Eis.
-            </p>
-            <div class="membership-cta-benefits-title">Als Mitglied profitierst du von:</div>
-            <ul class="membership-cta-benefits">
-                <li>✅ Fanfahrten &amp; Treffen</li>
-                <li>✅ Vereinsveranstaltungen</li>
-                <li>✅ Mitglieder-Vorteilen</li>
-                <li>✅ Gemeinschaft mit Gleichgesinnten</li>
-            </ul>
-        </div>
-
-        <div class="membership-cta-action">
-            <a class="membership-cta-button" href="/mitglied-werden.html">Jetzt Mitglied werden</a>
-        </div>
-    </div>
-</section>
-
+</main>
 <div id="footer"></div>
 <script src="/js/extracted/home.js"></script>
 <script src="/js/extracted/home-2.js"></script>
-<script src="/js/extracted/home-3.js"></script>
 <script src="/v2-shop-config.js"></script>
-<script src="/v2-public-content-flags.js"></script>
-<script src="sponsors.js"></script>
-<script src="media.js?v=20261106-news"></script>
-<script src="/js/extracted/abo-home-visibility.js"></script>
-<script src="/merch-public-20260530.js?v=2"></script>
-<script src="events.js"></script>
-<script src="/js/virtual-bastard.js"></script>
+<script src="/js/homepage-redesign-v1.js" defer></script>
+<script src="/js/virtual-bastard.js" defer></script>
 <script src="/js/consent-manager.js" defer></script>
-
-</body>
-</html>
+</body></html>
