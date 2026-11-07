@@ -21,24 +21,34 @@
     if(!upcoming.length)list.append(node('p','Derzeit sind keine kommenden Spiele veröffentlicht. Alle Spiele findest du im Kalender.'));
   }
   async function loadGames(){if(loading)return;loading=true;try{const r=await fetch(V2+'/functions/v1/atse-calendar?format=json',{cache:'no-store',signal:AbortSignal.timeout(20000)});if(!r.ok)throw Error();const data=await r.json();if(!Array.isArray(data.games))throw Error();lastGames=data.games;renderGames(lastGames);$('sync-state').textContent='Automatisch aus dem Gamecenter aktualisiert · '+timeLabel(new Date())+' Uhr';}catch{$('sync-state').textContent=lastGames.length?'Aktualisierung derzeit nicht möglich · zuletzt geladene Spiele':'Spielplan derzeit nicht verfügbar · bitte Kalender öffnen';if(!lastGames.length)$('games').replaceChildren(link('/atse-kalender.html','Zum vollständigen ATSE-Spielkalender →','hp-text-link'));}finally{loading=false;}}
+  let newsLoading=false;
+  async function loadSocial(){const response=await fetch(V2+'/functions/v1/social-public-feed',{signal:AbortSignal.timeout(30000)});if(!response.ok)throw Error('Social feed unavailable');const data=await response.json();if(!Array.isArray(data.items))throw Error('Invalid social feed');return data.items.filter(x=>['facebook','instagram'].includes(x.channel)&&x.id&&x.title&&safeUrl(x.permalink)).map(x=>({...x,source:x.channel}));}
   async function loadNews(){
+    if(newsLoading)return;newsLoading=true;
     const results=await Promise.allSettled([
+      loadSocial(),
       rpc(V2,'news_public_feed_v2',{p_limit:3,p_after:null}).then(rows=>rows.filter(x=>x.title&&x.slug).map(x=>({...x,source:'v2-news',summary:x.teaser,image:/^[0-9a-f-]{36}$/i.test(x.cover_media_id||'')?V2+'/functions/v1/news-public-image?id='+encodeURIComponent(x.cover_media_id):null}))),
       rpc(V2,'get_public_press',{p_limit:3,p_after:null}).then(rows=>rows.filter(x=>x.title).map(x=>({...x,source:'v2',summary:x.teaser,image:asset(x.image_path,V2)}))),
       rpc(V1,'get_public_media_items',{p_category:null,p_limit:3,p_featured_only:false}).then(rows=>rows.filter(x=>x.title).map(x=>({...x,source:'v1',image:asset(x.image_path,V1)})))
     ]);
-    const items=fulfilled(results).sort((a,b)=>(a.source==='v2-news'?0:1)-(b.source==='v2-news'?0:1)||String(b.published_at||b.publication_date||'').localeCompare(String(a.published_at||a.publication_date||'')));
+    const byDate=(a,b)=>(Date.parse(b.published_at||b.publication_date)||0)-(Date.parse(a.published_at||a.publication_date)||0);
+    const allItems=fulfilled(results).sort(byDate),selected=[];
+    // Reserve the latest item from both social channels before filling the third card.
+    for(const channel of ['facebook','instagram']){const latest=allItems.find(x=>x.source===channel);if(latest)selected.push(latest);}
+    for(const item of allItems){if(selected.length>=3)break;if(!selected.includes(item))selected.push(item);}
+    const items=selected.sort(byDate);
     const list=$('home-news');list.replaceChildren();const seen=new Set();
     for(const x of items){if(list.children.length>=3)break;const identity=x.source+':'+(x.slug||x.id||x.title);if(seen.has(identity))continue;seen.add(identity);
       const card=node('article',null,'hp-news-card');let href=null;
-      if(x.source==='v1'&&(x.slug||x.id))href='/presse.html?'+(x.slug?'slug='+encodeURIComponent(x.slug):'id='+encodeURIComponent(x.id));
+      if(['facebook','instagram'].includes(x.source))href=safeUrl(x.permalink);
+      else if(x.source==='v1'&&(x.slug||x.id))href='/presse.html?'+(x.slug?'slug='+encodeURIComponent(x.slug):'id='+encodeURIComponent(x.id));
       else if(x.slug)href='/presse.html?source='+x.source+'&slug='+encodeURIComponent(x.slug);
       const art=node('div',null,'hp-news-art');if(x.image){const img=node('img');img.src=x.image;img.alt=x.title;img.loading='lazy';img.addEventListener('error',()=>{img.remove();art.classList.add('hp-news-placeholder');art.textContent='STYRIAN BASTARDS';});art.append(img);}else{art.classList.add('hp-news-placeholder');art.textContent='STYRIAN BASTARDS';}
       const body=node('div',null,'hp-news-body');const published=x.published_at||x.publication_date;const label=published&&Number.isFinite(Date.parse(published))?dateLabel(published)+' · ':'';
-      body.append(node('span',label+(x.source==='v2-news'?'VEREINSNEWS':'PRESSE & MEDIEN'),'hp-news-meta'),node('h3',x.title),node('p',String(x.summary||x.teaser||'Neuigkeiten rund um die Styrian Bastards und den ATSE Graz.').slice(0,220)));
-      if(href)body.append(link(href,'Beitrag lesen ↗','hp-article-open'));card.append(art,body);list.append(card);
+      body.append(node('span',label+({facebook:'FACEBOOK',instagram:'INSTAGRAM','v2-news':'VEREINSNEWS'}[x.source]||'PRESSE & MEDIEN'),'hp-news-meta'),node('h3',x.title),node('p',String(x.summary||x.teaser||'Neuigkeiten rund um die Styrian Bastards und den ATSE Graz.').slice(0,220)));
+      if(href){const a=link(href,x.source==='facebook'?'Auf Facebook ansehen ↗':x.source==='instagram'?'Auf Instagram ansehen ↗':'Beitrag lesen ↗','hp-article-open');if(['facebook','instagram'].includes(x.source)){a.target='_blank';a.rel='noopener noreferrer';}body.append(a);}card.append(art,body);list.append(card);
     }
-    $('home-news-state').textContent=list.children.length?'News und Medienberichte rund um die Styrian Bastards.':results.every(r=>r.status==='rejected')?'Neuigkeiten konnten nicht geladen werden. Bitte später erneut versuchen.':'Aktuell sind keine Neuigkeiten veröffentlicht.';
+    $('home-news-state').textContent=list.children.length?(results[0].status==='fulfilled'?'Aktuelles von Facebook, Instagram und den Styrian Bastards.':'Social-Media-Beiträge derzeit nicht verfügbar. Weitere News und Medienberichte:'):results.every(r=>r.status==='rejected')?'Neuigkeiten konnten nicht geladen werden. Bitte später erneut versuchen.':'Aktuell sind keine Neuigkeiten veröffentlicht.';newsLoading=false;
   }
   async function loadPartners(){const results=await Promise.allSettled([
     rpc(V1,'get_public_sponsors').then(rows=>rows.map(x=>({name:x.name,website:x.website,logo:asset(x.logo_path,V1),order:x.public_sort_order}))),
@@ -56,5 +66,5 @@
   function syncHeader(){const nav=document.querySelector('#navbar .sb-navbar');if(nav)root.style.setProperty('--hp-nav-height',Math.ceil(nav.getBoundingClientRect().height)+'px');}
   const headerObserver=new MutationObserver(()=>{syncHeader();const nav=document.querySelector('#navbar .sb-navbar');if(nav){new ResizeObserver(syncHeader).observe(nav);headerObserver.disconnect();}});headerObserver.observe($('navbar'),{childList:true,subtree:true});window.addEventListener('resize',syncHeader);syncHeader();
   void loadGames();void loadNews();void loadPartners();void loadShop();void loadAbo();void loadEvents();
-  setInterval(()=>{if(!document.hidden)void loadGames();},300000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)void loadGames();});
+  setInterval(()=>{if(!document.hidden){void loadGames();void loadNews();}},300000);document.addEventListener('visibilitychange',()=>{if(!document.hidden){void loadGames();void loadNews();}});
 })();
