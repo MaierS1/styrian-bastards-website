@@ -33,7 +33,9 @@
     ]);
     const byDate=(a,b)=>(Date.parse(b.published_at||b.publication_date)||0)-(Date.parse(a.published_at||a.publication_date)||0);
     const allItems=fulfilled(results).sort(byDate),selected=[];
-    // Reserve the latest item from both social channels before filling the third card.
+    // Homepage news retain a dedicated slot alongside the latest Facebook/Instagram posts.
+    const homepage=allItems.find(x=>x.source==='v2-news')||allItems.find(x=>!['facebook','instagram'].includes(x.source));
+    if(homepage)selected.push(homepage);
     for(const channel of ['facebook','instagram']){const latest=allItems.find(x=>x.source===channel);if(latest)selected.push(latest);}
     for(const item of allItems){if(selected.length>=3)break;if(!selected.includes(item))selected.push(item);}
     const items=selected.sort(byDate);
