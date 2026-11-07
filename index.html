@@ -60,6 +60,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <link rel="stylesheet" href="/css/extracted/home.css">
 <link rel="stylesheet" href="/css/hero-restore.css?v=20260718-2">
+<link rel="stylesheet" href="/css/atse-calendar.css?v=20261107-1">
+<script src="/js/atse-calendar.js?v=20261107-1" defer></script>
 </head>
 
 <body>
@@ -126,6 +128,15 @@ Preis, aktuelle Verfügbarkeit und Bestellstatus werden direkt im Bestellsystem 
 </div>
 </div>
 </div>
+</section>
+
+<section class="section atse-calendar" id="atse-kalender" aria-labelledby="calendar-title">
+<div class="calendar-heading"><div><span class="calendar-kicker">Mit den Bastards am Eis</span><h2 id="calendar-title">ATSE-Spielkalender</h2><p>Heim- und Auswärtsspiele · direkt aus dem Gamecenter · Uhrzeiten in Österreich</p></div><a class="btn btn-primary" href="webcal://yktioliukcrrccrfwxad.supabase.co/functions/v1/atse-calendar">Kalender abonnieren</a></div>
+<div class="calendar-toolbar"><button type="button" id="calendar-prev" aria-label="Vorheriger Monat">←</button><h3 id="calendar-month"></h3><button type="button" id="calendar-next" aria-label="Nächster Monat">→</button><button type="button" id="calendar-today">Heute</button><label>Spiele <select id="calendar-filter"><option value="all">Alle</option><option value="home">Heimspiele</option><option value="away">Auswärtsspiele</option></select></label></div>
+<p id="calendar-state" role="status">Spielplan wird geladen …</p><div class="calendar-grid" id="calendar-grid" aria-label="Monatskalender"></div>
+<div class="calendar-list-heading"><h3 id="calendar-list-title">Spiele im gewählten Monat</h3><button type="button" id="calendar-show-all" aria-pressed="false">Alle Spiele anzeigen</button></div><div id="calendar-games"></div>
+<details class="calendar-subscribe"><summary>Kalender auf dem Handy oder Computer abonnieren</summary><p>Mit einem Abo werden neue Spiele, Terminänderungen und Absagen automatisch aus dem Gamecenter übernommen. Wann die Änderungen erscheinen, bestimmt deine Kalender-App. Ein einmaliger Import wird nicht aktualisiert.</p><p><a class="btn" href="webcal://yktioliukcrrccrfwxad.supabase.co/functions/v1/atse-calendar">Apple Kalender / Outlook</a> <a class="btn" href="https://calendar.google.com/calendar/u/0/r?cid=webcal%3A%2F%2Fyktioliukcrrccrfwxad.supabase.co%2Ffunctions%2Fv1%2Fatse-calendar" target="_blank" rel="noopener noreferrer">Google Kalender</a></p><label for="calendar-url">Abo-Adresse für „Kalender per URL hinzufügen“</label><input id="calendar-url" readonly value="https://yktioliukcrrccrfwxad.supabase.co/functions/v1/atse-calendar"><button type="button" id="calendar-copy">Link kopieren</button><p>Spiele ohne bestätigte Uhrzeit erscheinen vorläufig ganztägig. Fehlt auch das Datum, stehen sie bis zur Bekanntgabe nur in der Spielliste.</p></details>
+<noscript><p>Bitte JavaScript aktivieren, um den Spielkalender anzuzeigen. Den Kalender kannst du auch direkt über den Abo-Link abonnieren.</p></noscript>
 </section>
 
 <section id="events" class="section-anchor" aria-label="Events"></section>
